@@ -1,0 +1,41 @@
+name: Spring boot build test
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+#      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      # GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      # GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      # GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+      # KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+      # KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+      # KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+
+    steps:
+      - name: 1.리포지토리 가져오기
+        uses: actions/checkout@v4
+
+      - name: 2.JDK 17 설치
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 3.Gradle 명령 실행 권한 설정
+        run: chmod +x gradlew
+
+      - name: 4.Gradle build
+        run: ./gradlew build -x installLocalGitHook -x spotlessInternalRegisterDependencies -x spotlessJava -x spotlessJavaApply -x spotlessApply -x spotlessJavaCheck -x spotlessCheck -x test
+
+      - name: 5.Gradle test
+        run: ./gradlew --info test -Dspring.profiles.active=test
