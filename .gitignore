@@ -1,4 +1,10 @@
-env/
-build/
-.gradle/
+# 환경 변수 파일 및 디렉터리 무시
 .env
+env/
+
+# Gradle 빌드 관련 디렉터리 무시
+.gradle/
+
+# build 디렉터리 전체 무시, 하지만 build.gradle은 예외 처리
+build/
+!build.gradle

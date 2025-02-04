@@ -14,6 +14,10 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 #      S3_BUCKET: ${{ secrets.S3_BUCKET }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      MYSQL_DRIVER: ${{ secrets.MYSQL_DRIVER }}
+      MYSQL_URL: ${{ secrets.MYSQL_URL }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
       # GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       # GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       # GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
@@ -22,6 +26,12 @@ jobs:
       # KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
 
     steps:
+      - name: 환경 변수 확인
+        run: |
+          echo "MYSQL_DRIVER=${MYSQL_DRIVER}"
+          echo "MYSQL_URL=${MYSQL_URL}"
+          echo "MYSQL_USER=${MYSQL_USER}"
+          echo "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
       - name: 1.리포지토리 가져오기
         uses: actions/checkout@v4
 
