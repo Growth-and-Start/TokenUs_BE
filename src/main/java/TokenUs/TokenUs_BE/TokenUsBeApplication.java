@@ -8,8 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class TokenUsBeApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TokenUsBeApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(TokenUsBeApplication.class, args);
+    }
 }

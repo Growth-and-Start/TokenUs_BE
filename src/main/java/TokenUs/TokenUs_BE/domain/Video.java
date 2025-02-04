@@ -1,8 +1,10 @@
 package TokenUs.TokenUs_BE.domain;
 
-import TokenUs.TokenUs_BE.domain.common.BaseEntity;
 import jakarta.persistence.*;
+
 import lombok.*;
+
+import TokenUs.TokenUs_BE.domain.common.BaseEntity;
 
 @Entity
 @Getter
@@ -32,5 +34,4 @@ public class Video extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
 }

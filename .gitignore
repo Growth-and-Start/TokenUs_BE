@@ -8,3 +8,15 @@ env/
 # build 디렉터리 전체 무시, 하지만 build.gradle은 예외 처리
 build/
 !build.gradle
+
+# MySQL 데이터 및 로그 파일 제외
+data/tokenus-mysql/
+data/tokenus-mysql/**
+
+# InnoDB 임시 파일 제외
+#ib_*
+
+# IntelliJ IDEA 설정 파일 무시
+.idea/
+*.iml
+workspace.xml

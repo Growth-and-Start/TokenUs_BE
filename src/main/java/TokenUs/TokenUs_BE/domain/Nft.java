@@ -1,9 +1,10 @@
 package TokenUs.TokenUs_BE.domain;
 
-import TokenUs.TokenUs_BE.domain.common.BaseEntity;
 import jakarta.persistence.*;
+
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
+
+import TokenUs.TokenUs_BE.domain.common.BaseEntity;
 
 @Entity
 @Getter

@@ -1,9 +1,11 @@
 package TokenUs.TokenUs_BE.domain.mapping;
 
+import jakarta.persistence.*;
+
+import lombok.*;
+
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.common.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Getter
@@ -16,10 +18,10 @@ public class Subscribe extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="subscribed_from_id")
+    @JoinColumn(name = "subscribed_from_id")
     private User subscribedFrom;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="subscribed_to_id")
+    @JoinColumn(name = "subscribed_to_id")
     private User subscribedTo;
 }

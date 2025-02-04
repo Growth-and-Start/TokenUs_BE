@@ -1,16 +1,17 @@
 package TokenUs.TokenUs_BE.domain;
 
-import TokenUs.TokenUs_BE.domain.common.BaseEntity;
-import TokenUs.TokenUs_BE.domain.enums.Status;
-import TokenUs.TokenUs_BE.domain.mapping.VideoComment;
-import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
-import TokenUs.TokenUs_BE.domain.mapping.VideoLike;
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.persistence.*;
+
+import lombok.*;
+
+import TokenUs.TokenUs_BE.domain.common.BaseEntity;
+import TokenUs.TokenUs_BE.domain.enums.Status;
+import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
+import TokenUs.TokenUs_BE.domain.mapping.VideoComment;
+import TokenUs.TokenUs_BE.domain.mapping.VideoLike;
 
 @Entity
 @Getter
