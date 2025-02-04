@@ -1,0 +1,47 @@
+
+name: tokenus #모든 네트워크와 서비스 이름에 접두어로 붙음
+
+networks:
+  network:
+
+services:
+  tokenus-app:
+    container_name: tokenus-app
+    image: tokenus-app-image
+    build:
+      context: ../..
+      dockerfile: ../../Dockerfile
+    platform: linux/amd64
+    ports:
+      - "8080:8080"
+    env_file:
+      - ../../env/local.env
+    depends_on:
+      mysql-db:
+        condition: service_healthy  # MySQL이 완전히 실행된 후 Spring Boot 실행
+    restart: unless-stopped
+    networks:
+      - network
+
+
+  mysql-db:
+    image: mysql:latest
+    container_name: tokenus-mysql
+    env_file:
+      - ../../env/local.env
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: always
+    networks:
+      - network
+    healthcheck: # MySQL이 정상적으로 실행될 때까지 대기
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+
+
+volumes:
+  mysql_data:

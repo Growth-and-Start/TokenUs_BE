@@ -1,10 +1,12 @@
 package TokenUs.TokenUs_BE.apiPayload.code.status;
 
-import TokenUs.TokenUs_BE.apiPayload.code.BaseErrorCode;
-import TokenUs.TokenUs_BE.apiPayload.code.ErrorReasonDTO;
+import org.springframework.http.HttpStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
+
+import TokenUs.TokenUs_BE.apiPayload.code.BaseErrorCode;
+import TokenUs.TokenUs_BE.apiPayload.code.ErrorReasonDTO;
 
 @Getter
 @AllArgsConstructor
@@ -25,16 +27,12 @@ public enum ErrorStatus implements BaseErrorCode {
     private final String message;
 
     @Override
-    public ErrorReasonDTO getReason(){
-        return ErrorReasonDTO.builder()
-                .message(message)
-                .code(code)
-                .isSuccess(false)
-                .build();
+    public ErrorReasonDTO getReason() {
+        return ErrorReasonDTO.builder().message(message).code(code).isSuccess(false).build();
     }
 
     @Override
-    public ErrorReasonDTO getReasonHttpStatus(){
+    public ErrorReasonDTO getReasonHttpStatus() {
         return ErrorReasonDTO.builder()
                 .message(message)
                 .code(code)
