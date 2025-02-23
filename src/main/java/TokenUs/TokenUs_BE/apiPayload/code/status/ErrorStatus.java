@@ -20,7 +20,11 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 유저 관련 에러
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4001", "사용자가 없습니다."),
-    NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "닉네임은 필수 입니다.");
+    USER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "유저가 이미 존재합니다."),
+    NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4003", "닉네임은 필수 입니다."),
+
+    // 인증 관련
+    NOT_AUTHORIZED(HttpStatus.BAD_REQUEST, "AUTH400", "인증되지 않은 요청입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
