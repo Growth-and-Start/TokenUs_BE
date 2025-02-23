@@ -57,6 +57,10 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+//	//thymeleaf
+//	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+//	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
 }
 
 //jar파일 설정
