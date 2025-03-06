@@ -1,3 +1,5 @@
+package TokenUs.TokenUs_BE.apiPayload.exception;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import TokenUs.TokenUs_BE.apiPayload.ApiResponse;
 import TokenUs.TokenUs_BE.apiPayload.code.ErrorReasonDTO;
 import TokenUs.TokenUs_BE.apiPayload.code.status.ErrorStatus;
-import TokenUs.TokenUs_BE.apiPayload.exception.GeneralException;
 
 @Slf4j
 @RestControllerAdvice(annotations = {RestController.class})
