@@ -22,9 +22,9 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import TokenUs.TokenUs_BE.apiPayload.ApiResponse;
 import TokenUs.TokenUs_BE.apiPayload.code.status.ErrorStatus;
+import TokenUs.TokenUs_BE.config.security.CustomUserDetailsService;
 import TokenUs.TokenUs_BE.jwt.JwtAuthenticationFilter;
 import TokenUs.TokenUs_BE.jwt.JwtUtil;
-import TokenUs.TokenUs_BE.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @EnableWebSecurity
@@ -35,13 +35,15 @@ public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
 
-    private final UserRepository userRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
     public SecurityConfig(
-            JwtUtil jwtUtil, ObjectMapper objectMapper, UserRepository userRepository) {
+            JwtUtil jwtUtil,
+            ObjectMapper objectMapper,
+            CustomUserDetailsService customUserDetailsService) {
         this.jwtUtil = jwtUtil;
         this.objectMapper = objectMapper;
-        this.userRepository = userRepository;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     // AuthenticationManager 를 빈으로 등록 (스프링 시큐리티 6.x 이상)
@@ -55,48 +57,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         AuthenticationEntryPoint entryPoint = new CustomAuthenticationEntryPoint(objectMapper);
         http.cors(Customizer.withDefaults())
-                // 세션을 사용하지 않도록 설정
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(AbstractHttpConfigurer::disable) // JWT 사용 시 일반적으로 CSRF 는 disable
+                .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(entryPoint))
                 .authorizeHttpRequests(
                         auth ->
-                                auth
-                                        // 로그인, 회원가입 등 토큰 없이 접근해야 하는 API 허용
-                                        .requestMatchers(
-                                                "/",
-                                                "/user/**",
-                                                "/oauth/**",
-                                                "/health",
-                                                "/health/s3",
-                                                "/auth/**",
-                                                "/v2/api-docs",
-                                                "/v3/api-docs",
-                                                "/v3/api-docs/**",
-                                                "/swagger-resources",
-                                                "/swagger-resources/**",
-                                                "/configuration/ui",
-                                                "/configuration/security",
-                                                "/swagger-ui/**",
-                                                "/webjars/**",
-                                                "/swagger-ui.html")
+                                auth.requestMatchers(
+                                                "/user/login", "/user/signup", "/swagger-ui/**")
                                         .permitAll()
-                                        // 그 외 나머지는 인증 필요
                                         .anyRequest()
                                         .authenticated())
-                // 폼 로그인 등 기본 기능 비활성화 (JWT 만 쓰려면)
-                .formLogin(Customizer.withDefaults())
-                // .formLogin(form -> form.disable()) // 더 엄격하게
-                // 폼 로그인 완전히 비활성화할 수도 있음
-                .logout(AbstractHttpConfigurer::disable);
-
-        // 커스텀 JWT 필터 추가
-        // UsernamePasswordAuthenticationFilter 이전에 동작하도록 설정
-        http.addFilterBefore(
-                new JwtAuthenticationFilter(jwtUtil, userRepository),
-                org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-                        .class);
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtUtil, customUserDetailsService),
+                        org.springframework.security.web.authentication
+                                .UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

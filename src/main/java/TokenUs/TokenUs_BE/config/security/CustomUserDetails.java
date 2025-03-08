@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import TokenUs.TokenUs_BE.domain.User;
@@ -23,7 +24,9 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(user.getRole()); // ✅ Role 자체가 GrantedAuthority이므로 바로 반환
+        return List.of(
+                new SimpleGrantedAuthority(
+                        user.getRole().name())); // ✅ Role 자체가 GrantedAuthority이므로 바로 반환
     }
 
     @Override
