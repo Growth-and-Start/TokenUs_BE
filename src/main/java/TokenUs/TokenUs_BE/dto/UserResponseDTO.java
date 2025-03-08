@@ -17,4 +17,15 @@ public class UserResponseDTO {
         Long id;
         LocalDateTime createdAt;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class loginResultDTO {
+
+        private String accessToken;
+
+        private String refreshToken;
+    }
 }

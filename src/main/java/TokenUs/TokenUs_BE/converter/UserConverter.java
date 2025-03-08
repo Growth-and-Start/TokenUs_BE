@@ -31,4 +31,9 @@ public class UserConverter {
                 .nickname(request.getNickname())
                 .build();
     }
+
+    public static UserResponseDTO.loginResultDTO toLoginResultDTO(
+            String accessToken, String refreshToken) {
+        return new UserResponseDTO.loginResultDTO(accessToken, refreshToken);
+    }
 }

@@ -77,6 +77,22 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<VideoLike> videoLikeList = new ArrayList<>();
 
+    // 회원가입 시 role 기본값 설정
+    @PrePersist
+    public void setDefaultRole() {
+        if (this.role == null) {
+            this.role = Role.USER;
+        }
+    }
+
+    // refresh token
+    @Column(length = 500)
+    private String refreshToken;
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
     // JwTokenProvider을 위해
     public User(String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.email = email;
