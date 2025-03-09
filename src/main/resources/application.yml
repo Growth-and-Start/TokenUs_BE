@@ -33,3 +33,10 @@ logging:
     com.example: debug
 jwt:
   secret: ${JWT_SECRET}
+
+aws:
+  s3:
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+    bucket-name: ${AWS_S3_BUCKET}
+    region: ${AWS_REGION}
