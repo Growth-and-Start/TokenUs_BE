@@ -35,6 +35,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'com.mysql:mysql-connector-j'
 
+	// Spring Boot Configuration Processor (YAML 자동 완성 지원, 선택 사항)
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
 	//테스트
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -59,8 +62,8 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-	//jsonobject
-	implementation 'org.json:json:20210307'
+	// AWS SDK for S3 (Presigned URL 생성 포함)
+	implementation 'software.amazon.awssdk:s3:2.20.40'
 
 //	//thymeleaf
 //	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
