@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth ->
                                 auth.requestMatchers(
-                                                "/user/login", "/user/signup", "/swagger-ui/**")
+                                                "/auth/login", "/auth/signup", "/swagger-ui/**")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())
