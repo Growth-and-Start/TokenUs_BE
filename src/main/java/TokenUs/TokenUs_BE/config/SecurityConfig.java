@@ -64,7 +64,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth ->
                                 auth.requestMatchers(
-                                                "/auth/login", "/auth/signup", "/swagger-ui/**")
+                                                "/auth/login",
+                                                "/auth/signup",
+                                                "/swagger-ui/**",
+                                                "video/similarity-check")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())
