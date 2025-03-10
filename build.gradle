@@ -28,6 +28,8 @@ repositories {
 dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	//lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
@@ -65,9 +67,11 @@ dependencies {
 	// AWS SDK for S3 (Presigned URL 생성 포함)
 	implementation 'software.amazon.awssdk:s3:2.20.40'
 
-//	//thymeleaf
-//	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-//	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
+	//web socket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// JSON 파싱 (ObjectMapper 사용)
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 //jar파일 설정

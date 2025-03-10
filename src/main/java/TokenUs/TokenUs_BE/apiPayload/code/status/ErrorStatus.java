@@ -31,7 +31,10 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_AUTHORIZED(HttpStatus.BAD_REQUEST, "AUTH400", "인증되지 않은 요청입니다."),
 
     // 토큰 관련
-    INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "TOKEN4001", "옳바르지 않은 리프레시 토큰입니다.");
+    INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "TOKEN4001", "옳바르지 않은 리프레시 토큰입니다."),
+
+    // 비디오 관련
+    VIDEO_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "VIDEO4001", "해당 영상이 이미 업로드 되어있습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

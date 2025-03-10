@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
+import TokenUs.TokenUs_BE.sevice.FlaskService;
 import TokenUs.TokenUs_BE.sevice.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -16,6 +17,8 @@ import io.swagger.v3.oas.annotations.Operation;
 public class S3Controller {
 
     private final S3Service s3Service;
+
+    private final FlaskService flaskService;
 
     @GetMapping("/presigned-url")
     @Operation(description = "S3 업로드용 presigned-url, 유효기간 10분")
@@ -27,13 +30,16 @@ public class S3Controller {
         return ResponseEntity.ok(presignedUrl);
     }
 
-    @PostMapping("save-file")
-    @Operation(description = "s3업로드 완료 시 url을 백엔드에 전달")
+    @PostMapping("video_upload_complete")
+    @Operation(
+            summary = "영상 s3업로드 완료 시 FE에서 API호출해서 백엔드에 전달url을 전달",
+            description = "영상 유사도 검사를 위해 사용")
     public ResponseEntity<String> saveFile(@RequestBody Map<String, String> request) {
         String fileUrl = request.get("fileUrl");
 
-        System.out.println("파일 업로드 완료: " + fileUrl);
+        // Flask 서버로 업로드된 파일 URL 전달
+        flaskService.sendFileUrlToFlask(fileUrl);
 
-        return ResponseEntity.ok("파일 저장 완료");
+        return ResponseEntity.ok("파일 업로드 및 url flask 전달");
     }
 }
