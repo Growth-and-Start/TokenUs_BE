@@ -30,8 +30,10 @@ public class S3Controller {
         return ResponseEntity.ok(presignedUrl);
     }
 
-    @PostMapping("save-file")
-    @Operation(description = "s3업로드 완료 시 url을 백엔드에 전달")
+    @PostMapping("video_upload_complete")
+    @Operation(
+            summary = "영상 s3업로드 완료 시 FE에서 API호출해서 백엔드에 전달url을 전달",
+            description = "영상 유사도 검사를 위해 사용")
     public ResponseEntity<String> saveFile(@RequestBody Map<String, String> request) {
         String fileUrl = request.get("fileUrl");
 

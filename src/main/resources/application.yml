@@ -30,7 +30,9 @@ spring:
 
 logging:
   level:
-    com.example: debug
+    org.springframework.security: DEBUG
+    TokenUs.TokenUs_BE: DEBUG
+
 jwt:
   secret: ${JWT_SECRET}
 
