@@ -20,3 +20,10 @@ data/tokenus-mysql/**
 .idea/
 *.iml
 workspace.xml
+
+# tfurrle 관련
+/src/main/resources/contracts/*
+/src/main/java/TokenUs/TokenUs_BE/web3/contract/*
+
+#DS_Store
+.DS_Store

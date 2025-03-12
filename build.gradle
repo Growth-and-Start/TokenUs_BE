@@ -72,6 +72,9 @@ dependencies {
 
 	// JSON 파싱 (ObjectMapper 사용)
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	//web3.js
+	implementation 'org.web3j:core:4.9.8' // Web3j 라이브러리
 }
 
 //jar파일 설정
