@@ -21,7 +21,7 @@ public class S3Controller {
     private final FlaskService flaskService;
 
     @GetMapping("/presigned-url")
-    @Operation(description = "S3 업로드용 presigned-url, 유효기간 10분")
+    @Operation(summary = "S3 업로드용 presigned-url, 유효기간 10분")
     public ResponseEntity<String> getPresignedUrl(
             @RequestParam String fileName,
             @RequestParam(defaultValue = "application/octet-stream") String contentType) {

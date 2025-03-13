@@ -43,7 +43,7 @@ public class VideoController {
     }
 
     @PostMapping("/similarity-check")
-    @Operation(description = "flask에서 유사도 검사 결과를 반환")
+    @Operation(summary = "flask에서 유사도 검사 결과를 반환")
     public ResponseEntity<ApiResponse<VideoResponseDTO.similarityCheckResultDTO>>
             receiveSimilarityResult(
                     @Validated @RequestBody VideoResponseDTO.similarityCheckResultDTO result) {
@@ -59,7 +59,7 @@ public class VideoController {
     // 일단은 detail을 받아서 바로 영상 메타데이터를 mysql에 저장하도록
     // TODO: detail 받아서 nft 발급도 함께 + 썸네일 이미지
     @PostMapping("/upload_detail")
-    @Operation(description = "유사도 검사를 통과했을 시, 영상 제목과 상세 정보 입력 및 메타데이터 DB저장")
+    @Operation(summary = "유사도 검사를 통과했을 시, 영상 제목과 상세 정보 입력 및 메타데이터 DB저장")
     public ApiResponse<VideoResponseDTO.uploadResultDTO> saveVideoDetail(
             @Validated @RequestBody VideoRequestDTO.videoDetailRequestDTO request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {

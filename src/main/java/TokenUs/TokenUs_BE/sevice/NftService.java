@@ -38,9 +38,13 @@ public class NftService {
     public String mintVideoNFT(
             String metadataURI, BigInteger totalSupply, String NFTname, String NFTsymbol)
             throws Exception {
-        return contract.mintVideoNFT(metadataURI, totalSupply, NFTname, NFTsymbol)
-                .send()
-                .getTransactionHash();
+
+        String transactionHash =
+                contract.mintVideoNFT(metadataURI, totalSupply, NFTname, NFTsymbol)
+                        .send()
+                        .getTransactionHash();
+
+        return transactionHash;
     }
 
     public String safeTransferNFT(String from, String to, BigInteger tokenId) throws Exception {
