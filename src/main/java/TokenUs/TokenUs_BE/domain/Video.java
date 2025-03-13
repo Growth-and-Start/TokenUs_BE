@@ -1,8 +1,10 @@
 package TokenUs.TokenUs_BE.domain;
 
-import TokenUs.TokenUs_BE.domain.common.BaseEntity;
 import jakarta.persistence.*;
+
 import lombok.*;
+
+import TokenUs.TokenUs_BE.domain.common.BaseEntity;
 
 @Entity
 @Getter
@@ -22,15 +24,12 @@ public class Video extends BaseEntity {
     private String detail;
 
     @Column(nullable = false, length = 200)
-    private String file_url;
+    private String fileUrl;
 
-    @Column(nullable = false, length = 200)
-    private String thumbnail_url;
-
-    private Long hashValue;
+    @Column(nullable = true, length = 200)
+    private String thumbnailUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
 }

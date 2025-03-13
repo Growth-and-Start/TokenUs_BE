@@ -1,0 +1,36 @@
+name: tokenus
+
+services:
+  mysql-db:
+    container_name: tokenus-mysql
+    image: mysql:latest
+    env_file: deploy.env
+    volumes:
+      - /home/ubuntu/deploy-db:/var/lib/mysql
+    ports:
+      - "3308:3306"
+    networks:
+      - network
+    command: [ "--character-set-server=utf8mb4","--collation-server=utf8mb4_unicode_ci" ] # MySQL 서버가 실행될 때 사용할 문자셋 및 정렬 규칙 지정
+    restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tokenus-app:
+    container_name: tokenus-app
+    image: 061039770972.dkr.ecr.ap-northeast-2.amazonaws.com/tokenus-docker:latest
+    env_file: deploy.env
+    ports:
+      - "8080:8080"
+    networks:
+      - network
+    restart: always
+    depends_on:
+      - mysql-db
+
+networks:
+  network:
+    driver: bridge # "브리지 네트워크"를 자동 생성하고 컨테이너 간 통신이 가능하도록 설정
