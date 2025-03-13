@@ -18,6 +18,10 @@ jobs:
       MYSQL_URL: ${{ secrets.MYSQL_URL }}
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      GANACHE_PRIVATE_KEY: ${{secrets.GANACHE_PRIVATE_KEY}}
+      ECR_REPOSITORY_NAME: ${{secrets.ECR_REPOSIROTY_NAME}}
+      RPC_URL: ${{secrets.RPC_URL}}
+      VIDEO_NFT_CONTRACT_ADDRESS: ${{secrets.VIDEO_NFT_CONTRACT_ADDRESS}}
       # GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       # GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       # GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
