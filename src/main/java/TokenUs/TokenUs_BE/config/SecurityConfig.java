@@ -67,6 +67,8 @@ public class SecurityConfig {
                                                 "/auth/login",
                                                 "/auth/signup",
                                                 "/swagger-ui/**",
+                                                "/v3/api-docs/**",
+                                                "/",
                                                 "video/similarity-check")
                                         .permitAll()
                                         .anyRequest()

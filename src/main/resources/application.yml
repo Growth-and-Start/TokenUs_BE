@@ -42,3 +42,8 @@ aws:
     secret-key: ${AWS_SECRET_ACCESS_KEY}
     bucket-name: ${AWS_S3_BUCKET}
     region: ${AWS_DEFAULT_REGION}
+
+web3:
+  rpc-url: ${RPC_URL}
+  conrtact-address: ${VIDEO_NFT_CONTRACT_ADDRESS}
+  private-key: ${GANACHE_PRIVATE_KEY}
