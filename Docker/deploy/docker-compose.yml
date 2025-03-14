@@ -34,3 +34,6 @@ services:
 networks:
   network:
     driver: bridge # "브리지 네트워크"를 자동 생성하고 컨테이너 간 통신이 가능하도록 설정
+
+volumes:
+  mysql_data:
