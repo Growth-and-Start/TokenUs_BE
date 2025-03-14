@@ -6,7 +6,7 @@ services:
     image: mysql:latest
     env_file: deploy.env
     volumes:
-      - /home/ubuntu/deploy-db:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     ports:
       - "3308:3306"
     networks:
@@ -21,7 +21,7 @@ services:
 
   tokenus-app:
     container_name: tokenus-app
-    image: 061039770972.dkr.ecr.ap-northeast-2.amazonaws.com/tokenus-docker:latest
+    image: 343218215881.dkr.ecr.ap-northeast-2.amazonaws.com/tokenus/app:latest
     env_file: deploy.env
     ports:
       - "8080:8080"

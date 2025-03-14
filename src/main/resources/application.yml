@@ -4,10 +4,8 @@
 spring:
   application:
     name: tokenus
-
   config:
-    import:
-      - optional:file:env/local.env[.properties]
+    import: optional:file:.env[.properties]
 
   datasource:
     url: ${MYSQL_URL}
