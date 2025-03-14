@@ -2,7 +2,7 @@
 
 # ECR에서 최신 이미지 pull
 echo "ECR에 있는 이미지 불러오기"
-if ! docker pull 061039770972.dkr.ecr.ap-northeast-2.amazonaws.com/tokenus-docker:latest; then
+if ! docker pull 343218215881.dkr.ecr.ap-northeast-2.amazonaws.com/tokenus/app:latest; then
     echo "이미지 불러오기에 실패했습니다."
     exit 1
 fi
