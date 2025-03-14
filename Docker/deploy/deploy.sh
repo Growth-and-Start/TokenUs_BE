@@ -10,7 +10,10 @@ fi
 
 # Docker compose down으로 기존 컨테이너 중지 및 삭제
 echo "Docker compose down 실행"
-docker compose down
+docker compose down --remove-orphans
+
+# 볼륨이 없으면 생성
+docker volume create mysql_data || true
 
 # Docker compose up 실행
 echo "Docker compose up 실행"
