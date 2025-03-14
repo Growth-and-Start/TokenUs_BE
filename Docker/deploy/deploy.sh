@@ -1,4 +1,5 @@
-# 이 파일 내용은 모두 임시입니다.
+# AWS ECR 로그인
+aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 343218215881.dkr.ecr.ap-northeast-2.amazonaws.com
 
 # ECR에서 최신 이미지 pull
 echo "ECR에 있는 이미지 불러오기"
