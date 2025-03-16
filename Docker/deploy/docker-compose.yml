@@ -1,7 +1,7 @@
 name: tokenus
 
 services:
-  mysql-db:
+  tokenus-mysql:
     container_name: tokenus-mysql
     image: mysql:latest
     env_file: .env
@@ -22,6 +22,11 @@ services:
   tokenus-app:
     container_name: tokenus-app
     image: 343218215881.dkr.ecr.ap-northeast-2.amazonaws.com/tokenus/app:latest
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
     env_file: .env
     ports:
       - "8080:8080"
@@ -29,7 +34,8 @@ services:
       - network
     restart: always
     depends_on:
-      - mysql-db
+      tokenus-mysql:
+        condition: service_healthy  # MySQL이 완전히 실행된 후 Spring Boot 실행
 
 networks:
   network:
