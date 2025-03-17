@@ -1,8 +1,8 @@
 name: tokenus
 
 services:
-  tokenus-mysql:
-    container_name: tokenus-mysql
+  tokenus_mysql:
+    container_name: tokenus_mysql
     image: mysql:latest
     env_file: .env
     volumes:
