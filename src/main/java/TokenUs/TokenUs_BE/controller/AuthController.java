@@ -28,7 +28,9 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    @Operation(summary = "이메일, 비밀번호, 닉네임을 바탕으로 회원가입", description = "JWT 토큰 반환X, 로그인 API를 사용")
+    @Operation(
+            summary = "이메일, 비밀번호, 닉네임, 이름을 바탕으로 회원가입 - profileUrl, walletAddress는 optional",
+            description = "JWT 토큰 반환X, 로그인 API를 사용")
     public ApiResponse<UserResponseDTO.joinResultDTO> join(
             @Validated @RequestBody UserRequestDTO.joinRequestDTO request) {
 
@@ -62,5 +64,12 @@ public class AuthController {
     public ApiResponse<Void> logout(@RequestBody TokenDTO.refreshTokenRequestDTO request) {
         authService.logout(request.getRefreshToken());
         return ApiResponse.onSuccess(null);
+    }
+
+    @PostMapping("/email_check")
+    @Operation(summary = "이메일 중복 체크", description = "중복된 이메일을 확인합니다. true: 중복, false: 중복X")
+    public ApiResponse<Boolean> emailCheck(@RequestBody UserRequestDTO.emailCheckDTO request) {
+
+        return ApiResponse.onSuccess(authService.check_email_duplication(request.getEmail()));
     }
 }

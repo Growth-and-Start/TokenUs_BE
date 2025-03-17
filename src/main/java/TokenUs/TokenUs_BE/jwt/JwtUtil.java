@@ -34,7 +34,11 @@ public class JwtUtil {
     }
 
     // JWT 액세스 토큰 생성
-    public String generateToken(String email, Collection<? extends GrantedAuthority> authorities) {
+    public String generateToken(
+            String email,
+            Collection<? extends GrantedAuthority> authorities,
+            long expirationTime,
+            String tokenType) {
 
         Date now = new Date();
 
@@ -43,15 +47,12 @@ public class JwtUtil {
                         .map(GrantedAuthority::getAuthority) // "ROLE_ADMIN" 등
                         .toList();
 
-        // 30분 만료
-        long EXPIRATION_TIME = 1000 * 60 * 30L;
-
         return Jwts.builder()
                 .setSubject(email) // 사용자 식별 정보
-                .setIssuedAt(now) // 발긃 시간
-                .claim("type", "access") // type: 토큰 종류
+                .setIssuedAt(now) // 발급 시간
+                .claim("type", tokenType) // type: 토큰 종류
                 .claim("roles", roleNames)
-                .setExpiration(new Date(now.getTime() + EXPIRATION_TIME)) // 만료 시간
+                .setExpiration(new Date(now.getTime() + expirationTime)) // 만료 시간
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256) // HS256 알고리즘
                 .compact();
     }
