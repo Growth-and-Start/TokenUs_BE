@@ -119,4 +119,8 @@ public class AuthService {
         user.updateRefreshToken(null);
         userRepository.save(user);
     }
+
+    public boolean check_email_duplication(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
 }

@@ -65,4 +65,11 @@ public class AuthController {
         authService.logout(request.getRefreshToken());
         return ApiResponse.onSuccess(null);
     }
+
+    @PostMapping("/email_check")
+    @Operation(summary = "이메일 중복 체크", description = "중복된 이메일을 확인합니다. true: 중복, false: 중복X")
+    public ApiResponse<Boolean> emailCheck(@RequestBody UserRequestDTO.emailCheckDTO request) {
+
+        return ApiResponse.onSuccess(authService.check_email_duplication(request.getEmail()));
+    }
 }

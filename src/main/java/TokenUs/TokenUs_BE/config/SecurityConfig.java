@@ -69,7 +69,8 @@ public class SecurityConfig {
                                                 "/swagger-ui/**",
                                                 "/v3/api-docs/**",
                                                 "/",
-                                                "video/similarity-check")
+                                                "video/similarity-check",
+                                                "/auth/email_check/**")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())
