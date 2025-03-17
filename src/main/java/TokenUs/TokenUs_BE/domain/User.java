@@ -44,6 +44,10 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 20, unique = true)
     private String nickname;
 
+    @Comment("사용자의 이름. 중복 없음")
+    @Column(nullable = false, length = 20, unique = false)
+    private String name;
+
     @Comment("사용자 프로필 사진 파일의 S3 URL")
     @Column(columnDefinition = "TEXT")
     private String profile_image;
@@ -79,9 +83,15 @@ public class User extends BaseEntity {
 
     // 회원가입 시 role 기본값 설정
     @PrePersist
-    public void setDefaultRole() {
+    public void setDefaultValues() {
         if (this.role == null) {
             this.role = Role.USER;
+        }
+        if (this.status == null) {
+            this.status = Status.ACTIVE;
+        }
+        if (this.profile_image == null) {
+            this.profile_image = "https://your-default-image-url.com/default.jpg";
         }
     }
 
