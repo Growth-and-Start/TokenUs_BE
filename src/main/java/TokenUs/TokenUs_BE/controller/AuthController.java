@@ -28,7 +28,9 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    @Operation(summary = "이메일, 비밀번호, 닉네임을 바탕으로 회원가입", description = "JWT 토큰 반환X, 로그인 API를 사용")
+    @Operation(
+            summary = "이메일, 비밀번호, 닉네임, 이름을 바탕으로 회원가입 - profileUrl, walletAddress는 optional",
+            description = "JWT 토큰 반환X, 로그인 API를 사용")
     public ApiResponse<UserResponseDTO.joinResultDTO> join(
             @Validated @RequestBody UserRequestDTO.joinRequestDTO request) {
 

@@ -59,9 +59,17 @@ public class AuthService {
 
         // JWT 토큰 생성
         String accessToken =
-                jwtUtil.generateToken(user.getEmail(), Collections.singleton(user.getRole()));
+                jwtUtil.generateToken(
+                        user.getEmail(),
+                        Collections.singleton(user.getRole()),
+                        1000 * 60 * 30L, // 30분 만료
+                        "access");
         String refreshToken =
-                jwtUtil.generateToken(user.getEmail(), Collections.singleton(user.getRole()));
+                jwtUtil.generateToken(
+                        user.getEmail(),
+                        Collections.singleton(user.getRole()),
+                        1000 * 60 * 60 * 24 * 7L, // 7일 만료
+                        "refresh");
 
         // 🔥 Refresh Token 저장
         user.updateRefreshToken(refreshToken);
@@ -90,7 +98,11 @@ public class AuthService {
 
         // 새로운 Access Token 발급
         String newAccessToken =
-                jwtUtil.generateToken(user.getEmail(), Collections.singleton(user.getRole()));
+                jwtUtil.generateToken(
+                        user.getEmail(),
+                        Collections.singleton(user.getRole()),
+                        1000 * 60 * 30L,
+                        "access");
 
         // ✅ ApiResponse 형식에 맞게 반환
         return ApiResponse.of(SuccessStatus._OK, new TokenDTO.tokenResponseDTO(newAccessToken));
