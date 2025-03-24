@@ -26,13 +26,13 @@ public class S3Service {
     private String bucketName;
 
     /** Presigned URL 생성 메서드 */
-    public String generatePresignedUrl(String originalFileName, String contentType) {
+    public String generatePresignedUrl(String folder, String originalFileName, String contentType) {
 
         String finalFileName = originalFileName;
 
         // 기존 파일이 존재하면 숫자 붙이기
         int count = 1;
-        while (isFileExists(finalFileName)) {
+        while (isFileExists(folder + "/" + finalFileName)) {
             String nameWithoutExtension =
                     originalFileName.substring(0, originalFileName.lastIndexOf("."));
             String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
@@ -40,10 +40,13 @@ public class S3Service {
             count++;
         }
 
+        // key에 폴더 포함
+        String objectKey = folder + "/" + finalFileName;
+
         PutObjectRequest putObjectRequest =
                 PutObjectRequest.builder()
                         .bucket(bucketName)
-                        .key(finalFileName)
+                        .key(objectKey)
                         .contentType(contentType)
                         .build();
 
