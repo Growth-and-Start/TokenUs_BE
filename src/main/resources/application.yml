@@ -46,4 +46,4 @@ aws:
 web3:
   rpc-url: ${RPC_URL}
   conrtact-address: ${VIDEO_NFT_CONTRACT_ADDRESS}
-  private-key: ${GANACHE_PRIVATE_KEY}
+  private-key: ${PRIVATE_KEY}
