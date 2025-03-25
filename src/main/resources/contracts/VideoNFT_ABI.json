@@ -1,6 +1,17 @@
 [
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "symbol",
+        "type": "string"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -110,7 +121,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "creator",
+        "name": "creatorAddress",
         "type": "address"
       },
       {
@@ -122,14 +133,20 @@
       {
         "indexed": false,
         "internalType": "string",
-        "name": "NFTname",
+        "name": "name",
         "type": "string"
       },
       {
         "indexed": false,
         "internalType": "string",
-        "name": "NFTsymbol",
+        "name": "symbol",
         "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
       }
     ],
     "name": "VideoNFTMinted",
@@ -519,37 +536,12 @@
         "type": "uint256"
       }
     ],
-    "name": "videos",
+    "name": "videoExists",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "metadataURI",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "creator",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalSupply",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "symbol",
-        "type": "string"
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -559,6 +551,71 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "videos",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "videoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "nftName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "nftSymbol",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "metadataURI",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "creatorAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalSupply",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "videoId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "nftName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "nftSymbol",
+        "type": "string"
+      },
+      {
         "internalType": "string",
         "name": "metadataURI",
         "type": "string"
@@ -569,19 +626,84 @@
         "type": "uint256"
       },
       {
-        "internalType": "string",
-        "name": "NFTname",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
       },
       {
-        "internalType": "string",
-        "name": "NFTsymbol",
-        "type": "string"
+        "internalType": "address",
+        "name": "creatorAddress",
+        "type": "address"
       }
     ],
     "name": "mintVideoNFT",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "videoId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getVideoInfo",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "nftName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "nftSymbol",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "metadataURI",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "creatorAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalSupply",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getVideoIdOfToken",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
   }
 ]

@@ -22,11 +22,6 @@ services:
   tokenus-app:
     container_name: tokenus-app
     image: 343218215881.dkr.ecr.ap-northeast-2.amazonaws.com/tokenus/app:latest
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: "512M"
     env_file: .env
     ports:
       - "8080:8080"
@@ -36,6 +31,8 @@ services:
     depends_on:
       tokenus-mysql:
         condition: service_healthy  # MySQL이 완전히 실행된 후 Spring Boot 실행
+    cpus: "0.5"           # ✅ CPU 사용 제한
+    mem_limit: 512m       # ✅ 메모리 사용 제한 (512MB)
 
 networks:
   network:

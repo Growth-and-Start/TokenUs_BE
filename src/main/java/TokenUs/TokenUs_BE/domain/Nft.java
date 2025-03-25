@@ -1,5 +1,6 @@
 package TokenUs.TokenUs_BE.domain;
 
+import java.math.BigInteger;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -20,11 +21,11 @@ public class Nft extends BaseEntity {
     @Column(length = 500)
     private String contractAddress;
 
-    private Integer tokenId;
+    private BigInteger tokenId;
 
-    private Float currentPrice;
+    private BigInteger currentPrice;
 
-    private Integer mintQuantity;
+    private BigInteger mintQuantity;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean isListed;

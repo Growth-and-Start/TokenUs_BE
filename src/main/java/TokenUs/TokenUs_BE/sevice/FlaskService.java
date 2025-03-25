@@ -13,7 +13,8 @@ public class FlaskService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public void sendFileUrlToFlask(String fileUrl) {
-        String flaskUrl = "http://127.0.0.1:5000/download"; // Flask 서버 URL
+        //        String flaskUrl = "http://127.0.0.1:5000/download"; // 로컬 개발 환경
+        String flaskUrl = "http://tokenus-flask:5000/download"; // ec2환경
 
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("fileUrl", fileUrl);

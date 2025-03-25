@@ -1,7 +1,5 @@
 package TokenUs.TokenUs_BE.dto;
 
-import jakarta.validation.constraints.NotBlank;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,12 +12,11 @@ public class VideoRequestDTO {
     @AllArgsConstructor
     public static class videoDetailRequestDTO {
 
-        @NotBlank(message = "제목은 필수 입력값입니다.")
-        private String title;
-
-        private String detail;
-
-        private String fileUrl;
+        // video 정보
+        private String videoTitle;
+        private String videoDetail;
+        private String videoUrl;
+        private Boolean isOpen;
 
         private Boolean isOpen;
 

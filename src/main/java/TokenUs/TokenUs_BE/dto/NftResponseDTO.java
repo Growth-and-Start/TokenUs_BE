@@ -1,5 +1,8 @@
 package TokenUs.TokenUs_BE.dto;
 
+import java.math.BigInteger;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,10 +16,20 @@ public class NftResponseDTO {
     @AllArgsConstructor
     public static class NFTMintResultDTO {
 
-        String transactionHash;
+        private String transactionHash;
+        private List<NFTInfoDTO> mintedNFTs;
+    }
 
-        Float gasUsed;
-
-        String status;
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class NFTInfoDTO {
+        private BigInteger tokenId;
+        private BigInteger currentPrice;
+        private String contractAddress;
+        private Long videoId;
+        private Long userId;
+        private Boolean isList;
+        private BigInteger mintQuantity;
     }
 }
