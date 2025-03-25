@@ -16,9 +16,9 @@ public class VideoConverter {
     public static Video toVideo(VideoRequestDTO.videoDetailRequestDTO request, User user) {
 
         return Video.builder()
-                .title(request.getTitle())
-                .detail(request.getDetail())
-                .fileUrl(request.getFileUrl())
+                .title(request.getVideoTitle())
+                .detail(request.getVideoDetail())
+                .fileUrl(request.getVideoUrl())
                 .isOpen(request.getIsOpen())
                 .thumbnailUrl(request.getThumbnailUrl())
                 .user(user)

@@ -1,30 +1,32 @@
 package TokenUs.TokenUs_BE.dto;
 
 import java.math.BigInteger;
-import jakarta.validation.constraints.NotBlank;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 public class NftRequestDTO {
 
     @Builder
     @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NFTMintRequestDTO {
-        @NotBlank(message = "metadataURI는 필수 입력값입니다.")
-        String metadataUri;
+        // nft 정보
+        @Builder.Default
+        private String metadataUri =
+                "https://tokenus-storage.s3.ap-northeast-2.amazonaws.com/profile/second.png"; // ✅
 
-        @NotBlank(message = "총 발행량은 필수 입력값입니다.")
-        BigInteger totalSupply;
+        // 기본값
+        // 설정
 
-        @NotBlank(message = "nft이름은 필수 입력값입니다.")
-        String nftName;
+        private BigInteger totalSupply;
+        private String nftName;
+        private String nftSymbol;
+        private BigInteger price;
+        private BigInteger videoId;
 
-        @NotBlank(message = "nftSymbol은 필수 입력값입니다.")
-        String nftSymbol;
+        // 클라이언트가 보내지 않지만 백엔드에서 주입될 값들
+        private String creatorAddress;
     }
 }
