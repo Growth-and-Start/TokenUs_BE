@@ -19,6 +19,7 @@ public class VideoConverter {
                 .title(request.getTitle())
                 .detail(request.getDetail())
                 .fileUrl(request.getFileUrl())
+                .isOpen(request.getIsOpen())
                 .thumbnailUrl(request.getThumbnailUrl())
                 .user(user)
                 .build();

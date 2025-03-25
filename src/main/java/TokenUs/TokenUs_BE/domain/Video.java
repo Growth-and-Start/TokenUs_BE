@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import TokenUs.TokenUs_BE.domain.common.BaseEntity;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -28,6 +29,10 @@ public class Video extends BaseEntity {
 
     @Column(nullable = true, length = 200)
     private String thumbnailUrl;
+
+    @Column(nullable = true)
+    @ColumnDefault("true")
+    private Boolean isOpen;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
