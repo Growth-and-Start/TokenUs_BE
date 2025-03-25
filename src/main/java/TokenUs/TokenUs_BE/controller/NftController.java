@@ -31,6 +31,11 @@ public class NftController {
         String nftName = request.getNftName();
         String nftSymbol = request.getNftSymbol();
 
+        System.out.println("▶ metadataUri = " + request.getMetadataUri());
+        System.out.println("▶ totalSupply = " + request.getTotalSupply());
+        System.out.println("▶ nftName = " + request.getNftName());
+        System.out.println("▶ nftSymbol = " + request.getNftSymbol());
+
         return nftService.mintVideoNFT(metadataUri, totalSupply, nftName, nftSymbol);
     }
 

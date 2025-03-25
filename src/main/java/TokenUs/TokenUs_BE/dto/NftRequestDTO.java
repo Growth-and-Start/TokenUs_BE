@@ -2,6 +2,7 @@ package TokenUs.TokenUs_BE.dto;
 
 import java.math.BigInteger;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,8 +19,7 @@ public class NftRequestDTO {
         @NotBlank(message = "metadataURI는 필수 입력값입니다.")
         String metadataUri;
 
-        @NotBlank(message = "총 발행량은 필수 입력값입니다.")
-        BigInteger totalSupply;
+        @NotNull(message = "총 발행량은 필수 입력값입니다.") BigInteger totalSupply;
 
         @NotBlank(message = "nft이름은 필수 입력값입니다.")
         String nftName;

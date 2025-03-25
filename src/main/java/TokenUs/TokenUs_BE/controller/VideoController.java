@@ -53,7 +53,7 @@ public class VideoController {
         // ✅ WebSocket을 통해 프론트엔드에 전송
         messagingTemplate.convertAndSend("/topic/similarity-result", result);
 
-        return ResponseEntity.ok(ApiResponse.onSuccess(result)); // ✅ 프론트에 결과 반환
+        return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
 
     // 일단은 detail을 받아서 바로 영상 메타데이터를 mysql에 저장하도록
