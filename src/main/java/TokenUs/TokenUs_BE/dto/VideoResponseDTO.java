@@ -26,6 +26,8 @@ public class VideoResponseDTO {
         private String message;
 
         private boolean passed; // 유사도 검사를 통과했는지 여부
+
+        private String similarVideoId; // ❗ 유사도 검사 실패 시 포함됨 (nullable)
     }
 
     @Builder
