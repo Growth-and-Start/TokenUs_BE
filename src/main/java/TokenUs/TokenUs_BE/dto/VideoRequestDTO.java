@@ -21,6 +21,8 @@ public class VideoRequestDTO {
 
         private String fileUrl;
 
+        private Boolean isOpen;
+
         @Builder.Default private String thumbnailUrl = "https://example.com/default-thumbnail.jpg";
     }
 }
