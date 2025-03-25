@@ -26,6 +26,7 @@ import org.web3j.protocol.core.methods.response.BaseEventResponse;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple6;
+import org.web3j.tuples.generated.Tuple7;
 import org.web3j.tx.Contract;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.ContractGasProvider;
@@ -83,9 +84,15 @@ public class VideoNFT_ABI extends Contract {
 
     public static final String FUNC_TRANSFEROWNERSHIP = "transferOwnership";
 
+    public static final String FUNC_VIDEOEXISTS = "videoExists";
+
     public static final String FUNC_VIDEOS = "videos";
 
     public static final String FUNC_MINTVIDEONFT = "mintVideoNFT";
+
+    public static final String FUNC_GETVIDEOINFO = "getVideoInfo";
+
+    public static final String FUNC_GETVIDEOIDOFTOKEN = "getVideoIdOfToken";
 
     public static final Event APPROVAL_EVENT =
             new Event(
@@ -130,7 +137,8 @@ public class VideoNFT_ABI extends Contract {
                             new TypeReference<Address>(true) {},
                             new TypeReference<Uint256>() {},
                             new TypeReference<Utf8String>() {},
-                            new TypeReference<Utf8String>() {}));
+                            new TypeReference<Utf8String>() {},
+                            new TypeReference<Uint256>() {}));
     ;
 
     @Deprecated
@@ -335,11 +343,13 @@ public class VideoNFT_ABI extends Contract {
             VideoNFTMintedEventResponse typedResponse = new VideoNFTMintedEventResponse();
             typedResponse.log = eventValues.getLog();
             typedResponse.videoId = (BigInteger) eventValues.getIndexedValues().get(0).getValue();
-            typedResponse.creator = (String) eventValues.getIndexedValues().get(1).getValue();
+            typedResponse.creatorAddress =
+                    (String) eventValues.getIndexedValues().get(1).getValue();
             typedResponse.totalSupply =
                     (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
-            typedResponse.NFTname = (String) eventValues.getNonIndexedValues().get(1).getValue();
-            typedResponse.NFTsymbol = (String) eventValues.getNonIndexedValues().get(2).getValue();
+            typedResponse.name = (String) eventValues.getNonIndexedValues().get(1).getValue();
+            typedResponse.symbol = (String) eventValues.getNonIndexedValues().get(2).getValue();
+            typedResponse.price = (BigInteger) eventValues.getNonIndexedValues().get(3).getValue();
             responses.add(typedResponse);
         }
         return responses;
@@ -351,11 +361,12 @@ public class VideoNFT_ABI extends Contract {
         VideoNFTMintedEventResponse typedResponse = new VideoNFTMintedEventResponse();
         typedResponse.log = log;
         typedResponse.videoId = (BigInteger) eventValues.getIndexedValues().get(0).getValue();
-        typedResponse.creator = (String) eventValues.getIndexedValues().get(1).getValue();
+        typedResponse.creatorAddress = (String) eventValues.getIndexedValues().get(1).getValue();
         typedResponse.totalSupply =
                 (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
-        typedResponse.NFTname = (String) eventValues.getNonIndexedValues().get(1).getValue();
-        typedResponse.NFTsymbol = (String) eventValues.getNonIndexedValues().get(2).getValue();
+        typedResponse.name = (String) eventValues.getNonIndexedValues().get(1).getValue();
+        typedResponse.symbol = (String) eventValues.getNonIndexedValues().get(2).getValue();
+        typedResponse.price = (BigInteger) eventValues.getNonIndexedValues().get(3).getValue();
         return typedResponse;
     }
 
@@ -573,7 +584,17 @@ public class VideoNFT_ABI extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
-    public RemoteFunctionCall<Tuple6<BigInteger, String, String, BigInteger, String, String>>
+    public RemoteFunctionCall<Boolean> videoExists(BigInteger param0) {
+        final Function function =
+                new Function(
+                        FUNC_VIDEOEXISTS,
+                        Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(param0)),
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
+        return executeRemoteCallSingleValueReturn(function, Boolean.class);
+    }
+
+    public RemoteFunctionCall<
+                    Tuple7<BigInteger, String, String, String, String, BigInteger, BigInteger>>
             videos(BigInteger param0) {
         final Function function =
                 new Function(
@@ -582,41 +603,109 @@ public class VideoNFT_ABI extends Contract {
                         Arrays.<TypeReference<?>>asList(
                                 new TypeReference<Uint256>() {},
                                 new TypeReference<Utf8String>() {},
+                                new TypeReference<Utf8String>() {},
+                                new TypeReference<Utf8String>() {},
                                 new TypeReference<Address>() {},
                                 new TypeReference<Uint256>() {},
-                                new TypeReference<Utf8String>() {},
-                                new TypeReference<Utf8String>() {}));
+                                new TypeReference<Uint256>() {}));
         return new RemoteFunctionCall<
-                Tuple6<BigInteger, String, String, BigInteger, String, String>>(
+                Tuple7<BigInteger, String, String, String, String, BigInteger, BigInteger>>(
                 function,
-                new Callable<Tuple6<BigInteger, String, String, BigInteger, String, String>>() {
+                new Callable<
+                        Tuple7<
+                                BigInteger,
+                                String,
+                                String,
+                                String,
+                                String,
+                                BigInteger,
+                                BigInteger>>() {
                     @Override
-                    public Tuple6<BigInteger, String, String, BigInteger, String, String> call()
-                            throws Exception {
+                    public Tuple7<
+                                    BigInteger,
+                                    String,
+                                    String,
+                                    String,
+                                    String,
+                                    BigInteger,
+                                    BigInteger>
+                            call() throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
-                        return new Tuple6<BigInteger, String, String, BigInteger, String, String>(
+                        return new Tuple7<
+                                BigInteger, String, String, String, String, BigInteger, BigInteger>(
                                 (BigInteger) results.get(0).getValue(),
                                 (String) results.get(1).getValue(),
                                 (String) results.get(2).getValue(),
-                                (BigInteger) results.get(3).getValue(),
+                                (String) results.get(3).getValue(),
                                 (String) results.get(4).getValue(),
-                                (String) results.get(5).getValue());
+                                (BigInteger) results.get(5).getValue(),
+                                (BigInteger) results.get(6).getValue());
                     }
                 });
     }
 
     public RemoteFunctionCall<TransactionReceipt> mintVideoNFT(
-            String metadataURI, BigInteger totalSupply, String NFTname, String NFTsymbol) {
+            BigInteger videoId,
+            String nftName,
+            String nftSymbol,
+            String metadataURI,
+            BigInteger totalSupply,
+            BigInteger price,
+            String creatorAddress) {
         final Function function =
                 new Function(
                         FUNC_MINTVIDEONFT,
                         Arrays.<Type>asList(
+                                new org.web3j.abi.datatypes.generated.Uint256(videoId),
+                                new org.web3j.abi.datatypes.Utf8String(nftName),
+                                new org.web3j.abi.datatypes.Utf8String(nftSymbol),
                                 new org.web3j.abi.datatypes.Utf8String(metadataURI),
                                 new org.web3j.abi.datatypes.generated.Uint256(totalSupply),
-                                new org.web3j.abi.datatypes.Utf8String(NFTname),
-                                new org.web3j.abi.datatypes.Utf8String(NFTsymbol)),
+                                new org.web3j.abi.datatypes.generated.Uint256(price),
+                                new org.web3j.abi.datatypes.Address(160, creatorAddress)),
                         Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<Tuple6<String, String, String, String, BigInteger, BigInteger>>
+            getVideoInfo(BigInteger videoId) {
+        final Function function =
+                new Function(
+                        FUNC_GETVIDEOINFO,
+                        Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(videoId)),
+                        Arrays.<TypeReference<?>>asList(
+                                new TypeReference<Utf8String>() {},
+                                new TypeReference<Utf8String>() {},
+                                new TypeReference<Utf8String>() {},
+                                new TypeReference<Address>() {},
+                                new TypeReference<Uint256>() {},
+                                new TypeReference<Uint256>() {}));
+        return new RemoteFunctionCall<
+                Tuple6<String, String, String, String, BigInteger, BigInteger>>(
+                function,
+                new Callable<Tuple6<String, String, String, String, BigInteger, BigInteger>>() {
+                    @Override
+                    public Tuple6<String, String, String, String, BigInteger, BigInteger> call()
+                            throws Exception {
+                        List<Type> results = executeCallMultipleValueReturn(function);
+                        return new Tuple6<String, String, String, String, BigInteger, BigInteger>(
+                                (String) results.get(0).getValue(),
+                                (String) results.get(1).getValue(),
+                                (String) results.get(2).getValue(),
+                                (String) results.get(3).getValue(),
+                                (BigInteger) results.get(4).getValue(),
+                                (BigInteger) results.get(5).getValue());
+                    }
+                });
+    }
+
+    public RemoteFunctionCall<BigInteger> getVideoIdOfToken(BigInteger tokenId) {
+        final Function function =
+                new Function(
+                        FUNC_GETVIDEOIDOFTOKEN,
+                        Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(tokenId)),
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
     }
 
     @Deprecated
@@ -688,12 +777,14 @@ public class VideoNFT_ABI extends Contract {
     public static class VideoNFTMintedEventResponse extends BaseEventResponse {
         public BigInteger videoId;
 
-        public String creator;
+        public String creatorAddress;
 
         public BigInteger totalSupply;
 
-        public String NFTname;
+        public String name;
 
-        public String NFTsymbol;
+        public String symbol;
+
+        public BigInteger price;
     }
 }

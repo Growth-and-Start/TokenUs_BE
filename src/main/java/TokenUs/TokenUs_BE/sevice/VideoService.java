@@ -21,10 +21,10 @@ public class VideoService {
     private final VideoConverter videoconverter;
     private final VideoConverter videoConverter;
 
-    public Video saveDetail(VideoRequestDTO.videoDetailRequestDTO request, User user) {
+    public Video createVideo(VideoRequestDTO.videoDetailRequestDTO request, User user) {
 
         // 해당 file_url의 영상이 이미 업로드 되었다면
-        if (videoRepository.findByFileUrl((request.getFileUrl())).isPresent()) {
+        if (videoRepository.findByFileUrl((request.getVideoUrl())).isPresent()) {
             throw new GeneralHandler(ErrorStatus.VIDEO_ALREADY_EXIST);
         }
 
