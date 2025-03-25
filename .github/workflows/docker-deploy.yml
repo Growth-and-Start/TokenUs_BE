@@ -3,7 +3,7 @@ name: Build and Push Docker Image to ECR and Deploy on EC2
 on:
   push:
     branches:
-      - release
+      - develop
 
 jobs:
   build-and-push:
