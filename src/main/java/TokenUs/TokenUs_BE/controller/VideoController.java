@@ -46,7 +46,10 @@ public class VideoController {
     }
 
     @PostMapping("/similarity_check")
-    @Operation(summary = "flask로 유사도 검사 요청")
+    @Operation(
+            summary = "flask로 유사도 검사 요청",
+            description =
+                    " *250326*유사도 검사 걸렸을 때 nft 보유 여부 아직 확인하지 않고 있음. 추후 추가 예정<br> 유사한 영상은 현재 id만 반환중, 추후 만들어질 id로 영상 상세 페이지 get API구현 되어야함")
     public ApiResponse<VideoResponseDTO.similarityCheckResultDTO> requestSimilarityCheck(
             @RequestBody VideoRequestDTO.similarityCheckRequestDTO request) {
 
@@ -62,7 +65,7 @@ public class VideoController {
     }
 
     @PostMapping("/sand_result")
-    @Operation(summary = "flask에서 유사도 검사 결과를 반환")
+    @Operation(summary = "flask에서 유사도 검사 결과를 반환", description = "flask 서버 사용. FE에서 사용X")
     public ResponseEntity<ApiResponse<VideoResponseDTO.similarityCheckResultDTO>>
             receiveSimilarityResult(
                     @Validated @RequestBody VideoResponseDTO.similarityCheckResultDTO result) {

@@ -10,6 +10,7 @@ public class VideoResponseDTO {
 
     @Builder
     @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class similarityCheckResultDTO {

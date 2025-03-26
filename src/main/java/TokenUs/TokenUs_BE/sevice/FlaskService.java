@@ -3,21 +3,23 @@ package TokenUs.TokenUs_BE.sevice;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import io.github.cdimascio.dotenv.Dotenv;
-
 @Service
 public class FlaskService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    Dotenv dotenv = Dotenv.load();
+    private final RestTemplate restTemplate;
+    private final String flaskUrl;
+
+    public FlaskService(RestTemplate restTemplate, @Value("${flask.url}") String flaskUrl) {
+        this.restTemplate = restTemplate;
+        this.flaskUrl = flaskUrl;
+    }
 
     public String requestSimilarityCheck(String fileUrl) {
-
-        String flaskUrl = dotenv.get("FLASK_URL");
 
         // 1. requestBody 설정
         Map<String, String> requestBody = new HashMap<>();

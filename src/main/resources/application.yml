@@ -47,3 +47,6 @@ web3:
   rpc-url: ${RPC_URL}
   conrtact-address: ${VIDEO_NFT_CONTRACT_ADDRESS}
   private-key: ${PRIVATE_KEY}
+
+flask:
+  url: ${FLASK_URL}
