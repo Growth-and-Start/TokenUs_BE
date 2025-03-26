@@ -20,4 +20,13 @@ public class VideoRequestDTO {
 
         @Builder.Default private String thumbnailUrl = "https://example.com/default-thumbnail.jpg";
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class similarityCheckRequestDTO {
+
+        private String videoUrl;
+    }
 }

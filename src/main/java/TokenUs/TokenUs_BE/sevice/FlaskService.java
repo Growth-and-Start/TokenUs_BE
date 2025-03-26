@@ -7,30 +7,39 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 @Service
 public class FlaskService {
 
     private final RestTemplate restTemplate = new RestTemplate();
+    Dotenv dotenv = Dotenv.load();
 
-    public void sendFileUrlToFlask(String fileUrl) {
-        //        String flaskUrl = "http://127.0.0.1:5000/download"; // 로컬 개발 환경
-        String flaskUrl = "http://tokenus-flask:5000/download"; // ec2환경
+    public String requestSimilarityCheck(String fileUrl) {
 
+        String flaskUrl = dotenv.get("FLASK_URL");
+
+        // 1. requestBody 설정
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("file_url", fileUrl);
 
+        // 2. header 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        // 3. requestBody+Header
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
+        // 4. 요청 보냄
         ResponseEntity<String> response =
                 restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            System.out.println("Flask 서버로 URL 전송 성공: " + fileUrl);
+            System.out.println("Flask 응답 본문: " + response.getBody());
+            return response.getBody();
         } else {
-            System.err.println("Flask 서버로 URL 전송 실패: " + response.getStatusCode());
+            System.err.println("Flask 서버와 통신 실패: " + response.getStatusCode());
+            return null;
         }
     }
 }
