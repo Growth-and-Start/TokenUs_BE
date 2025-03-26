@@ -17,13 +17,15 @@ public class VideoResponseDTO {
         @JsonProperty("video_path")
         private String videoPath;
 
+        private String downloadMessage;
+
         @JsonProperty("max_similarity")
         private double maxSimilarity;
 
         @JsonProperty("avg_similarity")
         private double avgSimilarity;
 
-        private String message;
+        private String similarityMessage;
 
         private boolean passed; // 유사도 검사를 통과했는지 여부
 

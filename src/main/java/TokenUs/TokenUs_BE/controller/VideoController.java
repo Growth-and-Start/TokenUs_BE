@@ -18,6 +18,7 @@ import TokenUs.TokenUs_BE.domain.Video;
 import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
 import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
 import TokenUs.TokenUs_BE.repository.UserRepository;
+import TokenUs.TokenUs_BE.sevice.FlaskService;
 import TokenUs.TokenUs_BE.sevice.VideoService;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -29,19 +30,38 @@ public class VideoController {
     private final VideoService videoService;
     private final UserRepository userRepository;
     private final VideoConverter videoConverter;
+    private final FlaskService flaskService;
 
     public VideoController(
             SimpMessagingTemplate messagingTemplate,
             VideoService videoService,
             VideoConverter videoConverter,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            FlaskService flaskService) {
         this.messagingTemplate = messagingTemplate;
         this.videoService = videoService;
         this.videoConverter = videoConverter;
         this.userRepository = userRepository;
+        this.flaskService = flaskService;
     }
 
     @PostMapping("/similarity_check")
+    @Operation(summary = "flask로 유사도 검사 요청")
+    public ApiResponse<VideoResponseDTO.similarityCheckResultDTO> requestSimilarityCheck(
+            @RequestBody VideoRequestDTO.similarityCheckRequestDTO request) {
+
+        String fileUrl = request.getVideoUrl();
+        System.out.println(fileUrl);
+
+        // Flask 서버로 업로드된 파일 URL 전달
+        String responseBody = flaskService.requestSimilarityCheck(fileUrl);
+        VideoResponseDTO.similarityCheckResultDTO result =
+                VideoConverter.toCheckResult(responseBody);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @PostMapping("/sand_result")
     @Operation(summary = "flask에서 유사도 검사 결과를 반환")
     public ResponseEntity<ApiResponse<VideoResponseDTO.similarityCheckResultDTO>>
             receiveSimilarityResult(
@@ -49,8 +69,8 @@ public class VideoController {
 
         System.out.println("📡 Received similarity check result: " + result);
 
-        // ✅ WebSocket을 통해 프론트엔드에 전송
-        messagingTemplate.convertAndSend("/topic/similarity-result", result);
+        //        // ✅ WebSocket을 통해 프론트엔드에 전송
+        //        messagingTemplate.convertAndSend("/topic/similarity-result", result);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
