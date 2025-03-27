@@ -1,5 +1,8 @@
 package TokenUs.TokenUs_BE.sevice;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -9,6 +12,7 @@ import TokenUs.TokenUs_BE.apiPayload.exception.handler.GeneralHandler;
 import TokenUs.TokenUs_BE.converter.VideoConverter;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.Video;
+import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
 import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
 import TokenUs.TokenUs_BE.repository.UserRepository;
 import TokenUs.TokenUs_BE.repository.VideoRepository;
@@ -31,5 +35,20 @@ public class VideoService {
         Video newVideo = videoConverter.toVideo(request, user);
 
         return videoRepository.save(newVideo);
+    }
+
+    public List<Video> getVideoList(User user, Boolean isSubscribe) {
+        List<Video> videos;
+
+        if (Boolean.TRUE.equals(isSubscribe)) {
+            List<User> subscribedToList =
+                    user.getSubscribedFromList().stream()
+                            .map(Subscribe::getSubscribedTo)
+                            .collect(Collectors.toList());
+            return videoRepository.findByCreatorInAndIsOpenTrueOrderByCreatedAtDesc(
+                    subscribedToList);
+        } else {
+            return videoRepository.findAllByIsOpenTrueOrderByCreatedAtDesc();
+        }
     }
 }

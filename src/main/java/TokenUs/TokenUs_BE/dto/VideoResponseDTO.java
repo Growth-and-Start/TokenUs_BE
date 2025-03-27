@@ -7,6 +7,21 @@ import lombok.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class VideoResponseDTO {
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class listResultDTO {
+
+        private int videoId;
+        private String videoTitle;
+        private String videoUrl;
+        private LocalDateTime createdAt;
+        private String thumbnailUrl;
+        private Long creatorId;
+        private String creatorNickname;
+    }
 
     @Builder
     @Getter

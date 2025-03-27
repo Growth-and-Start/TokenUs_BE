@@ -23,7 +23,20 @@ public class VideoConverter {
                 .fileUrl(request.getVideoUrl())
                 .isOpen(request.getIsOpen())
                 .thumbnailUrl(request.getThumbnailUrl())
-                .user(user)
+                .creator(user)
+                .build();
+    }
+
+    public static VideoResponseDTO.listResultDTO toListResultDTO(Video video) {
+        return VideoResponseDTO.listResultDTO
+                .builder()
+                .videoId(video.getId().intValue())
+                .videoTitle(video.getTitle())
+                .videoUrl(video.getFileUrl())
+                .thumbnailUrl(video.getThumbnailUrl())
+                .createdAt(video.getCreatedAt())
+                .creatorId(video.getCreator().getId())
+                .creatorNickname(video.getCreator().getNickname())
                 .build();
     }
 
