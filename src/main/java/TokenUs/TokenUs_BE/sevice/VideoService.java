@@ -1,6 +1,7 @@
 package TokenUs.TokenUs_BE.sevice;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -11,8 +12,8 @@ import TokenUs.TokenUs_BE.apiPayload.exception.handler.GeneralHandler;
 import TokenUs.TokenUs_BE.converter.VideoConverter;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.Video;
+import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
 import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
-import TokenUs.TokenUs_BE.repository.SubscribeRepository;
 import TokenUs.TokenUs_BE.repository.UserRepository;
 import TokenUs.TokenUs_BE.repository.VideoRepository;
 
@@ -23,7 +24,6 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final VideoConverter videoconverter;
     private final VideoConverter videoConverter;
-    private final SubscribeRepository subscribeRepository;
 
     public Video createVideo(VideoRequestDTO.videoDetailRequestDTO request, User user) {
 
@@ -37,13 +37,16 @@ public class VideoService {
         return videoRepository.save(newVideo);
     }
 
-    public List<Video> getVideoList(Long userId, Boolean isSubscribe) {
+    public List<Video> getVideoList(User user, Boolean isSubscribe) {
         List<Video> videos;
 
         if (Boolean.TRUE.equals(isSubscribe)) {
-            // 사용자가 팔로우한 사람 목록
-            List<User> followings = subscribeRepository.findSubscribedUsersBySubscriberId(userId);
-            return videoRepository.findByCreatorInAndIsOpenTrueOrderByCreatedAtDesc(followings);
+            List<User> subscribedToList =
+                    user.getSubscribedFromList().stream()
+                            .map(Subscribe::getSubscribedTo)
+                            .collect(Collectors.toList());
+            return videoRepository.findByCreatorInAndIsOpenTrueOrderByCreatedAtDesc(
+                    subscribedToList);
         } else {
             return videoRepository.findAllByIsOpenTrueOrderByCreatedAtDesc();
         }

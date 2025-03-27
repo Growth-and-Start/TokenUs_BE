@@ -52,9 +52,9 @@ public class VideoController {
             @RequestParam(required = false) Boolean isSubscribe,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         // 로그인한 사용자 id 추출
-        Long userId = userDetails.getUser().getId();
+        User user = userDetails.getUser();
 
-        List<Video> videos = videoService.getVideoList(userId, isSubscribe);
+        List<Video> videos = videoService.getVideoList(user, isSubscribe);
 
         List<VideoResponseDTO.listResultDTO> result =
                 videos.stream().map(VideoConverter::toListResultDTO).collect(Collectors.toList());
