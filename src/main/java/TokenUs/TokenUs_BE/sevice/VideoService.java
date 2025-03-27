@@ -51,4 +51,9 @@ public class VideoService {
             return videoRepository.findAllByIsOpenTrueOrderByCreatedAtDesc();
         }
     }
+
+    public List<Video> searchVideoList(String searchFor) {
+
+        return videoRepository.searchByTitleOrCreatorNickname(searchFor);
+    }
 }

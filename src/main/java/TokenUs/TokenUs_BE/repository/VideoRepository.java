@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import TokenUs.TokenUs_BE.domain.User;
@@ -28,4 +30,12 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
 
     // (공개Only)크리에이터로 영상 찾기, 최신순 정렬
     List<Video> findByIsOpenTrue();
+
+    @Query(
+            "SELECT v FROM Video v "
+                    + "WHERE v.isOpen = true AND "
+                    + "(LOWER(v.title) LIKE LOWER(CONCAT('%', :searchFor, '%')) "
+                    + "OR LOWER(v.creator.nickname) LIKE LOWER(CONCAT('%', :searchFor, '%'))) "
+                    + "ORDER BY v.createdAt DESC")
+    List<Video> searchByTitleOrCreatorNickname(@Param("searchFor") String searchFor);
 }

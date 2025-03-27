@@ -62,6 +62,18 @@ public class VideoController {
         return ApiResponse.onSuccess(result);
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "영상을 검색", description = "검색어와 일치하는 제목, 크리에이터이름을 가진 공개 비디오 최신순 정렬 반환")
+    public ApiResponse<List<VideoResponseDTO.listResultDTO>> searchVideo(
+            @RequestParam(required = true) String searchFor) {
+        List<Video> videos = videoService.searchVideoList(searchFor);
+
+        List<VideoResponseDTO.listResultDTO> result =
+                videos.stream().map(VideoConverter::toListResultDTO).collect(Collectors.toList());
+
+        return ApiResponse.onSuccess(result);
+    }
+
     @PostMapping("/similarity_check")
     @Operation(
             summary = "flask로 유사도 검사 요청",
