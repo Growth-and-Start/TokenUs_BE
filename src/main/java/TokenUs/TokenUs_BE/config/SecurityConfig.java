@@ -71,7 +71,7 @@ public class SecurityConfig {
                                                 "/",
                                                 "video/similarity-check",
                                                 "/auth/email_check/**",
-                                                "s3/presigned-url/**")
+                                                "s3/presigned_url/**")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())
