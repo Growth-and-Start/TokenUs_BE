@@ -40,4 +40,16 @@ public class UserConverter {
             String accessToken, String refreshToken) {
         return new UserResponseDTO.loginResultDTO(accessToken, refreshToken);
     }
+
+    public static UserResponseDTO.searchResultDTO toSearchResultDTO(
+            User user, boolean isSubscribed) {
+        return UserResponseDTO.searchResultDTO
+                .builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .profileImageUrl(user.getProfile_image())
+                .nickName(user.getNickname())
+                .isSubscribed(isSubscribed)
+                .build();
+    }
 }

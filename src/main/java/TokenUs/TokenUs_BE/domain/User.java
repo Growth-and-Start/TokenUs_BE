@@ -72,11 +72,11 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<VideoComment> videoCommentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "subscribedFrom", cascade = CascadeType.ALL)
-    private List<Subscribe> subscribedFromList = new ArrayList<>();
+    @OneToMany(mappedBy = "subscriber", cascade = CascadeType.ALL)
+    private List<Subscribe> subscribingList = new ArrayList<>(); // 내가 구독한 사람들
 
-    @OneToMany(mappedBy = "subscribedTo", cascade = CascadeType.ALL)
-    private List<Subscribe> subscribedToList = new ArrayList<>();
+    @OneToMany(mappedBy = "target", cascade = CascadeType.ALL)
+    private List<Subscribe> subscriberList = new ArrayList<>(); // 나를 구독한 사람들
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<VideoLike> videoLikeList = new ArrayList<>();

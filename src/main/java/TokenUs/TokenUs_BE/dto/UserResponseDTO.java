@@ -28,4 +28,17 @@ public class UserResponseDTO {
 
         private String refreshToken;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class searchResultDTO {
+
+        private Long id;
+        private String nickName;
+        private String profileImageUrl;
+        private String email;
+        private boolean isSubscribed;
+    }
 }
