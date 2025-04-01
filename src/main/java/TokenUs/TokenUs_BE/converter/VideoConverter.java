@@ -50,32 +50,42 @@ public class VideoConverter {
                 .build();
     }
 
-    public static VideoResponseDTO.similarityCheckResultDTO toCheckResult(String jsonBody) {
-
+    public static VideoResponseDTO.similarityCheckResultDTO toCheckResult(String json) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode root = objectMapper.readTree(jsonBody);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(json);
 
-            JsonNode resultNode = root.get("similarity_check_result");
-            if (resultNode == null || resultNode.isNull()) {
-                throw new RuntimeException("similarity_check_result가 응답에 없습니다");
-            }
+            // Flask의 /download 응답 구조:
+            // {
+            //   "message": "Download successful",
+            //   "video_url": "...",
+            //   "similarity_check_result": {
+            //       "max_similarity": ...,
+            //       "avg_similarity": ...,
+            //       "message": "...",
+            //       "passed": true,
+            //       "similar_video_id": "3" (optional)
+            //   }
+            // }
+
+            JsonNode sim = root.path("similarity_check_result");
 
             return VideoResponseDTO.similarityCheckResultDTO
                     .builder()
-                    .videoPath(root.get("file_path").asText())
-                    .downloadMessage(root.get("message").asText())
-                    .maxSimilarity(resultNode.get("max_similarity").asDouble())
-                    .avgSimilarity(resultNode.get("avg_similarity").asDouble())
-                    .similarityMessage(resultNode.get("message").asText())
+                    .videoUrl(root.path("video_url").asText(null))
+                    .downloadMessage(root.path("message").asText(null))
+                    .maxSimilarity(sim.path("max_similarity").asDouble(0.0))
+                    .avgSimilarity(sim.path("avg_similarity").asDouble(0.0))
+                    .similarityMessage(sim.path("message").asText(null))
+                    .passed(sim.path("passed").asBoolean(false))
                     .similarVideoId(
-                            resultNode.has("similar_video_id")
-                                    ? resultNode.get("similar_video_id").asText()
+                            sim.has("similar_video_id")
+                                    ? sim.get("similar_video_id").asText(null)
                                     : null)
                     .build();
 
         } catch (Exception e) {
-            throw new RuntimeException("유사도 응답 변환 실패: " + e.getMessage());
+            throw new RuntimeException("Flask 응답 JSON 파싱 실패", e);
         }
     }
 }

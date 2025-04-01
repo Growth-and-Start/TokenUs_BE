@@ -52,5 +52,4 @@ public class UserResponseDTO {
         private Long targetId;
         private boolean isSubscribed;
     }
-
 }
