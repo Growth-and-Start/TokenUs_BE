@@ -31,7 +31,7 @@ public class VideoResponseDTO {
     public static class similarityCheckResultDTO {
 
         @JsonProperty("video_path")
-        private String videoPath;
+        private String videoUrl;
 
         private String downloadMessage;
 
