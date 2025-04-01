@@ -41,4 +41,15 @@ public class UserResponseDTO {
         private String email;
         private boolean isSubscribed;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class subscribeResultDTO {
+
+        private Long subscriberId;
+        private Long targetId;
+        private boolean isSubscribed;
+    }
 }

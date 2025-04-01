@@ -4,16 +4,16 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
 import TokenUs.TokenUs_BE.apiPayload.ApiResponse;
 import TokenUs.TokenUs_BE.config.security.CustomUserDetails;
+import TokenUs.TokenUs_BE.converter.SubscribeConverter;
+import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
 import TokenUs.TokenUs_BE.dto.UserResponseDTO;
 import TokenUs.TokenUs_BE.sevice.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +43,38 @@ public class UserController {
 
         List<UserResponseDTO.searchResultDTO> result =
                 userService.searchUsers(searchFor, currentUserId);
+        return ApiResponse.onSuccess(result);
+    }
+
+    @PostMapping("/subscribe")
+    @Operation(summary = "크리에이터(유저) 구독하기", description = "크리에이터의 id를 넣고 요청하면 현재 로그인한 사용자가 구독하도록 설정")
+    public ApiResponse<UserResponseDTO.subscribeResultDTO> subscribe(
+            @RequestParam Long targetId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // user id 반환
+        Long userId = userDetails.getUser().getId();
+
+        Subscribe subscribe = userService.subscribe(userId, targetId);
+
+        UserResponseDTO.subscribeResultDTO result =
+                SubscribeConverter.toResponseDTO(subscribe, true);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @DeleteMapping("/unsubscribe")
+    @Operation(
+            summary = "크리에이터(유저) 구독취소",
+            description = "크리에이터의 id를 넣고 요청하면 현재 로그인한 사용자가 구독 취소하도록 설정")
+    public ApiResponse<UserResponseDTO.subscribeResultDTO> unsubscribe(
+            @RequestParam Long targetId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // user id 반환
+        Long userId = userDetails.getUser().getId();
+
+        Subscribe subscribe = userService.unsubscribe(userId, targetId);
+
+        UserResponseDTO.subscribeResultDTO result =
+                SubscribeConverter.toResponseDTO(subscribe, false);
+
         return ApiResponse.onSuccess(result);
     }
 }
