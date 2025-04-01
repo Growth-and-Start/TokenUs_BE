@@ -17,11 +17,12 @@ public class Subscribe extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 구독을 한 사람(현재 로그인 유저)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscribed_from_id")
-    private User subscribedFrom;
+    @JoinColumn(name = "subscriber_id")
+    private User subscriber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscribed_to_id")
-    private User subscribedTo;
+    @JoinColumn(name = "target_id")
+    private User target;
 }

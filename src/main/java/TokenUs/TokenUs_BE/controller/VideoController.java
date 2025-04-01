@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -49,12 +48,32 @@ public class VideoController {
     @GetMapping("/get_opened_videos")
     @Operation(summary = "공개된 영상 리스트 리턴", description = "기본정렬: 최신순")
     public ApiResponse<List<VideoResponseDTO.listResultDTO>> getVideoList(
-            @RequestParam(required = false) Boolean isSubscribe,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        // 로그인한 사용자 id 추출
-        User user = userDetails.getUser();
+            @RequestParam(required = false) Boolean isSubscribe) {
+
+        User user = null;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && authentication.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            user = userDetails.getUser();
+        }
 
         List<Video> videos = videoService.getVideoList(user, isSubscribe);
+
+        List<VideoResponseDTO.listResultDTO> result =
+                videos.stream().map(VideoConverter::toListResultDTO).collect(Collectors.toList());
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "영상을 검색", description = "검색어와 일치하는 제목, 크리에이터이름을 가진 공개 비디오 최신순 정렬 반환")
+    public ApiResponse<List<VideoResponseDTO.listResultDTO>> searchVideo(
+            @RequestParam(required = true) String searchFor) {
+        List<Video> videos = videoService.searchVideoList(searchFor);
 
         List<VideoResponseDTO.listResultDTO> result =
                 videos.stream().map(VideoConverter::toListResultDTO).collect(Collectors.toList());

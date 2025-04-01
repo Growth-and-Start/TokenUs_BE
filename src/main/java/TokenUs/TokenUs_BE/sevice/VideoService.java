@@ -1,5 +1,6 @@
 package TokenUs.TokenUs_BE.sevice;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,17 +39,28 @@ public class VideoService {
     }
 
     public List<Video> getVideoList(User user, Boolean isSubscribe) {
-        List<Video> videos;
-
+        // 구독 필터링 요청인 경우
         if (Boolean.TRUE.equals(isSubscribe)) {
+            if (user == null) {
+                // 로그인하지 않은 유저가 구독 필터링 요청 → 빈 리스트 반환
+                return Collections.emptyList();
+            }
+
             List<User> subscribedToList =
-                    user.getSubscribedFromList().stream()
-                            .map(Subscribe::getSubscribedTo)
+                    user.getSubscribingList().stream()
+                            .map(Subscribe::getTarget)
                             .collect(Collectors.toList());
+
             return videoRepository.findByCreatorInAndIsOpenTrueOrderByCreatedAtDesc(
                     subscribedToList);
-        } else {
-            return videoRepository.findAllByIsOpenTrueOrderByCreatedAtDesc();
         }
+
+        // 전체 공개 영상 최신순 정렬
+        return videoRepository.findAllByIsOpenTrueOrderByCreatedAtDesc();
+    }
+
+    public List<Video> searchVideoList(String searchFor) {
+
+        return videoRepository.searchByTitleOrCreatorNickname(searchFor);
     }
 }
