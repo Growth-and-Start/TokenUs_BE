@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import TokenUs.TokenUs_BE.apiPayload.code.status.ErrorStatus;
-import TokenUs.TokenUs_BE.apiPayload.exception.handler.GeneralHandler;
+import TokenUs.TokenUs_BE.apiPayload.exception.GeneralException;
 import TokenUs.TokenUs_BE.converter.VideoConverter;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.Video;
@@ -30,7 +30,7 @@ public class VideoService {
 
         // 해당 file_url의 영상이 이미 업로드 되었다면
         if (videoRepository.findByFileUrl((request.getVideoUrl())).isPresent()) {
-            throw new GeneralHandler(ErrorStatus.VIDEO_ALREADY_EXIST);
+            throw new GeneralException(ErrorStatus.VIDEO_ALREADY_EXIST);
         }
 
         Video newVideo = videoConverter.toVideo(request, user);
