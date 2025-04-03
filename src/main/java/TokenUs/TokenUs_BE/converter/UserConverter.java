@@ -23,6 +23,7 @@ public class UserConverter {
                 .build();
     }
 
+    // 회원가입시 사용
     public static User toUser(UserRequestDTO.joinRequestDTO request) {
 
         return User.builder()
@@ -33,6 +34,17 @@ public class UserConverter {
                 .name(request.getName())
                 .status(Status.ACTIVE)
                 .profile_image(request.getProfileUrl())
+                .build();
+    }
+
+    public static UserResponseDTO.userInfoDTO toUser(User user) {
+        return UserResponseDTO.userInfoDTO
+                .builder()
+                .email(user.getEmail())
+                .id(user.getId())
+                .nickname(user.getNickname())
+                .profileImageUrl(user.getProfile_image())
+                .walletAddress(user.getWalletAddress())
                 .build();
     }
 

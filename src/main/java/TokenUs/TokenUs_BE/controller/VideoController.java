@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -117,11 +118,10 @@ public class VideoController {
     @PostMapping("/save")
     @Operation(summary = "영상 제목과 상세 정보 입력 및 메타데이터 DB저장")
     public ApiResponse<VideoResponseDTO.uploadResultDTO> saveVideoDetail(
-            @Validated @RequestBody VideoRequestDTO.videoDetailRequestDTO request) {
+            @Validated @RequestBody VideoRequestDTO.videoDetailRequestDTO request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         // 1. 로그인 유저
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
 
         // 2. VideoService를 통해 Video 객체 생성 및 반환
@@ -130,5 +130,49 @@ public class VideoController {
         VideoResponseDTO.uploadResultDTO response = videoConverter.toUploadResult(video);
 
         return ApiResponse.onSuccess(response);
+    }
+
+    // 필요 API->내 영상 리스트 반환, 공개 여부 수정, 현재 로그인한 사용자 이메일 받아오기, 지갑 주소 있는지 확인
+    @GetMapping("/get_my_videos")
+    @Operation(summary = "로그인한 사용자의 영상 리스트 반환", description = "영상 NFT의 currentPrice의 평균값 포함")
+    public ApiResponse<List<VideoResponseDTO.listResultDTO>> getMyVideos(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // user 객체 반환
+        User currentUser = userDetails.getUser();
+
+        List<VideoResponseDTO.listResultDTO> result =
+                videoService.getUserVideoListWithNftAveragePrice(currentUser);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @PatchMapping("/to_open")
+    @Operation(summary = "비디오를 비공개에서 공개로 전환", description = "")
+    public ApiResponse<VideoResponseDTO.openResultDTO> toOpenVideo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = true) Long videoId) {
+        // 현재 로그인한 사용자가 크리에이터가 맞는지 확인
+        User user = userDetails.getUser();
+
+        Video video = videoService.openVideo(videoId, user);
+
+        VideoResponseDTO.openResultDTO result = videoConverter.toOpenResultDTO(video);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @PatchMapping("/to_close")
+    @Operation(summary = "비디오를 공개에서 비공개로 전환", description = "")
+    public ApiResponse<VideoResponseDTO.openResultDTO> toCloseVideo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = true) Long videoId) {
+        // 현재 로그인한 사용자가 크리에이터가 맞는지 확인
+        User user = userDetails.getUser();
+
+        Video video = videoService.closeVideo(videoId, user);
+
+        VideoResponseDTO.openResultDTO result = videoConverter.toOpenResultDTO(video);
+
+        return ApiResponse.onSuccess(result);
     }
 }

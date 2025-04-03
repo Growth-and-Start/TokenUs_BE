@@ -36,7 +36,9 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "TOKEN4001", "옳바르지 않은 리프레시 토큰입니다."),
 
     // 비디오 관련
-    VIDEO_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "VIDEO4001", "해당 영상이 이미 업로드 되어있습니다.");
+    VIDEO_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "VIDEO4001", "해당 영상이 이미 업로드 되어있습니다."),
+    VIDEO_NOT_EXIST(HttpStatus.BAD_REQUEST, "VIDEO4002", "해당하는 영상이 없습니다."),
+    NOT_YOUR_VIDEO(HttpStatus.BAD_REQUEST, "VIDEO4003", "로그인한 사용자의 영상이 아닙니다. 권한이 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

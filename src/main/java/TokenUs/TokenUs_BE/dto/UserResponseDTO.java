@@ -52,4 +52,16 @@ public class UserResponseDTO {
         private Long targetId;
         private boolean isSubscribed;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class userInfoDTO {
+        private Long id;
+        private String email;
+        private String nickname;
+        private String profileImageUrl;
+        private String walletAddress;
+    }
 }

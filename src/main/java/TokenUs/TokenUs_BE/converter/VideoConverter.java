@@ -1,5 +1,7 @@
 package TokenUs.TokenUs_BE.converter;
 
+import java.math.BigInteger;
+
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,22 @@ public class VideoConverter {
                 .createdAt(video.getCreatedAt())
                 .creatorId(video.getCreator().getId())
                 .creatorNickname(video.getCreator().getNickname())
+                .build();
+    }
+
+    public static VideoResponseDTO.listResultDTO toUserListResultDTO(
+            Video video, BigInteger averagePrice) {
+        return VideoResponseDTO.listResultDTO
+                .builder()
+                .videoId(video.getId().intValue())
+                .videoTitle(video.getTitle())
+                .videoUrl(video.getFileUrl())
+                .videoDetail(video.getDetail())
+                .thumbnailUrl(video.getThumbnailUrl())
+                .createdAt(video.getCreatedAt())
+                .creatorId(video.getCreator().getId())
+                .creatorNickname(video.getCreator().getNickname())
+                .nftPrice(averagePrice)
                 .build();
     }
 
@@ -87,5 +105,13 @@ public class VideoConverter {
         } catch (Exception e) {
             throw new RuntimeException("Flask 응답 JSON 파싱 실패", e);
         }
+    }
+
+    public static VideoResponseDTO.openResultDTO toOpenResultDTO(Video video) {
+        return VideoResponseDTO.openResultDTO
+                .builder()
+                .id(video.getId())
+                .isOpened(video.getIsOpen())
+                .build();
     }
 }
