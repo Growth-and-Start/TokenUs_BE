@@ -64,4 +64,15 @@ public class VideoResponseDTO {
 
         private LocalDateTime createdAt;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class openResultDTO {
+
+        private Long id;
+
+        private Boolean isOpened;
+    }
 }

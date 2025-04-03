@@ -12,6 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 @Getter
 @Builder
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Video extends BaseEntity {

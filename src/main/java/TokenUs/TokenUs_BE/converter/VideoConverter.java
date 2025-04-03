@@ -106,4 +106,12 @@ public class VideoConverter {
             throw new RuntimeException("Flask 응답 JSON 파싱 실패", e);
         }
     }
+
+    public static VideoResponseDTO.openResultDTO toOpenResultDTO(Video video) {
+        return VideoResponseDTO.openResultDTO
+                .builder()
+                .id(video.getId())
+                .isOpened(video.getIsOpen())
+                .build();
+    }
 }

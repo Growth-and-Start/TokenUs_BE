@@ -90,4 +90,38 @@ public class VideoService {
                         })
                 .collect(Collectors.toList());
     }
+
+    public Video openVideo(Long videoId, User user) {
+        // 영상이 존재하는지 검증
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.NOT_YOUR_VIDEO));
+
+        // 로그인한 사용자의 영상이 맞는지 검증
+        if (!video.getCreator().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.NOT_YOUR_VIDEO);
+        }
+
+        video.setIsOpen(true);
+        videoRepository.save(video);
+        return video;
+    }
+
+    public Video closeVideo(Long videoId, User user) {
+        // 영상이 존재하는지 검증
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.NOT_YOUR_VIDEO));
+
+        // 로그인한 사용자의 영상이 맞는지 검증
+        if (!video.getCreator().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.NOT_YOUR_VIDEO);
+        }
+
+        video.setIsOpen(false);
+        videoRepository.save(video);
+        return video;
+    }
 }
