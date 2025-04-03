@@ -129,7 +129,7 @@ public class VideoController {
 
         // ✅ WebSocket으로 결과 전송
         // TODO: 유저에 따라 다르게 구현
-        messagingTemplate.convertAndSend("/topic/similarity-result", result);
+        messagingTemplate.convertAndSend("/topic/similarity_result", result);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
