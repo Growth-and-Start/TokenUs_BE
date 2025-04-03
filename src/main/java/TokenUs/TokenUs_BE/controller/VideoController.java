@@ -3,6 +3,7 @@ package TokenUs.TokenUs_BE.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,8 @@ import io.swagger.v3.oas.annotations.Operation;
 @RequestMapping("/video")
 public class VideoController {
 
-    private final SimpMessagingTemplate messagingTemplate;
+    @Autowired private final SimpMessagingTemplate messagingTemplate;
+
     private final VideoService videoService;
     private final UserRepository userRepository;
     private final VideoConverter videoConverter;
@@ -82,26 +84,42 @@ public class VideoController {
         return ApiResponse.onSuccess(result);
     }
 
+    //    @PostMapping("/similarity_check")
+    //    @Operation(
+    //            summary = "flask로 유사도 검사 요청",
+    //            description =
+    //                    " *250326*유사도 검사 걸렸을 때 nft 보유 여부 아직 확인하지 않고 있음. 추후 추가 예정<br> 유사한 영상은 현재
+    // id만 반환중, 추후 만들어질 id로 영상 상세 페이지 get API구현 되어야함")
+    //    public ApiResponse<VideoResponseDTO.similarityCheckResultDTO> requestSimilarityCheck(
+    //            @RequestBody VideoRequestDTO.similarityCheckRequestDTO request) {
+    //
+    //        String fileUrl = request.getVideoUrl();
+    //        System.out.println(fileUrl);
+    //
+    //        // Flask 서버로 업로드된 파일 URL 전달
+    //        String responseBody = flaskService.requestSimilarityCheck(fileUrl);
+    //        VideoResponseDTO.similarityCheckResultDTO result =
+    //                VideoConverter.toCheckResult(responseBody);
+    //
+    //        return ApiResponse.onSuccess(result);
+    //    }
+
     @PostMapping("/similarity_check")
-    @Operation(
-            summary = "flask로 유사도 검사 요청",
-            description =
-                    " *250326*유사도 검사 걸렸을 때 nft 보유 여부 아직 확인하지 않고 있음. 추후 추가 예정<br> 유사한 영상은 현재 id만 반환중, 추후 만들어질 id로 영상 상세 페이지 get API구현 되어야함")
-    public ApiResponse<VideoResponseDTO.similarityCheckResultDTO> requestSimilarityCheck(
+    @Operation(summary = "flask로 유사도 검사 요청", description = "유사도 검사 요청만 보내고, 결과는 WebSocket으로 전송됨")
+    public ApiResponse<String> requestSimilarityCheck(
             @RequestBody VideoRequestDTO.similarityCheckRequestDTO request) {
 
         String fileUrl = request.getVideoUrl();
-        System.out.println(fileUrl);
+        System.out.println("📤 Flask로 유사도 검사 요청 시작: " + fileUrl);
 
-        // Flask 서버로 업로드된 파일 URL 전달
-        String responseBody = flaskService.requestSimilarityCheck(fileUrl);
-        VideoResponseDTO.similarityCheckResultDTO result =
-                VideoConverter.toCheckResult(responseBody);
+        // ✅ Flask 서버로 비동기 요청 전송 (응답 기다리지 않음)
+        flaskService.sendSimilarityRequestAsync(fileUrl);
 
-        return ApiResponse.onSuccess(result);
+        // ✅ 즉시 응답
+        return ApiResponse.onSuccess("유사도 검사 요청이 성공적으로 전송되었습니다.");
     }
 
-    @PostMapping("/sand_result")
+    @PostMapping("/send_result")
     @Operation(summary = "flask에서 유사도 검사 결과를 반환", description = "flask 서버 사용. FE에서 사용X")
     public ResponseEntity<ApiResponse<VideoResponseDTO.similarityCheckResultDTO>>
             receiveSimilarityResult(
@@ -109,8 +127,9 @@ public class VideoController {
 
         System.out.println("📡 Received similarity check result: " + result);
 
-        //        // ✅ WebSocket을 통해 프론트엔드에 전송
-        //        messagingTemplate.convertAndSend("/topic/similarity-result", result);
+        // ✅ WebSocket으로 결과 전송
+        // TODO: 유저에 따라 다르게 구현
+        messagingTemplate.convertAndSend("/topic/similarity_result", result);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }

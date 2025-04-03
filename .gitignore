@@ -27,3 +27,9 @@ workspace.xml
 
 #DS_Store
 .DS_Store
+
+# Java 빌드 디렉토리 무시
+/bin/
+/out/
+/build/
+/*.class

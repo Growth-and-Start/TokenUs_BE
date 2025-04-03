@@ -44,4 +44,23 @@ public class FlaskService {
             return null;
         }
     }
+
+    public void sendSimilarityRequestAsync(String fileUrl) {
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("file_url", fileUrl);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            // 비동기로 요청만 보냄 (응답은 로그만)
+            ResponseEntity<String> response =
+                    restTemplate.postForEntity(flaskUrl, requestEntity, String.class);
+            System.out.println("📡 Flask 응답 상태: " + response.getStatusCode());
+        } catch (Exception e) {
+            System.err.println("🚨 Flask 요청 실패: " + e.getMessage());
+        }
+    }
 }
