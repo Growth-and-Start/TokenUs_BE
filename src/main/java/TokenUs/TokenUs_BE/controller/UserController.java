@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import TokenUs.TokenUs_BE.apiPayload.ApiResponse;
 import TokenUs.TokenUs_BE.config.security.CustomUserDetails;
 import TokenUs.TokenUs_BE.converter.SubscribeConverter;
+import TokenUs.TokenUs_BE.converter.UserConverter;
+import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
 import TokenUs.TokenUs_BE.dto.UserResponseDTO;
 import TokenUs.TokenUs_BE.sevice.UserService;
@@ -24,6 +26,7 @@ import io.swagger.v3.oas.annotations.Operation;
 public class UserController {
 
     private final UserService userService;
+    private final UserConverter userConverter;
 
     @GetMapping("/search")
     @Operation(
@@ -74,6 +77,17 @@ public class UserController {
 
         UserResponseDTO.subscribeResultDTO result =
                 SubscribeConverter.toResponseDTO(subscribe, false);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @GetMapping("/get_my_info")
+    @Operation(summary = "현재 로그인한 사용자의 정보를 반환합니다.", description = "이메일, 지갑주소, id, 프로필 사진url, 닉네임")
+    public ApiResponse<UserResponseDTO.userInfoDTO> getMyInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        User user = userDetails.getUser();
+
+        UserResponseDTO.userInfoDTO result = userConverter.toUser(user);
 
         return ApiResponse.onSuccess(result);
     }
