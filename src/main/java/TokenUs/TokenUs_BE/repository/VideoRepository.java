@@ -20,7 +20,7 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     List<Video> findAllByOrderByCreatedAtDesc();
 
     // 크리에이터로 영상 찾기, 최신순 정렬
-    List<Video> findByCreatorInOrderByCreatedAtDesc(List<User> users);
+    List<Video> findByCreatorOrderByCreatedAtDesc(User user);
 
     // (공개Only)Video_Url로 영상 검색
     List<Video> findAllByIsOpenTrueOrderByCreatedAtDesc();

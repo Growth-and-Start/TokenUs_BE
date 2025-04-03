@@ -1,5 +1,6 @@
 package TokenUs.TokenUs_BE.sevice;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,10 +12,12 @@ import lombok.RequiredArgsConstructor;
 import TokenUs.TokenUs_BE.apiPayload.code.status.ErrorStatus;
 import TokenUs.TokenUs_BE.apiPayload.exception.GeneralException;
 import TokenUs.TokenUs_BE.converter.VideoConverter;
+import TokenUs.TokenUs_BE.domain.Nft;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.Video;
 import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
 import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
+import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
 import TokenUs.TokenUs_BE.repository.UserRepository;
 import TokenUs.TokenUs_BE.repository.VideoRepository;
 
@@ -62,5 +65,29 @@ public class VideoService {
     public List<Video> searchVideoList(String searchFor) {
 
         return videoRepository.searchByTitleOrCreatorNickname(searchFor);
+    }
+
+    public List<VideoResponseDTO.listResultDTO> getUserVideoListWithNftAveragePrice(User user) {
+        List<Video> videos = videoRepository.findByCreatorOrderByCreatedAtDesc(user);
+
+        return videos.stream()
+                .map(
+                        video -> {
+                            // 평균 NFT 가격 계산
+                            BigInteger avgPrice = null;
+                            List<Nft> nftList = video.getNfts();
+                            if (nftList != null && !nftList.isEmpty()) {
+                                BigInteger total =
+                                        nftList.stream()
+                                                .map(Nft::getCurrentPrice)
+                                                .reduce(BigInteger.ZERO, BigInteger::add);
+
+                                avgPrice = total.divide(BigInteger.valueOf(nftList.size()));
+                            }
+
+                            // DTO 변환
+                            return VideoConverter.toUserListResultDTO(video, avgPrice);
+                        })
+                .collect(Collectors.toList());
     }
 }

@@ -1,5 +1,6 @@
 package TokenUs.TokenUs_BE.dto;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 import lombok.*;
@@ -17,10 +18,12 @@ public class VideoResponseDTO {
         private int videoId;
         private String videoTitle;
         private String videoUrl;
+        private String videoDetail;
         private LocalDateTime createdAt;
         private String thumbnailUrl;
         private Long creatorId;
         private String creatorNickname;
+        private BigInteger nftPrice;
     }
 
     @Builder
