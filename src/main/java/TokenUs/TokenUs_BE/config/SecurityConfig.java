@@ -74,7 +74,8 @@ public class SecurityConfig {
                                                 "s3/presigned_url/**",
                                                 "video/get_opened_videos/**",
                                                 "video/search/**",
-                                                "user/search/**")
+                                                "user/search/**",
+                                                "/ws/**")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())
