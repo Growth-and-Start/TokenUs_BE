@@ -69,7 +69,7 @@ public class SecurityConfig {
                                                 "/swagger-ui/**",
                                                 "/v3/api-docs/**",
                                                 "/",
-                                                "video/similarity-check",
+                                                "video/send_result",
                                                 "/auth/email_check/**",
                                                 "s3/presigned_url/**",
                                                 "video/get_opened_videos/**",
