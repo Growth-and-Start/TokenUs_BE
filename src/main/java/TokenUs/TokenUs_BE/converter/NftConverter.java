@@ -21,13 +21,10 @@ public class NftConverter {
     private final VideoRepository videoRepository;
 
     public Nft toNft(
-            NftRequestDTO.NFTMintRequestDTO dto,
-            BigInteger tokenId,
-            String contractAddress,
-            Long userId) {
+            NftRequestDTO.NFTMintRequestDTO dto, BigInteger tokenId, String txHash, Long userId) {
         return Nft.builder()
                 .tokenId(tokenId)
-                .contractAddress(contractAddress)
+                .txHash(txHash)
                 .currentPrice(dto.getPrice())
                 .mintQuantity(dto.getTotalSupply())
                 .isListed(false) // 민팅 시엔 기본 false
@@ -43,7 +40,6 @@ public class NftConverter {
                                 new NftResponseDTO.NFTInfoDTO(
                                         nft.getTokenId(),
                                         nft.getCurrentPrice(),
-                                        nft.getContractAddress(),
                                         nft.getVideo().getId(),
                                         nft.getOwner().getId(),
                                         nft.getIsListed(),

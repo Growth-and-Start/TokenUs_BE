@@ -37,7 +37,7 @@ public class User extends BaseEntity {
     private String password;
 
     @Comment("사용자의 지갑 주소")
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", unique = true)
     private String walletAddress;
 
     @Comment("사용자의 닉네임. 중복 없음")

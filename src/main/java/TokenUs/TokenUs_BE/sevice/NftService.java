@@ -92,7 +92,7 @@ public class NftService {
                     nftConverter.toNft(
                             request,
                             tokenId,
-                            receipt.getContractAddress(),
+                            txHash,
                             getUserIdFromAddress(request.getCreatorAddress()));
 
             savedNfts.add(nftRepository.save(nft));

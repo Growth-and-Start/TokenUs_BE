@@ -19,7 +19,9 @@ import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.Video;
 import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
 import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
+import TokenUs.TokenUs_BE.repository.NftRepository;
 import TokenUs.TokenUs_BE.repository.UserRepository;
+import TokenUs.TokenUs_BE.repository.VideoRepository;
 import TokenUs.TokenUs_BE.sevice.FlaskService;
 import TokenUs.TokenUs_BE.sevice.VideoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,18 +36,22 @@ public class VideoController {
     private final UserRepository userRepository;
     private final VideoConverter videoConverter;
     private final FlaskService flaskService;
+    private final NftRepository nftRepository;
+    @Autowired private VideoRepository videoRepository;
 
     public VideoController(
             SimpMessagingTemplate messagingTemplate,
             VideoService videoService,
             VideoConverter videoConverter,
             UserRepository userRepository,
-            FlaskService flaskService) {
+            FlaskService flaskService,
+            NftRepository nftRepository) {
         this.messagingTemplate = messagingTemplate;
         this.videoService = videoService;
         this.videoConverter = videoConverter;
         this.userRepository = userRepository;
         this.flaskService = flaskService;
+        this.nftRepository = nftRepository;
     }
 
     @GetMapping("/get_opened_videos")
@@ -193,5 +199,41 @@ public class VideoController {
         VideoResponseDTO.openResultDTO result = videoConverter.toOpenResultDTO(video);
 
         return ApiResponse.onSuccess(result);
+    }
+
+    @GetMapping("/check_nft")
+    @Operation(summary = "유저가 videoId에 해당하는 NFT를 가지고 있는지 확인", description = "유사도 검사 실패시 요청")
+    public ApiResponse<VideoResponseDTO.checkNftResultDTO> checkHavingNft(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = true) Long videoId) {
+        Long userId = userDetails.getUser().getId();
+
+        Boolean owns = nftRepository.existsByVideoIdAndOwnerId(videoId, userId);
+
+        VideoResponseDTO.checkNftResultDTO responseDTO =
+                new VideoResponseDTO.checkNftResultDTO(owns);
+
+        return ApiResponse.onSuccess(responseDTO);
+    }
+
+    @GetMapping("get_url")
+    @Operation(
+            summary = "영상의 id로 video Url 반환",
+            description = "유사도 검사 이후 유사한 영상의 id가 반환 되었을 때 사용합니다.")
+    public ApiResponse<VideoResponseDTO.getVideoUrlDTO> getVideoUrlwithId(
+            @RequestParam(required = true) Long videoId) {
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "해당 videoId를 가진 영상이 존재하지 않습니다."));
+
+        String videoUrl = video.getFileUrl();
+
+        VideoResponseDTO.getVideoUrlDTO responseDTO = new VideoResponseDTO.getVideoUrlDTO(videoUrl);
+
+        return ApiResponse.onSuccess(responseDTO);
     }
 }

@@ -26,7 +26,6 @@ public class NftResponseDTO {
     public static class NFTInfoDTO {
         private BigInteger tokenId;
         private BigInteger currentPrice;
-        private String contractAddress;
         private Long videoId;
         private Long userId;
         private Boolean isList;
