@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
@@ -123,5 +124,14 @@ public class VideoService {
         video.setIsOpen(false);
         videoRepository.save(video);
         return video;
+    }
+
+    @Transactional
+    public void increaseView(Long videoId) {
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(() -> new RuntimeException("해당 영상이 존재하지 않습니다."));
+        video.setViews(video.getViews() + 1);
     }
 }

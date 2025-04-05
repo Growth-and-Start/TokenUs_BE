@@ -111,4 +111,19 @@ public class VideoConverter {
                 .isOpened(video.getIsOpen())
                 .build();
     }
+
+    public static VideoResponseDTO.getDetailDTO toDetailDTO(Video video, Long likeCount) {
+        return VideoResponseDTO.getDetailDTO
+                .builder()
+                .videoId(video.getId())
+                .videoTitle(video.getTitle())
+                .videoDetail(video.getDetail())
+                .videoUrl(video.getFileUrl())
+                .createdAt(video.getCreatedAt())
+                .thumbnailUrl(video.getThumbnailUrl())
+                .creatorId(video.getCreator().getId())
+                .likeCount(likeCount)
+                .viewCount(video.getViews())
+                .build();
+    }
 }

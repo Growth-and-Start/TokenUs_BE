@@ -21,6 +21,7 @@ import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
 import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
 import TokenUs.TokenUs_BE.repository.NftRepository;
 import TokenUs.TokenUs_BE.repository.UserRepository;
+import TokenUs.TokenUs_BE.repository.VideoLikeRepository;
 import TokenUs.TokenUs_BE.repository.VideoRepository;
 import TokenUs.TokenUs_BE.sevice.FlaskService;
 import TokenUs.TokenUs_BE.sevice.VideoService;
@@ -37,7 +38,8 @@ public class VideoController {
     private final VideoConverter videoConverter;
     private final FlaskService flaskService;
     private final NftRepository nftRepository;
-    @Autowired private VideoRepository videoRepository;
+    private final VideoRepository videoRepository;
+    private final VideoLikeRepository videoLikeRepository;
 
     public VideoController(
             SimpMessagingTemplate messagingTemplate,
@@ -45,13 +47,17 @@ public class VideoController {
             VideoConverter videoConverter,
             UserRepository userRepository,
             FlaskService flaskService,
-            NftRepository nftRepository) {
+            NftRepository nftRepository,
+            VideoRepository videoRepository,
+            VideoLikeRepository videoLikeRepository) {
         this.messagingTemplate = messagingTemplate;
         this.videoService = videoService;
         this.videoConverter = videoConverter;
         this.userRepository = userRepository;
         this.flaskService = flaskService;
         this.nftRepository = nftRepository;
+        this.videoRepository = videoRepository;
+        this.videoLikeRepository = videoLikeRepository;
     }
 
     @GetMapping("/get_opened_videos")
@@ -235,5 +241,25 @@ public class VideoController {
         VideoResponseDTO.getVideoUrlDTO responseDTO = new VideoResponseDTO.getVideoUrlDTO(videoUrl);
 
         return ApiResponse.onSuccess(responseDTO);
+    }
+
+    @GetMapping("detail")
+    @Operation(summary = "영상의 id로 상세 정보 반환", description = "영상의 상세 시청 페이지에서 사용합니다.")
+    public ApiResponse<VideoResponseDTO.getDetailDTO> getVideoDetail(
+            @RequestParam(required = true) Long videoId) {
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "해당 videoId를 가진 영상이 존재하지 않습니다."));
+
+        videoService.increaseView(videoId);
+        Long likeCount = videoLikeRepository.countByVideo(video);
+
+        VideoResponseDTO.getDetailDTO result = videoConverter.toDetailDTO(video, likeCount);
+
+        return ApiResponse.onSuccess(result);
     }
 }

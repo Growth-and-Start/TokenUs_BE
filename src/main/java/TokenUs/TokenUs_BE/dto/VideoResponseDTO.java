@@ -98,4 +98,20 @@ public class VideoResponseDTO {
 
         private String videoUrl;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getDetailDTO {
+        private Long videoId;
+        private String videoTitle;
+        private String videoUrl;
+        private String videoDetail;
+        private LocalDateTime createdAt;
+        private String thumbnailUrl;
+        private Long creatorId;
+        private Long likeCount;
+        private Long viewCount;
+    }
 }
