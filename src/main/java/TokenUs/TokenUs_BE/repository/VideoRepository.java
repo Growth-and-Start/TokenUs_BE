@@ -16,6 +16,8 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     // Video_Url로 영상 검색
     Optional<Video> findByFileUrl(String fileUrl);
 
+    Optional<Video> findById(Long videoId);
+
     // 모든 영상 찾기, 최신순 정렬
     List<Video> findAllByOrderByCreatedAtDesc();
 

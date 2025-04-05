@@ -89,4 +89,13 @@ public class VideoResponseDTO {
 
         private Boolean hasNft;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getVideoUrlDTO {
+
+        private String videoUrl;
+    }
 }
