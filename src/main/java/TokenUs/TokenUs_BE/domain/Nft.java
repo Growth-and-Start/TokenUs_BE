@@ -19,7 +19,7 @@ public class Nft extends BaseEntity {
     private Long id;
 
     @Column(length = 500)
-    private String contractAddress;
+    private String txHash;
 
     private BigInteger tokenId;
 
