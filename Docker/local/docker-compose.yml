@@ -2,41 +2,41 @@
 name: tokenus #모든 네트워크와 서비스 이름에 접두어로 붙음
 
 services:
-#  tokenus-app:
-#    container_name: tokenus-app
-#    image: tokenus-app-image
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "0.5"
-#          memory: "512M"
-#    build:
-#      context: ../..
-#      dockerfile: Dockerfile
-#    platform: linux/amd64
-#    ports:
-#      - "8080:8080"
-#    env_file:
-#      - ../../.env
-#    depends_on:
-#      tokenus-mysql:
-#        condition: service_healthy  # MySQL이 완전히 실행된 후 Spring Boot 실행
-#    restart: unless-stopped
-#    networks:
-#      - network
+  tokenus-app:
+    container_name: tokenus-app
+    image: tokenus-app-image
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    ports:
+      - "8081:8080"
+    env_file:
+      - ../../.env
+    depends_on:
+      tokenus-mysql:
+        condition: service_healthy  # MySQL이 완전히 실행된 후 Spring Boot 실행
+    restart: unless-stopped
+    networks:
+      - tokenus_shared_network
 
-  tokenus_mysql:
+  tokenus-mysql:
     image: mysql:latest
-    container_name: tokenus_mysql
+    container_name: tokenus-mysql
     env_file:
       - ../../.env
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - db_volume:/var/lib/mysql
     restart: always
     networks:
-      - network
+      - tokenus_shared_network
     healthcheck: # MySQL이 정상적으로 실행될 때까지 대기
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
@@ -44,8 +44,8 @@ services:
       start_period: 10s
 
 volumes:
-  mysql_data:
+  db_volume:
 
 networks:
-  network:
-    driver: bridge
+  tokenus_shared_network:
+    external: true

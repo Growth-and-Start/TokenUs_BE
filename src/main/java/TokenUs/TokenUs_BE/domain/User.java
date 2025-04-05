@@ -44,10 +44,6 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 20, unique = true)
     private String nickname;
 
-    @Comment("사용자의 이름. 중복 없음")
-    @Column(nullable = false, length = 20, unique = false)
-    private String name;
-
     @Comment("사용자 프로필 사진 파일의 S3 URL")
     @Column(columnDefinition = "TEXT")
     private String profile_image;
