@@ -31,7 +31,6 @@ public class UserConverter {
                 .password(request.getPassword())
                 .walletAddress(request.getWalletAddress())
                 .nickname(request.getNickname())
-                .name(request.getName())
                 .status(Status.ACTIVE)
                 .profile_image(request.getProfileUrl())
                 .build();

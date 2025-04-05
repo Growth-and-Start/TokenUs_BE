@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import lombok.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 public class VideoResponseDTO {
     @Builder
@@ -31,12 +33,14 @@ public class VideoResponseDTO {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class similarityCheckResultDTO {
 
-        @JsonProperty("video_path")
+        @JsonProperty("video_url")
         private String videoUrl;
 
-        private String downloadMessage;
+        @JsonProperty("message")
+        private String similarityMessage;
 
         @JsonProperty("max_similarity")
         private double maxSimilarity;
@@ -44,11 +48,11 @@ public class VideoResponseDTO {
         @JsonProperty("avg_similarity")
         private double avgSimilarity;
 
-        private String similarityMessage;
+        @JsonProperty("passed")
+        private boolean passed;
 
-        private boolean passed; // 유사도 검사를 통과했는지 여부
-
-        private String similarVideoId; // ❗ 유사도 검사 실패 시 포함됨 (nullable)
+        @JsonProperty("similar_video_id")
+        private String similarVideoId;
     }
 
     @Builder
