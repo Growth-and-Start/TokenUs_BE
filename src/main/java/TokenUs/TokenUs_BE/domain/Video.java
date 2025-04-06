@@ -37,6 +37,10 @@ public class Video extends BaseEntity {
     @ColumnDefault("true")
     private Boolean isOpen;
 
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Long views;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User creator;

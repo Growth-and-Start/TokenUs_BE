@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.*;
 import TokenUs.TokenUs_BE.apiPayload.ApiResponse;
 import TokenUs.TokenUs_BE.config.security.CustomUserDetails;
 import TokenUs.TokenUs_BE.converter.VideoConverter;
+import TokenUs.TokenUs_BE.converter.VideoLikeConverter;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.Video;
+import TokenUs.TokenUs_BE.domain.mapping.VideoLike;
 import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
 import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
 import TokenUs.TokenUs_BE.repository.NftRepository;
 import TokenUs.TokenUs_BE.repository.UserRepository;
+import TokenUs.TokenUs_BE.repository.VideoLikeRepository;
 import TokenUs.TokenUs_BE.repository.VideoRepository;
 import TokenUs.TokenUs_BE.sevice.FlaskService;
 import TokenUs.TokenUs_BE.sevice.VideoService;
@@ -37,7 +40,9 @@ public class VideoController {
     private final VideoConverter videoConverter;
     private final FlaskService flaskService;
     private final NftRepository nftRepository;
-    @Autowired private VideoRepository videoRepository;
+    private final VideoRepository videoRepository;
+    private final VideoLikeRepository videoLikeRepository;
+    private final VideoLikeConverter videoLikeConverter;
 
     public VideoController(
             SimpMessagingTemplate messagingTemplate,
@@ -45,13 +50,19 @@ public class VideoController {
             VideoConverter videoConverter,
             UserRepository userRepository,
             FlaskService flaskService,
-            NftRepository nftRepository) {
+            NftRepository nftRepository,
+            VideoRepository videoRepository,
+            VideoLikeRepository videoLikeRepository,
+            VideoLikeConverter videoLikeConverter) {
         this.messagingTemplate = messagingTemplate;
         this.videoService = videoService;
         this.videoConverter = videoConverter;
         this.userRepository = userRepository;
         this.flaskService = flaskService;
         this.nftRepository = nftRepository;
+        this.videoRepository = videoRepository;
+        this.videoLikeRepository = videoLikeRepository;
+        this.videoLikeConverter = videoLikeConverter;
     }
 
     @GetMapping("/get_opened_videos")
@@ -235,5 +246,69 @@ public class VideoController {
         VideoResponseDTO.getVideoUrlDTO responseDTO = new VideoResponseDTO.getVideoUrlDTO(videoUrl);
 
         return ApiResponse.onSuccess(responseDTO);
+    }
+
+    @GetMapping("detail")
+    @Operation(summary = "영상의 id로 상세 정보 반환", description = "영상의 상세 시청 페이지에서 사용합니다.")
+    public ApiResponse<VideoResponseDTO.getDetailDTO> getVideoDetail(
+            @RequestParam(required = true) Long videoId) {
+
+        Long currentUserId = null;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null
+                && auth.isAuthenticated()
+                && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
+            currentUserId = userDetails.getUser().getId();
+        }
+
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "해당 videoId를 가진 영상이 존재하지 않습니다."));
+
+        videoService.increaseView(videoId);
+        Long likeCount = videoLikeRepository.countByVideo(video);
+
+        Boolean isLiked = videoLikeRepository.existsByUserIdAndVideoId(currentUserId, videoId);
+
+        VideoResponseDTO.getDetailDTO result =
+                videoConverter.toDetailDTO(video, likeCount, isLiked);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @PostMapping("/like")
+    @Operation(summary = "영상 좋아요 하기", description = "영상의 id를 넣고 요청하면 현재 로그인한 사용자가 like")
+    public ApiResponse<VideoResponseDTO.likeResultDTO> likeVideo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = true) Long videoId) {
+        // user id 반환
+        Long userId = userDetails.getUser().getId();
+
+        VideoLike videoLike = videoService.like(videoId, userId);
+
+        VideoResponseDTO.likeResultDTO result = videoLikeConverter.toLikeResultDTO(videoLike, true);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @DeleteMapping("/unlike")
+    @Operation(summary = "영상 좋아요 취소", description = "영상의 id를 넣고 요청하면 현재 로그인한 사용자가 like 취소")
+    public ApiResponse<VideoResponseDTO.likeResultDTO> unlikeVideo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = true) Long videoId) {
+        // user id 반환
+        Long userId = userDetails.getUser().getId();
+
+        VideoLike videoLike = videoService.unlike(videoId, userId);
+
+        VideoResponseDTO.likeResultDTO result =
+                videoLikeConverter.toLikeResultDTO(videoLike, false);
+
+        return ApiResponse.onSuccess(result);
     }
 }

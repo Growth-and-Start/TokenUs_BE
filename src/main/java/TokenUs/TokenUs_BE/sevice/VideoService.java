@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,11 @@ import TokenUs.TokenUs_BE.domain.Nft;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.Video;
 import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
+import TokenUs.TokenUs_BE.domain.mapping.VideoLike;
 import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
 import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
 import TokenUs.TokenUs_BE.repository.UserRepository;
+import TokenUs.TokenUs_BE.repository.VideoLikeRepository;
 import TokenUs.TokenUs_BE.repository.VideoRepository;
 
 @Service
@@ -28,6 +31,7 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final VideoConverter videoconverter;
     private final VideoConverter videoConverter;
+    private final VideoLikeRepository videoLikeRepository;
 
     public Video createVideo(VideoRequestDTO.videoDetailRequestDTO request, User user) {
 
@@ -123,5 +127,45 @@ public class VideoService {
         video.setIsOpen(false);
         videoRepository.save(video);
         return video;
+    }
+
+    @Transactional
+    public void increaseView(Long videoId) {
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(() -> new RuntimeException("해당 영상이 존재하지 않습니다."));
+        video.setViews(video.getViews() + 1);
+    }
+
+    public VideoLike like(Long userId, Long videoId) {
+        if (videoLikeRepository.existsByUserIdAndVideoId(userId, videoId)) {
+            throw new GeneralException(ErrorStatus.ALREADY_LIKED);
+        }
+
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.VIDEO_NOT_EXIST));
+
+        VideoLike videoLike = VideoLike.builder().video(video).user(user).build();
+
+        return videoLikeRepository.save(videoLike);
+    }
+
+    public VideoLike unlike(Long userId, Long videoId) {
+        VideoLike videoLike =
+                videoLikeRepository
+                        .findByUserIdAndVideoId(userId, videoId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.LIKE_NOT_FOUND));
+
+        videoLikeRepository.delete(videoLike);
+
+        return videoLike; // 삭제된 객체 반환 (원한다면 여기서 null 처리도 가능)
     }
 }
