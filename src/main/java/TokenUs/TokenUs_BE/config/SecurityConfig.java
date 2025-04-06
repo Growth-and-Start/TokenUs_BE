@@ -75,7 +75,9 @@ public class SecurityConfig {
                                                 "video/get_opened_videos/**",
                                                 "video/search/**",
                                                 "user/search/**",
-                                                "/ws/**")
+                                                "/ws/**",
+                                                "video/detail/**",
+                                                "user/detail/**")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())
