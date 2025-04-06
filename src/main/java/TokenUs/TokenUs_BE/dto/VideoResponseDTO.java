@@ -113,5 +113,6 @@ public class VideoResponseDTO {
         private Long creatorId;
         private Long likeCount;
         private Long viewCount;
+        private Boolean isLiked;
     }
 }

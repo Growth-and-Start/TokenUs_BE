@@ -112,7 +112,8 @@ public class VideoConverter {
                 .build();
     }
 
-    public static VideoResponseDTO.getDetailDTO toDetailDTO(Video video, Long likeCount) {
+    public static VideoResponseDTO.getDetailDTO toDetailDTO(
+            Video video, Long likeCount, Boolean isLiked) {
         return VideoResponseDTO.getDetailDTO
                 .builder()
                 .videoId(video.getId())
@@ -124,6 +125,7 @@ public class VideoConverter {
                 .creatorId(video.getCreator().getId())
                 .likeCount(likeCount)
                 .viewCount(video.getViews())
+                .isLiked(isLiked)
                 .build();
     }
 }

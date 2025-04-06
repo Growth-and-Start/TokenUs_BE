@@ -247,6 +247,16 @@ public class VideoController {
     @Operation(summary = "영상의 id로 상세 정보 반환", description = "영상의 상세 시청 페이지에서 사용합니다.")
     public ApiResponse<VideoResponseDTO.getDetailDTO> getVideoDetail(
             @RequestParam(required = true) Long videoId) {
+
+        Long currentUserId = null;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null
+                && auth.isAuthenticated()
+                && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
+            currentUserId = userDetails.getUser().getId();
+        }
+
         Video video =
                 videoRepository
                         .findById(videoId)
@@ -258,7 +268,10 @@ public class VideoController {
         videoService.increaseView(videoId);
         Long likeCount = videoLikeRepository.countByVideo(video);
 
-        VideoResponseDTO.getDetailDTO result = videoConverter.toDetailDTO(video, likeCount);
+        Boolean isLiked = videoLikeRepository.existsByUserIdAndVideoId(currentUserId, videoId);
+
+        VideoResponseDTO.getDetailDTO result =
+                videoConverter.toDetailDTO(video, likeCount, isLiked);
 
         return ApiResponse.onSuccess(result);
     }

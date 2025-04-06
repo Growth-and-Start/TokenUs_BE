@@ -101,9 +101,17 @@ public class UserController {
             summary = "userId로 user의 상세정보를 반환합니다.",
             description = "로그인 상태를 가정합니다. 구독 여부를 포함하기 위해")
     public ApiResponse<UserResponseDTO.searchResultDTO> getUserDetail(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(required = true) Long creatorId) {
-        Long currentUserId = userDetails.getUser().getId();
+
+        Long currentUserId = null;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null
+                && auth.isAuthenticated()
+                && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
+            currentUserId = userDetails.getUser().getId();
+        }
+
         User creator = userRepository.findById(creatorId).get();
 
         Boolean isSubscribed =
