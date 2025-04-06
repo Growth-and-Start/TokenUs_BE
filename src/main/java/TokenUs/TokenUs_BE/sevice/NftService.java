@@ -3,6 +3,7 @@ package TokenUs.TokenUs_BE.sevice;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple3;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.gas.StaticGasProvider;
 
@@ -217,5 +219,43 @@ public class NftService {
                 .sellerAddress(walletAddress)
                 .isListed(true)
                 .build();
+    }
+
+    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts() throws Exception {
+        // 1. 컨트랙트에서 판매중인 NFT 목록 호출
+        Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
+                marketplaceContract.getListedNFTs().send();
+
+        List<BigInteger> tokenIds = result.component1();
+        List<String> sellerAddresses = result.component2();
+        List<BigInteger> prices = result.component3();
+
+        List<NftResponseDTO.listedNFTInfoDTO> listedNfts = new ArrayList<>();
+
+        for (int i = 0; i < tokenIds.size(); i++) {
+            BigInteger tokenId = tokenIds.get(i);
+
+            Optional<Nft> optionalNft = nftRepository.findByTokenId(tokenId);
+
+            if (optionalNft.isPresent()) {
+                Nft nft = optionalNft.get();
+
+                // DTO 변환
+                NftResponseDTO.listedNFTInfoDTO dto =
+                        NftResponseDTO.listedNFTInfoDTO
+                                .builder()
+                                .tokenId(tokenId)
+                                .currentPrice(nft.getCurrentPrice())
+                                .videoId(nft.getVideo().getId())
+                                .isListed(nft.getIsListed())
+                                .creatorId(nft.getVideo().getCreator().getId())
+                                .sellerWallet(sellerAddresses.get(i))
+                                .build();
+
+                listedNfts.add(dto);
+            }
+        }
+
+        return listedNfts;
     }
 }

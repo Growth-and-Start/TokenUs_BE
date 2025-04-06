@@ -1,6 +1,7 @@
 package TokenUs.TokenUs_BE.controller;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -60,5 +61,10 @@ public class NftController {
             @RequestParam String from, @RequestParam String to, @RequestParam BigInteger tokenId)
             throws Exception {
         return nftService.safeTransferNFT(from, to, tokenId);
+    }
+
+    @GetMapping("/listed")
+    public ApiResponse<List<NftResponseDTO.listedNFTInfoDTO>> getListedNFTs() throws Exception {
+        return ApiResponse.onSuccess(nftService.getListedNfts());
     }
 }

@@ -20,6 +20,7 @@ public class NftResponseDTO {
         private List<NFTInfoDTO> mintedNFTs;
     }
 
+    @Builder
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
@@ -28,8 +29,21 @@ public class NftResponseDTO {
         private BigInteger currentPrice;
         private Long videoId;
         private Long userId;
-        private Boolean isList;
+        private Boolean isListed;
         private BigInteger mintQuantity;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class listedNFTInfoDTO {
+        private BigInteger tokenId;
+        private BigInteger currentPrice;
+        private Long videoId;
+        private Boolean isListed;
+        private Long creatorId;
+        private String sellerWallet;
     }
 
     @Builder
