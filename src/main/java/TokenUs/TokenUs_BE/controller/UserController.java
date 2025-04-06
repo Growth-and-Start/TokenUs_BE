@@ -17,6 +17,8 @@ import TokenUs.TokenUs_BE.converter.UserConverter;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
 import TokenUs.TokenUs_BE.dto.UserResponseDTO;
+import TokenUs.TokenUs_BE.repository.SubscribeRepository;
+import TokenUs.TokenUs_BE.repository.UserRepository;
 import TokenUs.TokenUs_BE.sevice.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -27,6 +29,8 @@ public class UserController {
 
     private final UserService userService;
     private final UserConverter userConverter;
+    private final UserRepository userRepository;
+    private final SubscribeRepository subscribeRepository;
 
     @GetMapping("/search")
     @Operation(
@@ -88,6 +92,25 @@ public class UserController {
         User user = userDetails.getUser();
 
         UserResponseDTO.userInfoDTO result = userConverter.toUser(user);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @GetMapping("/detail")
+    @Operation(
+            summary = "userId로 user의 상세정보를 반환합니다.",
+            description = "로그인 상태를 가정합니다. 구독 여부를 포함하기 위해")
+    public ApiResponse<UserResponseDTO.searchResultDTO> getUserDetail(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = true) Long creatorId) {
+        Long currentUserId = userDetails.getUser().getId();
+        User creator = userRepository.findById(creatorId).get();
+
+        Boolean isSubscribed =
+                subscribeRepository.existsBySubscriberIdAndTargetId(currentUserId, creator.getId());
+
+        UserResponseDTO.searchResultDTO result =
+                userConverter.toSearchResultDTO(creator, isSubscribed);
 
         return ApiResponse.onSuccess(result);
     }
