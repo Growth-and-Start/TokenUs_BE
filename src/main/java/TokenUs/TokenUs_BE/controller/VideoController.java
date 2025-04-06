@@ -289,7 +289,7 @@ public class VideoController {
         // user id 반환
         Long userId = userDetails.getUser().getId();
 
-        VideoLike videoLike = videoService.like(videoId, userId);
+        VideoLike videoLike = videoService.like(userId, videoId);
 
         VideoResponseDTO.likeResultDTO result = videoLikeConverter.toLikeResultDTO(videoLike, true);
 
@@ -304,7 +304,7 @@ public class VideoController {
         // user id 반환
         Long userId = userDetails.getUser().getId();
 
-        VideoLike videoLike = videoService.unlike(videoId, userId);
+        VideoLike videoLike = videoService.unlike(userId, videoId);
 
         VideoResponseDTO.likeResultDTO result =
                 videoLikeConverter.toLikeResultDTO(videoLike, false);
