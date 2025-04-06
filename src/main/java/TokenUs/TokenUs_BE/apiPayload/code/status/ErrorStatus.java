@@ -38,7 +38,9 @@ public enum ErrorStatus implements BaseErrorCode {
     // 비디오 관련
     VIDEO_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "VIDEO4001", "해당 영상이 이미 업로드 되어있습니다."),
     VIDEO_NOT_EXIST(HttpStatus.BAD_REQUEST, "VIDEO4002", "해당하는 영상이 없습니다."),
-    NOT_YOUR_VIDEO(HttpStatus.BAD_REQUEST, "VIDEO4003", "로그인한 사용자의 영상이 아닙니다. 권한이 없습니다.");
+    NOT_YOUR_VIDEO(HttpStatus.BAD_REQUEST, "VIDEO4003", "로그인한 사용자의 영상이 아닙니다. 권한이 없습니다."),
+    ALREADY_LIKED(HttpStatus.BAD_REQUEST, "VIDEO4004", "해당 영상을 이미 좋아요 하였습니다."),
+    LIKE_NOT_FOUND(HttpStatus.BAD_REQUEST, "VIDEO4005", "좋아요 정보가 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

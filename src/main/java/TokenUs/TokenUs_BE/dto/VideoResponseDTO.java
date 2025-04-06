@@ -115,4 +115,13 @@ public class VideoResponseDTO {
         private Long viewCount;
         private Boolean isLiked;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class likeResultDTO {
+        private Long videoId;
+        private Boolean isLiked;
+    }
 }

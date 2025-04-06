@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import TokenUs.TokenUs_BE.apiPayload.ApiResponse;
 import TokenUs.TokenUs_BE.config.security.CustomUserDetails;
 import TokenUs.TokenUs_BE.converter.VideoConverter;
+import TokenUs.TokenUs_BE.converter.VideoLikeConverter;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.Video;
+import TokenUs.TokenUs_BE.domain.mapping.VideoLike;
 import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
 import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
 import TokenUs.TokenUs_BE.repository.NftRepository;
@@ -40,6 +42,7 @@ public class VideoController {
     private final NftRepository nftRepository;
     private final VideoRepository videoRepository;
     private final VideoLikeRepository videoLikeRepository;
+    private final VideoLikeConverter videoLikeConverter;
 
     public VideoController(
             SimpMessagingTemplate messagingTemplate,
@@ -49,7 +52,8 @@ public class VideoController {
             FlaskService flaskService,
             NftRepository nftRepository,
             VideoRepository videoRepository,
-            VideoLikeRepository videoLikeRepository) {
+            VideoLikeRepository videoLikeRepository,
+            VideoLikeConverter videoLikeConverter) {
         this.messagingTemplate = messagingTemplate;
         this.videoService = videoService;
         this.videoConverter = videoConverter;
@@ -58,6 +62,7 @@ public class VideoController {
         this.nftRepository = nftRepository;
         this.videoRepository = videoRepository;
         this.videoLikeRepository = videoLikeRepository;
+        this.videoLikeConverter = videoLikeConverter;
     }
 
     @GetMapping("/get_opened_videos")
@@ -272,6 +277,37 @@ public class VideoController {
 
         VideoResponseDTO.getDetailDTO result =
                 videoConverter.toDetailDTO(video, likeCount, isLiked);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @PostMapping("/like")
+    @Operation(summary = "영상 좋아요 하기", description = "영상의 id를 넣고 요청하면 현재 로그인한 사용자가 like")
+    public ApiResponse<VideoResponseDTO.likeResultDTO> likeVideo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = true) Long videoId) {
+        // user id 반환
+        Long userId = userDetails.getUser().getId();
+
+        VideoLike videoLike = videoService.like(videoId, userId);
+
+        VideoResponseDTO.likeResultDTO result = videoLikeConverter.toLikeResultDTO(videoLike, true);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @DeleteMapping("/unlike")
+    @Operation(summary = "영상 좋아요 취소", description = "영상의 id를 넣고 요청하면 현재 로그인한 사용자가 like 취소")
+    public ApiResponse<VideoResponseDTO.likeResultDTO> unlikeVideo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = true) Long videoId) {
+        // user id 반환
+        Long userId = userDetails.getUser().getId();
+
+        VideoLike videoLike = videoService.unlike(videoId, userId);
+
+        VideoResponseDTO.likeResultDTO result =
+                videoLikeConverter.toLikeResultDTO(videoLike, false);
 
         return ApiResponse.onSuccess(result);
     }
