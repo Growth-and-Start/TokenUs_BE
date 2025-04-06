@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import TokenUs.TokenUs_BE.domain.common.BaseEntity;
+import TokenUs.TokenUs_BE.domain.enums.TransactionType;
+import io.micrometer.common.lang.Nullable;
 
 @Entity
 @Getter
@@ -17,7 +19,11 @@ public class Transaction extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Float tradePrice;
+    @Column(length = 66)
+    private String txHash;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id")
@@ -25,7 +31,7 @@ public class Transaction extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id")
-    private User buyer;
+    @Nullable private User buyer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nft_id")

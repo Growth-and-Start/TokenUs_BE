@@ -31,4 +31,16 @@ public class NftResponseDTO {
         private Boolean isList;
         private BigInteger mintQuantity;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class NFTListResultDTO {
+        private String transactionHash;
+        private BigInteger tokenId;
+        private BigInteger price;
+        private String sellerAddress;
+        private Boolean isListed;
+    }
 }

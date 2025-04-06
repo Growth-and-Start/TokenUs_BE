@@ -20,11 +20,9 @@ public class NftConverter {
     private final UserRepository userRepository;
     private final VideoRepository videoRepository;
 
-    public Nft toNft(
-            NftRequestDTO.NFTMintRequestDTO dto, BigInteger tokenId, String txHash, Long userId) {
+    public Nft toNft(NftRequestDTO.NFTMintRequestDTO dto, BigInteger tokenId, Long userId) {
         return Nft.builder()
                 .tokenId(tokenId)
-                .txHash(txHash)
                 .currentPrice(dto.getPrice())
                 .mintQuantity(dto.getTotalSupply())
                 .isListed(false) // 민팅 시엔 기본 false

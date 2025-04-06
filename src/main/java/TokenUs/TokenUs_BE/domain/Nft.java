@@ -9,6 +9,7 @@ import TokenUs.TokenUs_BE.domain.common.BaseEntity;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -17,9 +18,6 @@ public class Nft extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(length = 500)
-    private String txHash;
 
     private BigInteger tokenId;
 
