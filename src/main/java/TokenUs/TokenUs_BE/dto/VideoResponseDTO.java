@@ -51,8 +51,8 @@ public class VideoResponseDTO {
         @JsonProperty("passed")
         private boolean passed;
 
-        @JsonProperty("similar_video_id")
-        private String similarVideoId;
+        @JsonProperty("similar_video_url")
+        private String similarVideoUrl;
     }
 
     @Builder
