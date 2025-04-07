@@ -24,6 +24,7 @@ public class VideoConverter {
                 .isOpen(request.getIsOpen())
                 .thumbnailUrl(request.getThumbnailUrl())
                 .creator(user)
+                .views(0L)
                 .build();
     }
 
