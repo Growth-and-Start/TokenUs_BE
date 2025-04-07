@@ -1,5 +1,6 @@
 package TokenUs.TokenUs_BE.domain;
 
+import java.math.BigInteger;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -32,6 +33,9 @@ public class Transaction extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id")
     @Nullable private User buyer;
+
+    @Column(name = "trade_price")
+    private BigInteger tradePrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nft_id")

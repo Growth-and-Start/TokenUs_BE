@@ -32,4 +32,22 @@ public class NftRequestDTO {
         private BigInteger tokenId;
         private BigInteger price; // wei 단위
     }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NftDelistRequestDTO {
+        private BigInteger tokenId;
+    }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NFTPurchaseRequestDTO {
+        private BigInteger tokenId;
+    }
 }

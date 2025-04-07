@@ -46,6 +46,8 @@ import org.web3j.tx.gas.ContractGasProvider;
 public class VideoNftMarketplace_ABI extends Contract {
     public static final String BINARY = "Bin file was not provided";
 
+    public static final String FUNC_APPROVEDOPERATORS = "approvedOperators";
+
     public static final String FUNC_LISTINGS = "listings";
 
     public static final String FUNC_OWNER = "owner";
@@ -53,6 +55,8 @@ public class VideoNftMarketplace_ABI extends Contract {
     public static final String FUNC_RENOUNCEOWNERSHIP = "renounceOwnership";
 
     public static final String FUNC_TRANSFEROWNERSHIP = "transferOwnership";
+
+    public static final String FUNC_APPROVEOPERATOR = "approveOperator";
 
     public static final String FUNC_LISTNFT = "listNFT";
 
@@ -86,6 +90,13 @@ public class VideoNftMarketplace_ABI extends Contract {
                             new TypeReference<Uint256>(true) {},
                             new TypeReference<Address>(true) {},
                             new TypeReference<Uint256>() {}));
+    ;
+
+    public static final Event OPERATORAPPROVED_EVENT =
+            new Event(
+                    "OperatorApproved",
+                    Arrays.<TypeReference<?>>asList(
+                            new TypeReference<Address>(true) {}, new TypeReference<Bool>() {}));
     ;
 
     public static final Event OWNERSHIPTRANSFERRED_EVENT =
@@ -247,6 +258,43 @@ public class VideoNftMarketplace_ABI extends Contract {
         return nFTPurchasedEventFlowable(filter);
     }
 
+    public static List<OperatorApprovedEventResponse> getOperatorApprovedEvents(
+            TransactionReceipt transactionReceipt) {
+        List<Contract.EventValuesWithLog> valueList =
+                staticExtractEventParametersWithLog(OPERATORAPPROVED_EVENT, transactionReceipt);
+        ArrayList<OperatorApprovedEventResponse> responses =
+                new ArrayList<OperatorApprovedEventResponse>(valueList.size());
+        for (Contract.EventValuesWithLog eventValues : valueList) {
+            OperatorApprovedEventResponse typedResponse = new OperatorApprovedEventResponse();
+            typedResponse.log = eventValues.getLog();
+            typedResponse.operator = (String) eventValues.getIndexedValues().get(0).getValue();
+            typedResponse.approved = (Boolean) eventValues.getNonIndexedValues().get(0).getValue();
+            responses.add(typedResponse);
+        }
+        return responses;
+    }
+
+    public static OperatorApprovedEventResponse getOperatorApprovedEventFromLog(Log log) {
+        Contract.EventValuesWithLog eventValues =
+                staticExtractEventParametersWithLog(OPERATORAPPROVED_EVENT, log);
+        OperatorApprovedEventResponse typedResponse = new OperatorApprovedEventResponse();
+        typedResponse.log = log;
+        typedResponse.operator = (String) eventValues.getIndexedValues().get(0).getValue();
+        typedResponse.approved = (Boolean) eventValues.getNonIndexedValues().get(0).getValue();
+        return typedResponse;
+    }
+
+    public Flowable<OperatorApprovedEventResponse> operatorApprovedEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(log -> getOperatorApprovedEventFromLog(log));
+    }
+
+    public Flowable<OperatorApprovedEventResponse> operatorApprovedEventFlowable(
+            DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(OPERATORAPPROVED_EVENT));
+        return operatorApprovedEventFlowable(filter);
+    }
+
     public static List<OwnershipTransferredEventResponse> getOwnershipTransferredEvents(
             TransactionReceipt transactionReceipt) {
         List<Contract.EventValuesWithLog> valueList =
@@ -284,6 +332,15 @@ public class VideoNftMarketplace_ABI extends Contract {
         EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
         filter.addSingleTopic(EventEncoder.encode(OWNERSHIPTRANSFERRED_EVENT));
         return ownershipTransferredEventFlowable(filter);
+    }
+
+    public RemoteFunctionCall<Boolean> approvedOperators(String param0) {
+        final Function function =
+                new Function(
+                        FUNC_APPROVEDOPERATORS,
+                        Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(160, param0)),
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
+        return executeRemoteCallSingleValueReturn(function, Boolean.class);
     }
 
     public RemoteFunctionCall<Tuple4<BigInteger, String, BigInteger, Boolean>> listings(
@@ -335,6 +392,15 @@ public class VideoNftMarketplace_ABI extends Contract {
                 new Function(
                         FUNC_TRANSFEROWNERSHIP,
                         Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(160, newOwner)),
+                        Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> approveOperator(String operator) {
+        final Function function =
+                new Function(
+                        FUNC_APPROVEOPERATOR,
+                        Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(160, operator)),
                         Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
@@ -453,6 +519,12 @@ public class VideoNftMarketplace_ABI extends Contract {
         public String buyer;
 
         public BigInteger price;
+    }
+
+    public static class OperatorApprovedEventResponse extends BaseEventResponse {
+        public String operator;
+
+        public Boolean approved;
     }
 
     public static class OwnershipTransferredEventResponse extends BaseEventResponse {

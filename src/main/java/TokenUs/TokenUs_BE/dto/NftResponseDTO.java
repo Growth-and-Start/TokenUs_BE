@@ -57,4 +57,15 @@ public class NftResponseDTO {
         private String sellerAddress;
         private Boolean isListed;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class NFTPurchaseResultDTO {
+        private String transactionHash;
+        private BigInteger tokenId;
+        private String buyerAddress;
+        private BigInteger tradePrice;
+    }
 }

@@ -4,5 +4,5 @@ public enum TransactionType {
     MINT,
     LIST,
     DELIST,
-    PURCHASE
+    TRADE
 }
