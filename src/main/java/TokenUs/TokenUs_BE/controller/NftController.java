@@ -1,14 +1,14 @@
 package TokenUs.TokenUs_BE.controller;
 
-import java.math.BigInteger;
+import java.util.List;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
+import TokenUs.TokenUs_BE.apiPayload.ApiResponse;
 import TokenUs.TokenUs_BE.config.security.CustomUserDetails;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
@@ -28,23 +28,56 @@ public class NftController {
     @PostMapping("/mint")
     @Operation(summary = "nft를 발행합니다.", description = "video/save를 완료한 후 반환되는 videoId를 입력해야합니다.")
     public NftResponseDTO.NFTMintResultDTO mintVideoNFT(
-            @Validated @RequestBody NftRequestDTO.NFTMintRequestDTO request) throws Exception {
+            @Validated @RequestBody NftRequestDTO.NFTMintRequestDTO request,
+            @AuthenticationPrincipal CustomUserDetails userDetails)
+            throws Exception {
         // 1. 로그인 유저
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
 
         // 2. DTO에 주입
         request.setCreatorAddress(user.getWalletAddress());
 
-        return nftService.mintVideoNFT(request);
+        return nftService.mintVideoNFT(request, user);
     }
 
-    @PostMapping("/transfer")
-    @Operation(summary = "nft 거래를 위한 API(개발중)")
-    public String transferVideoNFT(
-            @RequestParam String from, @RequestParam String to, @RequestParam BigInteger tokenId)
+    @PostMapping("/list")
+    @Operation(
+            summary = "nft를 마켓 플레이스에 등록",
+            description = "단위: wei</br>디자인 및 FE 나오기 전 작업->수정 필요하면 말해주세요")
+    public ApiResponse<NftResponseDTO.NFTListResultDTO> listNFT(
+            @RequestBody NftRequestDTO.listNftRequestDTO request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        try {
+            NftResponseDTO.NFTListResultDTO result =
+                    nftService.listNft(request, userDetails.getUser().getId());
+            return ApiResponse.onSuccess(result);
+        } catch (Exception e) {
+            return ApiResponse.onFailure("LIST_FAIL", e.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/listed")
+    @Operation(summary = "판매 등록된 NFT 리스트 반환", description = "")
+    public ApiResponse<List<NftResponseDTO.listedNFTInfoDTO>> getListedNFTs() throws Exception {
+        return ApiResponse.onSuccess(nftService.getListedNfts());
+    }
+
+    @PostMapping("/delist")
+    @Operation(summary = "NFT의 판매 등록 취소", description = "NFT의 소유자만 가능")
+    public ApiResponse<NftResponseDTO.NFTListResultDTO> delistNFT(
+            @RequestBody NftRequestDTO.NftDelistRequestDTO request,
+            @AuthenticationPrincipal CustomUserDetails userDetails)
             throws Exception {
-        return nftService.safeTransferNFT(from, to, tokenId);
+        return ApiResponse.onSuccess(nftService.delistNFT(request, userDetails.getUser().getId()));
+    }
+
+    @PostMapping("/trade")
+    @Operation(summary = "NFT 거래", description = "")
+    public ApiResponse<NftResponseDTO.NFTPurchaseResultDTO> purchaseNFT(
+            @RequestBody NftRequestDTO.NFTPurchaseRequestDTO request,
+            @AuthenticationPrincipal CustomUserDetails userDetails)
+            throws Exception {
+        return ApiResponse.onSuccess(
+                nftService.purchaseNFT(request, userDetails.getUser().getId()));
     }
 }

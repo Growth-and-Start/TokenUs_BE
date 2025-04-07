@@ -25,8 +25,8 @@ import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.BaseEventResponse;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple5;
 import org.web3j.tuples.generated.Tuple6;
-import org.web3j.tuples.generated.Tuple7;
 import org.web3j.tx.Contract;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.ContractGasProvider;
@@ -43,7 +43,7 @@ import org.web3j.tx.gas.ContractGasProvider;
  * <p>Generated with web3j version 1.6.3.
  */
 @SuppressWarnings("rawtypes")
-public class VideoNFT_ABI extends Contract {
+public class VideoNft_ABI extends Contract {
     public static final String BINARY = "Bin file was not provided";
 
     public static final String FUNC_APPROVE = "approve";
@@ -84,9 +84,13 @@ public class VideoNFT_ABI extends Contract {
 
     public static final String FUNC_TRANSFEROWNERSHIP = "transferOwnership";
 
+    public static final String FUNC_TRUSTEDOPERATOR = "trustedOperator";
+
     public static final String FUNC_VIDEOEXISTS = "videoExists";
 
     public static final String FUNC_VIDEOS = "videos";
+
+    public static final String FUNC_SETTRUSTEDOPERATOR = "setTrustedOperator";
 
     public static final String FUNC_MINTVIDEONFT = "mintVideoNFT";
 
@@ -142,7 +146,7 @@ public class VideoNFT_ABI extends Contract {
     ;
 
     @Deprecated
-    protected VideoNFT_ABI(
+    protected VideoNft_ABI(
             String contractAddress,
             Web3j web3j,
             Credentials credentials,
@@ -151,7 +155,7 @@ public class VideoNFT_ABI extends Contract {
         super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit);
     }
 
-    protected VideoNFT_ABI(
+    protected VideoNft_ABI(
             String contractAddress,
             Web3j web3j,
             Credentials credentials,
@@ -160,7 +164,7 @@ public class VideoNFT_ABI extends Contract {
     }
 
     @Deprecated
-    protected VideoNFT_ABI(
+    protected VideoNft_ABI(
             String contractAddress,
             Web3j web3j,
             TransactionManager transactionManager,
@@ -169,7 +173,7 @@ public class VideoNFT_ABI extends Contract {
         super(BINARY, contractAddress, web3j, transactionManager, gasPrice, gasLimit);
     }
 
-    protected VideoNFT_ABI(
+    protected VideoNft_ABI(
             String contractAddress,
             Web3j web3j,
             TransactionManager transactionManager,
@@ -584,6 +588,15 @@ public class VideoNFT_ABI extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
+    public RemoteFunctionCall<String> trustedOperator() {
+        final Function function =
+                new Function(
+                        FUNC_TRUSTEDOPERATOR,
+                        Arrays.<Type>asList(),
+                        Arrays.<TypeReference<?>>asList(new TypeReference<Address>() {}));
+        return executeRemoteCallSingleValueReturn(function, String.class);
+    }
+
     public RemoteFunctionCall<Boolean> videoExists(BigInteger param0) {
         final Function function =
                 new Function(
@@ -593,8 +606,7 @@ public class VideoNFT_ABI extends Contract {
         return executeRemoteCallSingleValueReturn(function, Boolean.class);
     }
 
-    public RemoteFunctionCall<
-                    Tuple7<BigInteger, String, String, String, String, BigInteger, BigInteger>>
+    public RemoteFunctionCall<Tuple6<BigInteger, String, String, String, BigInteger, BigInteger>>
             videos(BigInteger param0) {
         final Function function =
                 new Function(
@@ -604,51 +616,42 @@ public class VideoNFT_ABI extends Contract {
                                 new TypeReference<Uint256>() {},
                                 new TypeReference<Utf8String>() {},
                                 new TypeReference<Utf8String>() {},
-                                new TypeReference<Utf8String>() {},
                                 new TypeReference<Address>() {},
                                 new TypeReference<Uint256>() {},
                                 new TypeReference<Uint256>() {}));
         return new RemoteFunctionCall<
-                Tuple7<BigInteger, String, String, String, String, BigInteger, BigInteger>>(
+                Tuple6<BigInteger, String, String, String, BigInteger, BigInteger>>(
                 function,
-                new Callable<
-                        Tuple7<
-                                BigInteger,
-                                String,
-                                String,
-                                String,
-                                String,
-                                BigInteger,
-                                BigInteger>>() {
+                new Callable<Tuple6<BigInteger, String, String, String, BigInteger, BigInteger>>() {
                     @Override
-                    public Tuple7<
-                                    BigInteger,
-                                    String,
-                                    String,
-                                    String,
-                                    String,
-                                    BigInteger,
-                                    BigInteger>
-                            call() throws Exception {
+                    public Tuple6<BigInteger, String, String, String, BigInteger, BigInteger> call()
+                            throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
-                        return new Tuple7<
-                                BigInteger, String, String, String, String, BigInteger, BigInteger>(
+                        return new Tuple6<
+                                BigInteger, String, String, String, BigInteger, BigInteger>(
                                 (BigInteger) results.get(0).getValue(),
                                 (String) results.get(1).getValue(),
                                 (String) results.get(2).getValue(),
                                 (String) results.get(3).getValue(),
-                                (String) results.get(4).getValue(),
-                                (BigInteger) results.get(5).getValue(),
-                                (BigInteger) results.get(6).getValue());
+                                (BigInteger) results.get(4).getValue(),
+                                (BigInteger) results.get(5).getValue());
                     }
                 });
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> setTrustedOperator(String _operator) {
+        final Function function =
+                new Function(
+                        FUNC_SETTRUSTEDOPERATOR,
+                        Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(160, _operator)),
+                        Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<TransactionReceipt> mintVideoNFT(
             BigInteger videoId,
             String nftName,
             String nftSymbol,
-            String metadataURI,
             BigInteger totalSupply,
             BigInteger price,
             String creatorAddress) {
@@ -659,7 +662,6 @@ public class VideoNFT_ABI extends Contract {
                                 new org.web3j.abi.datatypes.generated.Uint256(videoId),
                                 new org.web3j.abi.datatypes.Utf8String(nftName),
                                 new org.web3j.abi.datatypes.Utf8String(nftSymbol),
-                                new org.web3j.abi.datatypes.Utf8String(metadataURI),
                                 new org.web3j.abi.datatypes.generated.Uint256(totalSupply),
                                 new org.web3j.abi.datatypes.generated.Uint256(price),
                                 new org.web3j.abi.datatypes.Address(160, creatorAddress)),
@@ -667,8 +669,8 @@ public class VideoNFT_ABI extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
-    public RemoteFunctionCall<Tuple6<String, String, String, String, BigInteger, BigInteger>>
-            getVideoInfo(BigInteger videoId) {
+    public RemoteFunctionCall<Tuple5<String, String, String, BigInteger, BigInteger>> getVideoInfo(
+            BigInteger videoId) {
         final Function function =
                 new Function(
                         FUNC_GETVIDEOINFO,
@@ -676,25 +678,22 @@ public class VideoNFT_ABI extends Contract {
                         Arrays.<TypeReference<?>>asList(
                                 new TypeReference<Utf8String>() {},
                                 new TypeReference<Utf8String>() {},
-                                new TypeReference<Utf8String>() {},
                                 new TypeReference<Address>() {},
                                 new TypeReference<Uint256>() {},
                                 new TypeReference<Uint256>() {}));
-        return new RemoteFunctionCall<
-                Tuple6<String, String, String, String, BigInteger, BigInteger>>(
+        return new RemoteFunctionCall<Tuple5<String, String, String, BigInteger, BigInteger>>(
                 function,
-                new Callable<Tuple6<String, String, String, String, BigInteger, BigInteger>>() {
+                new Callable<Tuple5<String, String, String, BigInteger, BigInteger>>() {
                     @Override
-                    public Tuple6<String, String, String, String, BigInteger, BigInteger> call()
+                    public Tuple5<String, String, String, BigInteger, BigInteger> call()
                             throws Exception {
                         List<Type> results = executeCallMultipleValueReturn(function);
-                        return new Tuple6<String, String, String, String, BigInteger, BigInteger>(
+                        return new Tuple5<String, String, String, BigInteger, BigInteger>(
                                 (String) results.get(0).getValue(),
                                 (String) results.get(1).getValue(),
                                 (String) results.get(2).getValue(),
-                                (String) results.get(3).getValue(),
-                                (BigInteger) results.get(4).getValue(),
-                                (BigInteger) results.get(5).getValue());
+                                (BigInteger) results.get(3).getValue(),
+                                (BigInteger) results.get(4).getValue());
                     }
                 });
     }
@@ -709,39 +708,39 @@ public class VideoNFT_ABI extends Contract {
     }
 
     @Deprecated
-    public static VideoNFT_ABI load(
+    public static VideoNft_ABI load(
             String contractAddress,
             Web3j web3j,
             Credentials credentials,
             BigInteger gasPrice,
             BigInteger gasLimit) {
-        return new VideoNFT_ABI(contractAddress, web3j, credentials, gasPrice, gasLimit);
+        return new VideoNft_ABI(contractAddress, web3j, credentials, gasPrice, gasLimit);
     }
 
     @Deprecated
-    public static VideoNFT_ABI load(
+    public static VideoNft_ABI load(
             String contractAddress,
             Web3j web3j,
             TransactionManager transactionManager,
             BigInteger gasPrice,
             BigInteger gasLimit) {
-        return new VideoNFT_ABI(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+        return new VideoNft_ABI(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
     }
 
-    public static VideoNFT_ABI load(
+    public static VideoNft_ABI load(
             String contractAddress,
             Web3j web3j,
             Credentials credentials,
             ContractGasProvider contractGasProvider) {
-        return new VideoNFT_ABI(contractAddress, web3j, credentials, contractGasProvider);
+        return new VideoNft_ABI(contractAddress, web3j, credentials, contractGasProvider);
     }
 
-    public static VideoNFT_ABI load(
+    public static VideoNft_ABI load(
             String contractAddress,
             Web3j web3j,
             TransactionManager transactionManager,
             ContractGasProvider contractGasProvider) {
-        return new VideoNFT_ABI(contractAddress, web3j, transactionManager, contractGasProvider);
+        return new VideoNft_ABI(contractAddress, web3j, transactionManager, contractGasProvider);
     }
 
     public static class ApprovalEventResponse extends BaseEventResponse {

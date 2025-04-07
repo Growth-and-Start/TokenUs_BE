@@ -10,6 +10,11 @@
         "internalType": "string",
         "name": "symbol",
         "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_trustedOperator",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -529,6 +534,20 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "trustedOperator",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -574,11 +593,6 @@
         "type": "string"
       },
       {
-        "internalType": "string",
-        "name": "metadataURI",
-        "type": "string"
-      },
-      {
         "internalType": "address",
         "name": "creatorAddress",
         "type": "address"
@@ -601,6 +615,19 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_operator",
+        "type": "address"
+      }
+    ],
+    "name": "setTrustedOperator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "videoId",
         "type": "uint256"
@@ -613,11 +640,6 @@
       {
         "internalType": "string",
         "name": "nftSymbol",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "metadataURI",
         "type": "string"
       },
       {
@@ -659,11 +681,6 @@
       {
         "internalType": "string",
         "name": "nftSymbol",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "metadataURI",
         "type": "string"
       },
       {
