@@ -25,6 +25,10 @@ public class Nft extends BaseEntity {
 
     private BigInteger mintQuantity;
 
+    private String nftName;
+
+    private String nftSymbol;
+
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private Boolean isListed;
 

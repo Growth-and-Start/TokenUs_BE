@@ -26,6 +26,8 @@ public class NftResponseDTO {
     @NoArgsConstructor
     public static class NFTInfoDTO {
         private BigInteger tokenId;
+        private String nftName;
+        private String nftSymbol;
         private BigInteger currentPrice;
         private Long videoId;
         private Long userId;
@@ -39,6 +41,8 @@ public class NftResponseDTO {
     @NoArgsConstructor
     public static class listedNFTInfoDTO {
         private BigInteger tokenId;
+        private String nftName;
+        private String nftSymbol;
         private BigInteger currentPrice;
         private Long videoId;
         private Boolean isListed;
@@ -53,6 +57,8 @@ public class NftResponseDTO {
     public static class NFTListResultDTO {
         private String transactionHash;
         private BigInteger tokenId;
+        private String nftName;
+        private String nftSymbol;
         private BigInteger price;
         private String sellerAddress;
         private Boolean isListed;
@@ -65,6 +71,8 @@ public class NftResponseDTO {
     public static class NFTPurchaseResultDTO {
         private String transactionHash;
         private BigInteger tokenId;
+        private String nftName;
+        private String nftSymbol;
         private String buyerAddress;
         private BigInteger tradePrice;
     }
