@@ -118,7 +118,11 @@ public class NftService {
         for (BigInteger tokenId : tokenIdList) {
             Nft nft =
                     nftConverter.toNft(
-                            request, tokenId, getUserIdFromAddress(request.getCreatorAddress()));
+                            request,
+                            tokenId,
+                            getUserIdFromAddress(request.getCreatorAddress()),
+                            request.getNftName(),
+                            request.getNftSymbol());
 
             nft = nftRepository.save(nft); // 저장된 엔티티 다시 할당
 
@@ -228,6 +232,8 @@ public class NftService {
 
         return NftResponseDTO.NFTListResultDTO.builder()
                 .transactionHash(receipt.getTransactionHash())
+                .nftName(nft.getNftName())
+                .nftSymbol(nft.getNftSymbol())
                 .tokenId(request.getTokenId())
                 .price(request.getPrice())
                 .sellerAddress(walletAddress)
@@ -259,6 +265,8 @@ public class NftService {
                         NftResponseDTO.listedNFTInfoDTO
                                 .builder()
                                 .tokenId(tokenId)
+                                .nftName(nft.getNftName())
+                                .nftSymbol(nft.getNftSymbol())
                                 .currentPrice(nft.getCurrentPrice())
                                 .videoId(nft.getVideo().getId())
                                 .isListed(nft.getIsListed())
@@ -317,6 +325,8 @@ public class NftService {
         return NftResponseDTO.NFTListResultDTO.builder()
                 .transactionHash(receipt.getTransactionHash())
                 .tokenId(request.getTokenId())
+                .nftName(nft.getNftName())
+                .nftSymbol(nft.getNftSymbol())
                 .sellerAddress(walletAddress)
                 .isListed(nft.getIsListed())
                 .build();
@@ -386,6 +396,8 @@ public class NftService {
         return NftResponseDTO.NFTPurchaseResultDTO.builder()
                 .transactionHash(txHash)
                 .tokenId(tokenId)
+                .nftName(nft.getNftName())
+                .nftSymbol(nft.getNftSymbol())
                 .buyerAddress(buyerAddress)
                 .tradePrice(price)
                 .build();
