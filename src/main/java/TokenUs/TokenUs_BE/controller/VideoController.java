@@ -213,13 +213,13 @@ public class VideoController {
     }
 
     @GetMapping("/check_nft")
-    @Operation(summary = "유저가 videoId에 해당하는 NFT를 가지고 있는지 확인", description = "유사도 검사 실패시 요청")
+    @Operation(summary = "유저가 videoUrl에 해당하는 NFT를 가지고 있는지 확인", description = "유사도 검사 실패시 요청")
     public ApiResponse<VideoResponseDTO.checkNftResultDTO> checkHavingNft(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(required = true) Long videoId) {
+            @RequestParam(required = true) String videoUrl) {
         Long userId = userDetails.getUser().getId();
 
-        Boolean owns = nftRepository.existsByVideoIdAndOwnerId(videoId, userId);
+        Boolean owns = nftRepository.existsByVideo_FileUrlAndOwner_Id(videoUrl, userId);
 
         VideoResponseDTO.checkNftResultDTO responseDTO =
                 new VideoResponseDTO.checkNftResultDTO(owns);
