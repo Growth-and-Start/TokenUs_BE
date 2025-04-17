@@ -33,6 +33,11 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     // (공개Only)크리에이터로 영상 찾기, 최신순 정렬
     List<Video> findByIsOpenTrue();
 
+    List<Video> findAllByIsOpenTrueOrderByViewsDesc();
+
+    // (공개Only) 공개 영상 중, views가 가장 높은 영상 1개
+    Video findTopByIsOpenTrueOrderByViewsDesc();
+
     @Query(
             "SELECT v FROM Video v "
                     + "WHERE v.isOpen = true AND "
