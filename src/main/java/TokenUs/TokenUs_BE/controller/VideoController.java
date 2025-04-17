@@ -68,7 +68,8 @@ public class VideoController {
     @GetMapping("/get_opened_videos")
     @Operation(summary = "공개된 영상 리스트 리턴", description = "기본정렬: 최신순")
     public ApiResponse<List<VideoResponseDTO.listResultDTO>> getVideoList(
-            @RequestParam(required = false) Boolean isSubscribe) {
+            @RequestParam(required = false) Boolean subscribeFilter,
+            @RequestParam(required = false) Boolean popularFilter) {
 
         User user = null;
 
@@ -81,7 +82,7 @@ public class VideoController {
             user = userDetails.getUser();
         }
 
-        List<Video> videos = videoService.getVideoList(user, isSubscribe);
+        List<Video> videos = videoService.getVideoList(user, subscribeFilter, popularFilter);
 
         List<VideoResponseDTO.listResultDTO> result =
                 videos.stream().map(VideoConverter::toListResultDTO).collect(Collectors.toList());

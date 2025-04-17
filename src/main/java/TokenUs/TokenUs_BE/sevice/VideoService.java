@@ -45,9 +45,9 @@ public class VideoService {
         return videoRepository.save(newVideo);
     }
 
-    public List<Video> getVideoList(User user, Boolean isSubscribe) {
+    public List<Video> getVideoList(User user, Boolean subscribeFilter, Boolean popularFilter) {
         // 구독 필터링 요청인 경우
-        if (Boolean.TRUE.equals(isSubscribe)) {
+        if (Boolean.TRUE.equals(subscribeFilter)) {
             if (user == null) {
                 // 로그인하지 않은 유저가 구독 필터링 요청 → 빈 리스트 반환
                 return Collections.emptyList();
@@ -60,6 +60,12 @@ public class VideoService {
 
             return videoRepository.findByCreatorInAndIsOpenTrueOrderByCreatedAtDesc(
                     subscribedToList);
+        }
+
+        // 인기순 정렬 요청인 경우
+        if (Boolean.TRUE.equals(popularFilter)) {
+            // 인기순 정렬 로직 추가
+            return videoRepository.findAllByIsOpenTrueOrderByViewsDesc();
         }
 
         // 전체 공개 영상 최신순 정렬
