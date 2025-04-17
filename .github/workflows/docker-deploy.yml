@@ -42,12 +42,39 @@ jobs:
           ./gradlew jib \
             -Djib.to.image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
+      - name: 7.오래된 Docker 이미지 삭제 (최신 5개 제외)
+        env:
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
+        run: |
+          aws ecr list-images \
+            --region $AWS_REGION \
+            --repository-name $ECR_REPOSITORY \
+            --query 'imageIds[*]' \
+            --output json \
+            | jq '.[:-5]' \
+            > old-images.json
+
+          IMAGE_COUNT=$(jq length old-images.json)
+          if [ "$IMAGE_COUNT" -gt 0 ]; then
+            aws ecr batch-delete-image \
+              --region $AWS_REGION \
+              --repository-name $ECR_REPOSITORY \
+              --image-ids file://old-images.json
+            echo "🧹 $IMAGE_COUNT개의 오래된 이미지를 삭제했습니다."
+          else
+            echo "🧼 삭제할 이미지가 없습니다."
+          fi
+
+
+
+
   run-images-on-ec2:
     needs: build-and-push
     runs-on: ubuntu-latest
 
     steps:
-      - name: 7.EC2 접속 및 배포 스크립트 실행
+      - name: 8.EC2 접속 및 배포 스크립트 실행
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SSH_HOST_NAME }}
