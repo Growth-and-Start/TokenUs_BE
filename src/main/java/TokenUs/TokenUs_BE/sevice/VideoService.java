@@ -174,4 +174,15 @@ public class VideoService {
 
         return videoLike; // 삭제된 객체 반환 (원한다면 여기서 null 처리도 가능)
     }
+
+    public Video getMostPopularVideo() {
+        // 공개 영상 중, views가 가장 높은 영상 1개
+        Video mostPopularVideo = videoRepository.findTopByIsOpenTrueOrderByViewsDesc();
+
+        if (mostPopularVideo == null) {
+            throw new GeneralException(ErrorStatus.VIDEO_NOT_EXIST);
+        }
+
+        return mostPopularVideo;
+    }
 }

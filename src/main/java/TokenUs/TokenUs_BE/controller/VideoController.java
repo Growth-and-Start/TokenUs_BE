@@ -312,4 +312,16 @@ public class VideoController {
 
         return ApiResponse.onSuccess(result);
     }
+
+    @GetMapping("/most_popular")
+    @Operation(summary = "조회수 기준 가장 인기 영상 리턴", description = "")
+    public ApiResponse<VideoResponseDTO.getDetailDTO> getMostPopularVideo() {
+        Video video = videoService.getMostPopularVideo();
+
+        Long likeCount = videoLikeRepository.countByVideo(video);
+
+        VideoResponseDTO.getDetailDTO result = videoConverter.toDetailDTO(video, likeCount, false);
+
+        return ApiResponse.onSuccess(result);
+    }
 }
