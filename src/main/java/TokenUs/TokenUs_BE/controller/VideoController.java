@@ -68,7 +68,8 @@ public class VideoController {
     @GetMapping("/get_opened_videos")
     @Operation(summary = "공개된 영상 리스트 리턴", description = "기본정렬: 최신순")
     public ApiResponse<List<VideoResponseDTO.listResultDTO>> getVideoList(
-            @RequestParam(required = false) Boolean isSubscribe) {
+            @RequestParam(required = false) Boolean subscribeFilter,
+            @RequestParam(required = false) Boolean popularFilter) {
 
         User user = null;
 
@@ -81,7 +82,7 @@ public class VideoController {
             user = userDetails.getUser();
         }
 
-        List<Video> videos = videoService.getVideoList(user, isSubscribe);
+        List<Video> videos = videoService.getVideoList(user, subscribeFilter, popularFilter);
 
         List<VideoResponseDTO.listResultDTO> result =
                 videos.stream().map(VideoConverter::toListResultDTO).collect(Collectors.toList());
@@ -308,6 +309,18 @@ public class VideoController {
 
         VideoResponseDTO.likeResultDTO result =
                 videoLikeConverter.toLikeResultDTO(videoLike, false);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @GetMapping("/most_popular")
+    @Operation(summary = "조회수 기준 가장 인기 영상 리턴", description = "")
+    public ApiResponse<VideoResponseDTO.getDetailDTO> getMostPopularVideo() {
+        Video video = videoService.getMostPopularVideo();
+
+        Long likeCount = videoLikeRepository.countByVideo(video);
+
+        VideoResponseDTO.getDetailDTO result = videoConverter.toDetailDTO(video, likeCount, false);
 
         return ApiResponse.onSuccess(result);
     }
