@@ -76,4 +76,14 @@ public class NftResponseDTO {
         private String buyerAddress;
         private BigInteger tradePrice;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class NFTTradeHistoryDTO {
+        private String txHash;
+        private BigInteger tradePrice;
+        private String createdAt;
+    }
 }

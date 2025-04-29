@@ -80,4 +80,15 @@ public class NftController {
         return ApiResponse.onSuccess(
                 nftService.purchaseNFT(request, userDetails.getUser().getId()));
     }
+
+    @GetMapping("/trade_history")
+    @Operation(
+            summary = "videoId로 NFT 거래 내역을 조회합니다.",
+            description = "거래 내역은 최신순으로 정렬되며, txHash와 거래 가격을 포함합니다.")
+    public ApiResponse<List<NftResponseDTO.NFTTradeHistoryDTO>> getTradeHistory(
+            @RequestParam Long videoId) {
+        List<NftResponseDTO.NFTTradeHistoryDTO> result =
+                nftService.getTradeHistoryByVideoId(videoId);
+        return ApiResponse.onSuccess(result);
+    }
 }

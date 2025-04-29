@@ -402,4 +402,11 @@ public class NftService {
                 .tradePrice(price)
                 .build();
     }
+
+    public List<NftResponseDTO.NFTTradeHistoryDTO> getTradeHistoryByVideoId(Long videoId) {
+        List<Transaction> transactions =
+                transactionRepository.findByVideoIdAndTypeOrderByCreatedAtDesc(
+                        videoId, TransactionType.TRADE);
+        return nftConverter.toTradeHistoryDTOList(transactions);
+    }
 }
