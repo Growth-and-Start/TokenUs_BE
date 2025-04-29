@@ -77,6 +77,7 @@ public class SecurityConfig {
                                                 "user/search/**",
                                                 "/ws/**",
                                                 "video/detail/**",
+                                                "nft/trade_history/**",
                                                 "user/detail/**")
                                         .permitAll()
                                         .anyRequest()

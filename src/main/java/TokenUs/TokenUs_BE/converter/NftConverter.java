@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
 import TokenUs.TokenUs_BE.domain.Nft;
+import TokenUs.TokenUs_BE.domain.Transaction;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
 import TokenUs.TokenUs_BE.repository.UserRepository;
@@ -51,6 +52,19 @@ public class NftConverter {
                                         nft.getOwner().getId(),
                                         nft.getIsListed(),
                                         nft.getMintQuantity()))
+                .toList();
+    }
+
+    public List<NftResponseDTO.NFTTradeHistoryDTO> toTradeHistoryDTOList(
+            List<Transaction> transactions) {
+        return transactions.stream()
+                .map(
+                        transaction ->
+                                NftResponseDTO.NFTTradeHistoryDTO.builder()
+                                        .txHash(transaction.getTxHash())
+                                        .tradePrice(transaction.getTradePrice())
+                                        .createdAt(transaction.getCreatedAt().toString())
+                                        .build())
                 .toList();
     }
 }
