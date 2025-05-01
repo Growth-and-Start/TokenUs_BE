@@ -155,9 +155,11 @@ public class NftService {
 
         for (Log log : receipt.getLogs()) {
             if (log.getTopics().size() == 4 && log.getTopics().get(0).equals(TRANSFER_EVENT_HASH)) {
-
-                BigInteger tokenId = new BigInteger(log.getTopics().get(3).substring(2), 16);
-                tokenIds.add(tokenId);
+                String tokenIdHex = log.getTopics().get(3);
+                if (tokenIdHex != null && tokenIdHex.length() >= 2) {
+                    BigInteger tokenId = new BigInteger(tokenIdHex.substring(2), 16);
+                    tokenIds.add(tokenId);
+                }
             }
         }
 

@@ -40,7 +40,8 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           ./gradlew jib \
-            -Djib.to.image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            -Djib.to.image=$ECR_REGISTRY/$ECR_REPOSITORY \
+            -Djib.to.tags=$IMAGE_TAG,latest
 
       - name: 7.오래된 Docker 이미지 삭제 (최신 5개 제외)
         env:
@@ -65,9 +66,6 @@ jobs:
           else
             echo "🧼 삭제할 이미지가 없습니다."
           fi
-
-
-
 
   run-images-on-ec2:
     needs: build-and-push

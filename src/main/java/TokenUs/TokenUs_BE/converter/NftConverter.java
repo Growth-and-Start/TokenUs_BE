@@ -32,6 +32,7 @@ public class NftConverter {
                 .nftName(nftName)
                 .nftSymbol(nftSymbol)
                 .currentPrice(dto.getPrice())
+                .mintPrice(dto.getPrice())
                 .mintQuantity(dto.getTotalSupply())
                 .isListed(false) // 민팅 시엔 기본 false
                 .owner(userRepository.getReferenceById(userId))
