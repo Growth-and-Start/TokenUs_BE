@@ -8,14 +8,17 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import TokenUs.TokenUs_BE.converter.NftConverter;
 import TokenUs.TokenUs_BE.domain.Nft;
 import TokenUs.TokenUs_BE.domain.Transaction;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.enums.TransactionType;
+import TokenUs.TokenUs_BE.domain.mapping.NftLike;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
+import TokenUs.TokenUs_BE.repository.NftLikeRepository;
 import TokenUs.TokenUs_BE.repository.NftRepository;
 import TokenUs.TokenUs_BE.repository.TransactionRepository;
 import TokenUs.TokenUs_BE.repository.UserRepository;
@@ -44,6 +47,7 @@ public class NftService {
     private final NftRepository nftRepository;
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
+    private final NftLikeRepository nftLikeRepository;
 
     private static final String TRANSFER_EVENT_HASH =
             "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
@@ -57,25 +61,27 @@ public class NftService {
             NftConverter nftConverter,
             NftRepository nftRepository,
             UserRepository userRepository,
-            TransactionRepository transactionRepository)
+            TransactionRepository transactionRepository,
+            NftLikeRepository nftLikeRepository)
             throws Exception {
         this.web3j = web3j;
+        this.credentials = Credentials.create(privateKey);
+        this.nftConverter = nftConverter;
+        this.nftRepository = nftRepository;
+        this.userRepository = userRepository;
+        this.transactionRepository = transactionRepository;
+        this.nftLikeRepository = nftLikeRepository;
 
-        this.credentials = Credentials.create(privateKey); // Private Key 불러오기
-
-        // ✅ Chain ID를 포함한 트랜잭션 매니저 사용
         RawTransactionManager txManager = new RawTransactionManager(web3j, credentials, chainId);
 
-        // ✅ 트랜잭션 매니저 + gas provider와 함께 계약 로드
         this.videoNftContract =
                 VideoNft_ABI.load(
                         videoNftcontractAddress,
                         web3j,
                         txManager,
                         new StaticGasProvider(
-                                BigInteger.valueOf(30_000_000_000L), // gas price (30 Gwei)
-                                BigInteger.valueOf(6_500_000) // gas limit
-                                ));
+                                BigInteger.valueOf(30_000_000_000L),
+                                BigInteger.valueOf(6_500_000)));
 
         this.marketplaceContract =
                 VideoNftMarketplace_ABI.load(
@@ -85,11 +91,6 @@ public class NftService {
                         new StaticGasProvider(
                                 BigInteger.valueOf(30_000_000_000L),
                                 BigInteger.valueOf(6_500_000)));
-
-        this.nftConverter = nftConverter;
-        this.nftRepository = nftRepository;
-        this.userRepository = userRepository;
-        this.transactionRepository = transactionRepository;
     }
 
     public NftResponseDTO.NFTMintResultDTO mintVideoNFT(
@@ -243,7 +244,7 @@ public class NftService {
                 .build();
     }
 
-    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts() throws Exception {
+    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId) throws Exception {
         // 1. 컨트랙트에서 판매중인 NFT 목록 호출
         Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
                 marketplaceContract.getListedNFTs().send();
@@ -254,6 +255,10 @@ public class NftService {
 
         List<NftResponseDTO.listedNFTInfoDTO> listedNfts = new ArrayList<>();
 
+        // 로그인한 사용자 정보 가져오기
+        Optional<User> loginUser =
+                loginUserId != null ? userRepository.findById(loginUserId) : Optional.empty();
+
         for (int i = 0; i < tokenIds.size(); i++) {
             BigInteger tokenId = tokenIds.get(i);
 
@@ -261,6 +266,12 @@ public class NftService {
 
             if (optionalNft.isPresent()) {
                 Nft nft = optionalNft.get();
+
+                // 좋아요 여부 확인
+                Boolean isLiked = null;
+                if (loginUser.isPresent()) {
+                    isLiked = nftLikeRepository.existsByUserAndNft(loginUser.get(), nft);
+                }
 
                 // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
@@ -274,6 +285,7 @@ public class NftService {
                                 .isListed(nft.getIsListed())
                                 .creatorId(nft.getVideo().getCreator().getId())
                                 .sellerWallet(sellerAddresses.get(i))
+                                .isLiked(isLiked)
                                 .build();
 
                 listedNfts.add(dto);
@@ -410,5 +422,34 @@ public class NftService {
                 transactionRepository.findByVideoIdAndTypeOrderByCreatedAtDesc(
                         videoId, TransactionType.TRADE);
         return nftConverter.toTradeHistoryDTOList(transactions);
+    }
+
+    @Transactional
+    public void likeNft(Long nftId, User user) {
+        Nft nft =
+                nftRepository
+                        .findById(nftId)
+                        .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."));
+
+        if (nftLikeRepository.existsByUserAndNft(user, nft)) {
+            throw new IllegalArgumentException("이미 좋아요한 NFT입니다.");
+        }
+
+        NftLike nftLike = NftLike.builder().user(user).nft(nft).build();
+        nftLikeRepository.save(nftLike);
+    }
+
+    @Transactional
+    public void unlikeNft(Long nftId, User user) {
+        Nft nft =
+                nftRepository
+                        .findById(nftId)
+                        .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."));
+
+        if (!nftLikeRepository.existsByUserAndNft(user, nft)) {
+            throw new IllegalArgumentException("좋아요하지 않은 NFT입니다.");
+        }
+
+        nftLikeRepository.deleteByUserAndNft(user, nft);
     }
 }

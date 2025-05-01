@@ -63,8 +63,10 @@ public class NftController {
 
     @GetMapping("/listed")
     @Operation(summary = "판매 등록된 NFT 리스트 반환", description = "")
-    public ApiResponse<List<NftResponseDTO.listedNFTInfoDTO>> getListedNFTs() throws Exception {
-        return ApiResponse.onSuccess(nftService.getListedNfts());
+    public ApiResponse<List<NftResponseDTO.listedNFTInfoDTO>> getListedNFTs(
+            @AuthenticationPrincipal CustomUserDetails userDetails) throws Exception {
+        Long loginUserId = userDetails != null ? userDetails.getUser().getId() : null;
+        return ApiResponse.onSuccess(nftService.getListedNfts(loginUserId));
     }
 
     @PostMapping("/delist")
@@ -95,5 +97,21 @@ public class NftController {
         List<NftResponseDTO.NFTTradeHistoryDTO> result =
                 nftService.getTradeHistoryByVideoId(videoId);
         return ApiResponse.onSuccess(result);
+    }
+
+    @PostMapping("/{nftId}/like")
+    @Operation(summary = "NFT 좋아요", description = "로그인한 사용자만 가능합니다.")
+    public ApiResponse<String> likeNft(
+            @PathVariable Long nftId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        nftService.likeNft(nftId, userDetails.getUser());
+        return ApiResponse.onSuccess("NFT 좋아요가 완료되었습니다.");
+    }
+
+    @DeleteMapping("/{nftId}/dislike")
+    @Operation(summary = "NFT 좋아요 취소", description = "로그인한 사용자만 가능합니다.")
+    public ApiResponse<String> unlikeNft(
+            @PathVariable Long nftId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        nftService.unlikeNft(nftId, userDetails.getUser());
+        return ApiResponse.onSuccess("NFT 좋아요가 취소되었습니다.");
     }
 }

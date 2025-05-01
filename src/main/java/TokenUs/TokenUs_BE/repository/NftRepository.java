@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import TokenUs.TokenUs_BE.domain.Nft;
 
 @Repository
-public interface NftRepository extends JpaRepository<Nft, Integer> {
+public interface NftRepository extends JpaRepository<Nft, Long> {
 
     boolean existsByVideo_FileUrlAndOwner_Id(String videoUrl, Long ownerId);
 
