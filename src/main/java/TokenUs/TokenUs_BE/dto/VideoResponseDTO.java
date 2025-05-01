@@ -114,6 +114,8 @@ public class VideoResponseDTO {
         private Long likeCount;
         private Long viewCount;
         private Boolean isLiked;
+        private BigInteger mintPrice;
+        private BigInteger floorPrice;
     }
 
     @Builder

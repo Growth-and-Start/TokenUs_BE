@@ -115,6 +115,23 @@ public class VideoConverter {
 
     public static VideoResponseDTO.getDetailDTO toDetailDTO(
             Video video, Long likeCount, Boolean isLiked) {
+        // mintPrice와 floorPrice 계산
+        BigInteger mintPrice = null;
+        BigInteger floorPrice = null;
+
+        if (video.getNfts() != null && !video.getNfts().isEmpty()) {
+            // mintPrice는 첫 번째 NFT의 mintPrice로 설정
+            mintPrice = video.getNfts().get(0).getMintPrice();
+
+            // floorPrice는 현재 판매 중인 NFT 중 가장 낮은 가격
+            floorPrice =
+                    video.getNfts().stream()
+                            .filter(nft -> nft.getIsListed())
+                            .map(Nft::getCurrentPrice)
+                            .min(BigInteger::compareTo)
+                            .orElse(null);
+        }
+
         return VideoResponseDTO.getDetailDTO
                 .builder()
                 .videoId(video.getId())
@@ -127,6 +144,8 @@ public class VideoConverter {
                 .likeCount(likeCount)
                 .viewCount(video.getViews())
                 .isLiked(isLiked)
+                .mintPrice(mintPrice)
+                .floorPrice(floorPrice)
                 .build();
     }
 }
