@@ -1,4 +1,4 @@
-package TokenUs.TokenUs_BE.sevice;
+package TokenUs.TokenUs_BE.service;
 
 import java.time.Duration;
 

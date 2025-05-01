@@ -2,6 +2,7 @@ package TokenUs.TokenUs_BE.controller;
 
 import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,10 +17,11 @@ import TokenUs.TokenUs_BE.converter.SubscribeConverter;
 import TokenUs.TokenUs_BE.converter.UserConverter;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
+import TokenUs.TokenUs_BE.dto.UserRequestDTO;
 import TokenUs.TokenUs_BE.dto.UserResponseDTO;
 import TokenUs.TokenUs_BE.repository.SubscribeRepository;
 import TokenUs.TokenUs_BE.repository.UserRepository;
-import TokenUs.TokenUs_BE.sevice.UserService;
+import TokenUs.TokenUs_BE.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RequiredArgsConstructor
@@ -121,5 +123,14 @@ public class UserController {
                 userConverter.toSearchResultDTO(creator, isSubscribed);
 
         return ApiResponse.onSuccess(result);
+    }
+
+    @PostMapping("/add_wallet")
+    @Operation(summary = "지갑 주소 추가", description = "로그인한 사용자의 지갑 주소를 업데이트합니다.")
+    public ApiResponse<Void> addWallet(
+            @Valid @RequestBody UserRequestDTO.WalletAddressUpdateDTO request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.updateWalletAddress(userDetails.getUser().getId(), request.getWalletAddress());
+        return ApiResponse.onSuccess(null);
     }
 }

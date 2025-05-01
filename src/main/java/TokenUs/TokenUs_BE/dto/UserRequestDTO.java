@@ -51,4 +51,13 @@ public class UserRequestDTO {
         @Email(message = "이메일 형식이 아닙니다.")
         String email;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class WalletAddressUpdateDTO {
+        @NotBlank(message = "지갑 주소는 필수 입력값입니다.")
+        String walletAddress;
+    }
 }

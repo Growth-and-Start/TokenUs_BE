@@ -1,4 +1,4 @@
-package TokenUs.TokenUs_BE.sevice;
+package TokenUs.TokenUs_BE.service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

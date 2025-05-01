@@ -25,8 +25,8 @@ import TokenUs.TokenUs_BE.repository.NftRepository;
 import TokenUs.TokenUs_BE.repository.UserRepository;
 import TokenUs.TokenUs_BE.repository.VideoLikeRepository;
 import TokenUs.TokenUs_BE.repository.VideoRepository;
-import TokenUs.TokenUs_BE.sevice.FlaskService;
-import TokenUs.TokenUs_BE.sevice.VideoService;
+import TokenUs.TokenUs_BE.service.FlaskService;
+import TokenUs.TokenUs_BE.service.VideoService;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController

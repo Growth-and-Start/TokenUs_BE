@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
-import TokenUs.TokenUs_BE.sevice.FlaskService;
-import TokenUs.TokenUs_BE.sevice.S3Service;
+import TokenUs.TokenUs_BE.service.FlaskService;
+import TokenUs.TokenUs_BE.service.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
