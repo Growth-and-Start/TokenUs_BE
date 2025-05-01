@@ -68,4 +68,20 @@ public class NftConverter {
                                         .build())
                 .toList();
     }
+
+    public NftResponseDTO.listedNFTInfoDTO toListedNFTInfoDTO(
+            Nft nft, String sellerWallet, Boolean isLiked) {
+        return NftResponseDTO.listedNFTInfoDTO
+                .builder()
+                .tokenId(nft.getTokenId())
+                .nftName(nft.getNftName())
+                .nftSymbol(nft.getNftSymbol())
+                .currentPrice(nft.getCurrentPrice())
+                .videoId(nft.getVideo().getId())
+                .isListed(nft.getIsListed())
+                .creatorId(nft.getVideo().getCreator().getId())
+                .sellerWallet(sellerWallet)
+                .isLiked(isLiked)
+                .build();
+    }
 }
