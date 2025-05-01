@@ -15,7 +15,7 @@ import TokenUs.TokenUs_BE.dto.TokenDTO;
 import TokenUs.TokenUs_BE.dto.UserRequestDTO;
 import TokenUs.TokenUs_BE.dto.UserResponseDTO;
 import TokenUs.TokenUs_BE.jwt.JwtUtil;
-import TokenUs.TokenUs_BE.sevice.AuthService;
+import TokenUs.TokenUs_BE.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController

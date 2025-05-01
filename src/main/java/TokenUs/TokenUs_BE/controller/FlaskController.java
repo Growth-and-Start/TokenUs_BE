@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import TokenUs.TokenUs_BE.sevice.FlaskService;
+import TokenUs.TokenUs_BE.service.FlaskService;
 
 @RestController
 @RequestMapping("/flask")

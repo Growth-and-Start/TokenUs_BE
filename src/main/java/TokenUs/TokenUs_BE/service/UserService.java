@@ -1,10 +1,11 @@
-package TokenUs.TokenUs_BE.sevice;
+package TokenUs.TokenUs_BE.service;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -74,5 +75,14 @@ public class UserService {
 
         subscribeRepository.delete(subscribe);
         return subscribe; // 삭제된 객체 반환 (원한다면 여기서 null 처리도 가능)
+    }
+
+    @Transactional
+    public void updateWalletAddress(Long userId, String walletAddress) {
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+        user.setWalletAddress(walletAddress);
     }
 }

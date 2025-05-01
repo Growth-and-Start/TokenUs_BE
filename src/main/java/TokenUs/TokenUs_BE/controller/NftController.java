@@ -13,8 +13,8 @@ import TokenUs.TokenUs_BE.config.security.CustomUserDetails;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
-import TokenUs.TokenUs_BE.sevice.NftService;
-import TokenUs.TokenUs_BE.sevice.VideoService;
+import TokenUs.TokenUs_BE.service.NftService;
+import TokenUs.TokenUs_BE.service.VideoService;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RequiredArgsConstructor
