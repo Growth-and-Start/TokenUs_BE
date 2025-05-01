@@ -127,7 +127,7 @@ public class VideoConverter {
             floorPrice =
                     video.getNfts().stream()
                             .filter(nft -> nft.getIsListed())
-                            .map(Nft::getCurrentPrice)
+                            .map(nft -> nft.getCurrentPrice())
                             .min(BigInteger::compareTo)
                             .orElse(null);
         }
