@@ -124,6 +124,17 @@ public class VideoConverter {
             mintPrice = video.getNfts().get(0).getMintPrice();
 
             // floorPrice는 현재 판매 중인 NFT 중 가장 낮은 가격
+            System.out.println("Total NFTs: " + video.getNfts().size());
+            System.out.println(
+                    "Listed NFTs: "
+                            + video.getNfts().stream().filter(nft -> nft.getIsListed()).count());
+            System.out.println(
+                    "Current prices: "
+                            + video.getNfts().stream()
+                                    .filter(nft -> nft.getIsListed())
+                                    .map(nft -> nft.getCurrentPrice())
+                                    .collect(java.util.stream.Collectors.toList()));
+
             floorPrice =
                     video.getNfts().stream()
                             .filter(nft -> nft.getIsListed())
