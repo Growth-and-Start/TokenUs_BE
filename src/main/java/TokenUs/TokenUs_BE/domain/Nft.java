@@ -23,6 +23,8 @@ public class Nft extends BaseEntity {
 
     private BigInteger currentPrice;
 
+    private BigInteger mintPrice;
+
     private BigInteger mintQuantity;
 
     private String nftName;
