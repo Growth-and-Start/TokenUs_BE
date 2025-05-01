@@ -18,6 +18,7 @@ import TokenUs.TokenUs_BE.domain.mapping.VideoComment;
 import TokenUs.TokenUs_BE.domain.mapping.VideoLike;
 import org.hibernate.annotations.Comment;
 
+@Setter
 @Entity
 @Getter
 @Builder
