@@ -12,4 +12,6 @@ public interface NftLikeRepository extends JpaRepository<NftLike, Long> {
     boolean existsByUserAndNft(User user, Nft nft);
 
     void deleteByUserAndNft(User user, Nft nft);
+
+    Long countByNft(Nft nft);
 }
