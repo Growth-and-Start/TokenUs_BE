@@ -96,4 +96,20 @@ public class NftController {
                 nftService.getTradeHistoryByVideoId(videoId);
         return ApiResponse.onSuccess(result);
     }
+
+    @PostMapping("/{nftId}/like")
+    @Operation(summary = "NFT 좋아요", description = "로그인한 사용자만 가능합니다.")
+    public ApiResponse<String> likeNft(
+            @PathVariable Long nftId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        nftService.likeNft(nftId, userDetails.getUser());
+        return ApiResponse.onSuccess("NFT 좋아요가 완료되었습니다.");
+    }
+
+    @DeleteMapping("/{nftId}/dislike")
+    @Operation(summary = "NFT 좋아요 취소", description = "로그인한 사용자만 가능합니다.")
+    public ApiResponse<String> unlikeNft(
+            @PathVariable Long nftId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        nftService.unlikeNft(nftId, userDetails.getUser());
+        return ApiResponse.onSuccess("NFT 좋아요가 취소되었습니다.");
+    }
 }
