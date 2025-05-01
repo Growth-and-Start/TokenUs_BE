@@ -63,8 +63,10 @@ public class NftController {
 
     @GetMapping("/listed")
     @Operation(summary = "판매 등록된 NFT 리스트 반환", description = "")
-    public ApiResponse<List<NftResponseDTO.listedNFTInfoDTO>> getListedNFTs() throws Exception {
-        return ApiResponse.onSuccess(nftService.getListedNfts());
+    public ApiResponse<List<NftResponseDTO.listedNFTInfoDTO>> getListedNFTs(
+            @AuthenticationPrincipal CustomUserDetails userDetails) throws Exception {
+        Long loginUserId = userDetails != null ? userDetails.getUser().getId() : null;
+        return ApiResponse.onSuccess(nftService.getListedNfts(loginUserId));
     }
 
     @PostMapping("/delist")

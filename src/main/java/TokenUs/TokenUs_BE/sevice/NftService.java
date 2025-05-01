@@ -244,7 +244,7 @@ public class NftService {
                 .build();
     }
 
-    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts() throws Exception {
+    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId) throws Exception {
         // 1. 컨트랙트에서 판매중인 NFT 목록 호출
         Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
                 marketplaceContract.getListedNFTs().send();
@@ -255,6 +255,10 @@ public class NftService {
 
         List<NftResponseDTO.listedNFTInfoDTO> listedNfts = new ArrayList<>();
 
+        // 로그인한 사용자 정보 가져오기
+        Optional<User> loginUser =
+                loginUserId != null ? userRepository.findById(loginUserId) : Optional.empty();
+
         for (int i = 0; i < tokenIds.size(); i++) {
             BigInteger tokenId = tokenIds.get(i);
 
@@ -262,6 +266,12 @@ public class NftService {
 
             if (optionalNft.isPresent()) {
                 Nft nft = optionalNft.get();
+
+                // 좋아요 여부 확인
+                Boolean isLiked = null;
+                if (loginUser.isPresent()) {
+                    isLiked = nftLikeRepository.existsByUserAndNft(loginUser.get(), nft);
+                }
 
                 // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
@@ -275,6 +285,7 @@ public class NftService {
                                 .isListed(nft.getIsListed())
                                 .creatorId(nft.getVideo().getCreator().getId())
                                 .sellerWallet(sellerAddresses.get(i))
+                                .isLiked(isLiked)
                                 .build();
 
                 listedNfts.add(dto);
