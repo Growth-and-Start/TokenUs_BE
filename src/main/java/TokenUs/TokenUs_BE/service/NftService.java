@@ -483,4 +483,49 @@ public class NftService {
 
         nftLikeRepository.deleteByUserAndNft(user, nft);
     }
+
+    public List<NftResponseDTO.listedNFTInfoDTO> getListedNftsByVideoId(
+            Long videoId, Long loginUserId) throws Exception {
+        // 1. 컨트랙트에서 판매중인 NFT 목록 호출
+        Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
+                marketplaceContract.getListedNFTs().send();
+
+        List<BigInteger> tokenIds = result.component1();
+        List<String> sellerAddresses = result.component2();
+        List<BigInteger> prices = result.component3();
+
+        List<NftResponseDTO.listedNFTInfoDTO> listedNfts = new ArrayList<>();
+
+        // 로그인한 사용자 정보 가져오기
+        Optional<User> loginUser =
+                loginUserId != null ? userRepository.findById(loginUserId) : Optional.empty();
+
+        for (int i = 0; i < tokenIds.size(); i++) {
+            BigInteger tokenId = tokenIds.get(i);
+
+            Optional<Nft> optionalNft = nftRepository.findByTokenId(tokenId);
+
+            if (optionalNft.isPresent()) {
+                Nft nft = optionalNft.get();
+
+                // 해당 비디오의 NFT만 필터링
+                if (!nft.getVideo().getId().equals(videoId)) {
+                    continue;
+                }
+
+                // 좋아요 여부 확인
+                Boolean isLiked = null;
+                if (loginUser.isPresent()) {
+                    isLiked = nftLikeRepository.existsByUserAndNft(loginUser.get(), nft);
+                }
+
+                // DTO 변환
+                NftResponseDTO.listedNFTInfoDTO dto =
+                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i), isLiked);
+                listedNfts.add(dto);
+            }
+        }
+
+        return listedNfts;
+    }
 }
