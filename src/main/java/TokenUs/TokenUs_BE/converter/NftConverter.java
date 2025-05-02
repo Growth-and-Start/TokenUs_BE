@@ -88,4 +88,23 @@ public class NftConverter {
                 .likeCount(nftLikeRepository.countByNft(nft))
                 .build();
     }
+
+    public NftResponseDTO.NFTListResultDTO toNFTListResultDTO(Nft nft) {
+        return NftResponseDTO.NFTListResultDTO.builder()
+                .id(nft.getId())
+                .tokenId(nft.getTokenId())
+                .nftName(nft.getNftName())
+                .nftSymbol(nft.getNftSymbol())
+                .price(nft.getCurrentPrice())
+                .currentPrice(nft.getCurrentPrice())
+                .mintPrice(nft.getMintPrice())
+                .sellerAddress(nft.getOwner().getWalletAddress())
+                .isListed(nft.getIsListed())
+                .likeCount(nftLikeRepository.countByNft(nft))
+                .build();
+    }
+
+    public List<NftResponseDTO.NFTListResultDTO> toNFTListResultDTOList(List<Nft> nftList) {
+        return nftList.stream().map(this::toNFTListResultDTO).toList();
+    }
 }
