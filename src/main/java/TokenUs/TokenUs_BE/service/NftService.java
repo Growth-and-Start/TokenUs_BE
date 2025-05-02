@@ -272,10 +272,12 @@ public class NftService {
                 Boolean isLiked = null;
                 if (loginUser.isPresent()) {
                     isLiked = nftLikeRepository.existsByUserAndNft(loginUser.get(), nft);
-                }
 
-                // 좋아요 수 계산
-                Long likeCount = nftLikeRepository.countByNft(nft);
+                    // sortBy가 liked이고 좋아요하지 않은 NFT는 건너뛰기
+                    if ("liked".equals(sortBy) && !isLiked) {
+                        continue;
+                    }
+                }
 
                 // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
@@ -285,7 +287,7 @@ public class NftService {
         }
 
         // 정렬 로직
-        if (sortBy != null) {
+        if (sortBy != null && !"liked".equals(sortBy)) {
             switch (sortBy) {
                 case "popular":
                     listedNfts.sort(
@@ -298,27 +300,6 @@ public class NftService {
                                                 nftRepository.findByTokenId(b.getTokenId()).get());
                                 return likesB.compareTo(likesA);
                             });
-                    break;
-                case "liked":
-                    if (loginUser.isPresent()) {
-                        User user = loginUser.get();
-                        listedNfts.sort(
-                                (a, b) -> {
-                                    Boolean isLikedA =
-                                            nftLikeRepository.existsByUserAndNft(
-                                                    user,
-                                                    nftRepository
-                                                            .findByTokenId(a.getTokenId())
-                                                            .get());
-                                    Boolean isLikedB =
-                                            nftLikeRepository.existsByUserAndNft(
-                                                    user,
-                                                    nftRepository
-                                                            .findByTokenId(b.getTokenId())
-                                                            .get());
-                                    return isLikedB.compareTo(isLikedA);
-                                });
-                    }
                     break;
             }
         }
