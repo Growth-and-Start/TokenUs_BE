@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -275,6 +274,9 @@ public class NftService {
                     isLiked = nftLikeRepository.existsByUserAndNft(loginUser.get(), nft);
                 }
 
+                // 좋아요 수 계산
+                Long likeCount = nftLikeRepository.countByNft(nft);
+
                 // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
                         nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i), isLiked);
@@ -284,9 +286,8 @@ public class NftService {
 
         // 정렬 로직
         if (sortBy != null) {
-            switch (sortBy.toLowerCase()) {
+            switch (sortBy) {
                 case "popular":
-                    // 좋아요 수로 정렬
                     listedNfts.sort(
                             (a, b) -> {
                                 Long likesA =
@@ -299,24 +300,25 @@ public class NftService {
                             });
                     break;
                 case "liked":
-                    // 현재 로그인한 유저가 좋아요한 NFT만 필터링
                     if (loginUser.isPresent()) {
-                        listedNfts =
-                                listedNfts.stream()
-                                        .filter(
-                                                dto -> {
-                                                    Nft nft =
-                                                            nftRepository
-                                                                    .findByTokenId(dto.getTokenId())
-                                                                    .get();
-                                                    return nftLikeRepository.existsByUserAndNft(
-                                                            loginUser.get(), nft);
-                                                })
-                                        .collect(Collectors.toList());
+                        User user = loginUser.get();
+                        listedNfts.sort(
+                                (a, b) -> {
+                                    Boolean isLikedA =
+                                            nftLikeRepository.existsByUserAndNft(
+                                                    user,
+                                                    nftRepository
+                                                            .findByTokenId(a.getTokenId())
+                                                            .get());
+                                    Boolean isLikedB =
+                                            nftLikeRepository.existsByUserAndNft(
+                                                    user,
+                                                    nftRepository
+                                                            .findByTokenId(b.getTokenId())
+                                                            .get());
+                                    return isLikedB.compareTo(isLikedA);
+                                });
                     }
-                    break;
-                default:
-                    // 기본값: 최신순 (현재 구현된 순서대로)
                     break;
             }
         }

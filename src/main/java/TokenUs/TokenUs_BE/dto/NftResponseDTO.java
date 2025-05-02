@@ -40,6 +40,7 @@ public class NftResponseDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class listedNFTInfoDTO {
+        private Long id;
         private BigInteger tokenId;
         private String nftName;
         private String nftSymbol;
@@ -49,6 +50,7 @@ public class NftResponseDTO {
         private Long creatorId;
         private String sellerWallet;
         private Boolean isLiked;
+        private Long likeCount;
     }
 
     @Builder
