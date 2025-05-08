@@ -9,7 +9,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -219,7 +218,7 @@ public class VideoController {
     public ApiResponse<VideoResponseDTO.checkNftResultDTO> checkHavingNft(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(required = true) String videoUrl) {
-        Long userId = userDetails.getUser().getId();
+        Long userId = userDetails != null ? userDetails.getUser().getId() : null;
 
         Boolean owns = nftRepository.existsByVideo_FileUrlAndOwner_Id(videoUrl, userId);
 
@@ -332,9 +331,9 @@ public class VideoController {
             description =
                     "NFT가 listed된 비디오들의 기본 정보를 조회합니다. sort 파라미터: popular(인기순), interested(관심영상), 기본값(최신순)")
     public ApiResponse<List<VideoResponseDTO.listedVideoDTO>> getListedVideos(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(required = false) String sort) {
-        Long userId = userDetails != null ? ((User) userDetails).getId() : null;
+        Long userId = userDetails != null ? userDetails.getUser().getId() : null;
         return ApiResponse.onSuccess(videoService.getListedVideos(userId, sort));
     }
 }

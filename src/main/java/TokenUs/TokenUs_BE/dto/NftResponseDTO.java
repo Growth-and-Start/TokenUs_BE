@@ -49,7 +49,6 @@ public class NftResponseDTO {
         private Boolean isListed;
         private Long creatorId;
         private String sellerWallet;
-        private Boolean isLiked;
     }
 
     @Builder
