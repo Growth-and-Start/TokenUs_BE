@@ -12,7 +12,6 @@ import TokenUs.TokenUs_BE.domain.Transaction;
 import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
-import TokenUs.TokenUs_BE.repository.NftLikeRepository;
 import TokenUs.TokenUs_BE.repository.UserRepository;
 import TokenUs.TokenUs_BE.repository.VideoRepository;
 
@@ -22,7 +21,6 @@ public class NftConverter {
 
     private final UserRepository userRepository;
     private final VideoRepository videoRepository;
-    private final NftLikeRepository nftLikeRepository;
 
     public Nft toNft(
             NftRequestDTO.NFTMintRequestDTO dto,
@@ -72,8 +70,7 @@ public class NftConverter {
                 .toList();
     }
 
-    public NftResponseDTO.listedNFTInfoDTO toListedNFTInfoDTO(
-            Nft nft, String sellerWallet, Boolean isLiked) {
+    public NftResponseDTO.listedNFTInfoDTO toListedNFTInfoDTO(Nft nft, String sellerWallet) {
         return NftResponseDTO.listedNFTInfoDTO
                 .builder()
                 .id(nft.getId())
@@ -85,8 +82,6 @@ public class NftConverter {
                 .isListed(nft.getIsListed())
                 .creatorId(nft.getVideo().getCreator().getId())
                 .sellerWallet(sellerWallet)
-                .isLiked(isLiked)
-                .likeCount(nftLikeRepository.countByNft(nft))
                 .build();
     }
 
@@ -101,7 +96,6 @@ public class NftConverter {
                 .mintPrice(nft.getMintPrice())
                 .sellerAddress(nft.getOwner().getWalletAddress())
                 .isListed(nft.getIsListed())
-                .likeCount(nftLikeRepository.countByNft(nft))
                 .build();
     }
 

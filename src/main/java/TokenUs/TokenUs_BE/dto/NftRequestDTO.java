@@ -50,12 +50,4 @@ public class NftRequestDTO {
     public static class NFTPurchaseRequestDTO {
         private BigInteger tokenId;
     }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class VideoInterestRequestDTO {
-        private Long videoId;
-    }
 }

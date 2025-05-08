@@ -18,7 +18,6 @@ import TokenUs.TokenUs_BE.domain.Transaction;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.Video;
 import TokenUs.TokenUs_BE.domain.enums.TransactionType;
-import TokenUs.TokenUs_BE.domain.mapping.NftLike;
 import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
@@ -48,7 +47,6 @@ public class NftService {
     private final NftRepository nftRepository;
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
-    private final NftLikeRepository nftLikeRepository;
     private final VideoInterestRepository videoInterestRepository;
     private final VideoRepository videoRepository;
 
@@ -65,7 +63,6 @@ public class NftService {
             NftRepository nftRepository,
             UserRepository userRepository,
             TransactionRepository transactionRepository,
-            NftLikeRepository nftLikeRepository,
             VideoInterestRepository videoInterestRepository,
             VideoRepository videoRepository)
             throws Exception {
@@ -75,7 +72,6 @@ public class NftService {
         this.nftRepository = nftRepository;
         this.userRepository = userRepository;
         this.transactionRepository = transactionRepository;
-        this.nftLikeRepository = nftLikeRepository;
         this.videoInterestRepository = videoInterestRepository;
         this.videoRepository = videoRepository;
 
@@ -251,13 +247,10 @@ public class NftService {
                 .mintPrice(nft.getMintPrice())
                 .sellerAddress(nft.getOwner().getWalletAddress())
                 .isListed(true)
-                .likeCount(nftLikeRepository.countByNft(nft))
                 .build();
     }
 
-    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId, String sortBy)
-            throws Exception {
-        // 1. 컨트랙트에서 판매중인 NFT 목록 호출
+    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId) throws Exception {
         Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
                 marketplaceContract.getListedNFTs().send();
 
@@ -279,39 +272,10 @@ public class NftService {
             if (optionalNft.isPresent()) {
                 Nft nft = optionalNft.get();
 
-                // 좋아요 여부 확인
-                Boolean isLiked = null;
-                if (loginUser.isPresent()) {
-                    isLiked = nftLikeRepository.existsByUserAndNft(loginUser.get(), nft);
-
-                    // sortBy가 liked이고 좋아요하지 않은 NFT는 건너뛰기
-                    if ("liked".equals(sortBy) && !isLiked) {
-                        continue;
-                    }
-                }
-
                 // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
-                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i), isLiked);
+                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i));
                 listedNfts.add(dto);
-            }
-        }
-
-        // 정렬 로직
-        if (sortBy != null && !"liked".equals(sortBy)) {
-            switch (sortBy) {
-                case "popular":
-                    listedNfts.sort(
-                            (a, b) -> {
-                                Long likesA =
-                                        nftLikeRepository.countByNft(
-                                                nftRepository.findByTokenId(a.getTokenId()).get());
-                                Long likesB =
-                                        nftLikeRepository.countByNft(
-                                                nftRepository.findByTokenId(b.getTokenId()).get());
-                                return likesB.compareTo(likesA);
-                            });
-                    break;
             }
         }
 
@@ -370,7 +334,6 @@ public class NftService {
                 .mintPrice(nft.getMintPrice())
                 .sellerAddress(nft.getOwner().getWalletAddress())
                 .isListed(false)
-                .likeCount(nftLikeRepository.countByNft(nft))
                 .build();
     }
 
@@ -452,35 +415,6 @@ public class NftService {
         return nftConverter.toTradeHistoryDTOList(transactions);
     }
 
-    @Transactional
-    public void likeNft(Long nftId, User user) {
-        Nft nft =
-                nftRepository
-                        .findById(nftId)
-                        .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."));
-
-        if (nftLikeRepository.existsByUserAndNft(user, nft)) {
-            throw new IllegalArgumentException("이미 좋아요한 NFT입니다.");
-        }
-
-        NftLike nftLike = NftLike.builder().user(user).nft(nft).build();
-        nftLikeRepository.save(nftLike);
-    }
-
-    @Transactional
-    public void unlikeNft(Long nftId, User user) {
-        Nft nft =
-                nftRepository
-                        .findById(nftId)
-                        .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."));
-
-        if (!nftLikeRepository.existsByUserAndNft(user, nft)) {
-            throw new IllegalArgumentException("좋아요하지 않은 NFT입니다.");
-        }
-
-        nftLikeRepository.deleteByUserAndNft(user, nft);
-    }
-
     public List<NftResponseDTO.listedNFTInfoDTO> getListedNftsByVideoId(
             Long videoId, Long loginUserId) throws Exception {
         // 1. 컨트랙트에서 판매중인 NFT 목록 호출
@@ -510,15 +444,9 @@ public class NftService {
                     continue;
                 }
 
-                // 좋아요 여부 확인
-                Boolean isLiked = null;
-                if (loginUser.isPresent()) {
-                    isLiked = nftLikeRepository.existsByUserAndNft(loginUser.get(), nft);
-                }
-
                 // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
-                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i), isLiked);
+                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i));
                 listedNfts.add(dto);
             }
         }
