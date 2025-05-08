@@ -60,4 +60,14 @@ public class UserRequestDTO {
         @NotBlank(message = "지갑 주소는 필수 입력값입니다.")
         String walletAddress;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class modifyInfoDTO {
+        String profileImage;
+        String nickname;
+        String password;
+    }
 }

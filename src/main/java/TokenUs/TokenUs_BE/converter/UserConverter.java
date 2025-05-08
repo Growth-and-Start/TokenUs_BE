@@ -52,6 +52,17 @@ public class UserConverter {
         return new UserResponseDTO.loginResultDTO(accessToken, refreshToken);
     }
 
+    public static UserResponseDTO.modifyResultDTO toModifyResultDTO(User user) {
+        return UserResponseDTO.modifyResultDTO
+                .builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfile_image())
+                .walletAddress(user.getWalletAddress())
+                .build();
+    }
+
     public static UserResponseDTO.searchResultDTO toSearchResultDTO(
             User user, boolean isSubscribed) {
         return UserResponseDTO.searchResultDTO
