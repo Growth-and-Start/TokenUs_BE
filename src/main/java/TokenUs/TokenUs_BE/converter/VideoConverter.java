@@ -159,4 +159,22 @@ public class VideoConverter {
                 .floorPrice(floorPrice)
                 .build();
     }
+
+    public static VideoResponseDTO.listedVideoDTO toListedVideoDTO(
+            Video video, Boolean isInterested, Long interestCount, BigInteger floorPrice) {
+        return VideoResponseDTO.listedVideoDTO
+                .builder()
+                .videoId(video.getId())
+                .videoUrl(video.getFileUrl())
+                .title(video.getTitle())
+                .detail(video.getDetail())
+                .creatorNickname(video.getCreator().getNickname())
+                .creatorProfileUrl(video.getCreator().getProfile_image())
+                .thumbnailUrl(video.getThumbnailUrl())
+                .createdAt(video.getCreatedAt())
+                .isInterested(isInterested)
+                .interestCount(interestCount)
+                .floorPrice(floorPrice)
+                .build();
+    }
 }

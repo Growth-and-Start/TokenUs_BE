@@ -185,4 +185,61 @@ public class VideoService {
 
         return mostPopularVideo;
     }
+
+    public List<VideoResponseDTO.listedVideoDTO> getListedVideos(Long userId, String sort) {
+        List<Video> videos = videoRepository.findAll();
+
+        List<VideoResponseDTO.listedVideoDTO> result =
+                videos.stream()
+                        .filter(
+                                video ->
+                                        video.getNfts().stream().anyMatch(nft -> nft.getIsListed()))
+                        .map(
+                                video -> {
+                                    Boolean isInterested =
+                                            userId != null
+                                                    && videoLikeRepository.existsByUserIdAndVideoId(
+                                                            userId, video.getId());
+                                    Long interestCount = videoLikeRepository.countByVideo(video);
+
+                                    // listed된 NFT 중 가장 낮은 가격 계산
+                                    BigInteger floorPrice =
+                                            video.getNfts().stream()
+                                                    .filter(nft -> nft.getIsListed())
+                                                    .map(nft -> nft.getCurrentPrice())
+                                                    .min(BigInteger::compareTo)
+                                                    .orElse(BigInteger.ZERO);
+
+                                    return VideoConverter.toListedVideoDTO(
+                                            video, isInterested, interestCount, floorPrice);
+                                })
+                        .collect(Collectors.toList());
+
+        // 정렬 처리
+        if (sort != null) {
+            switch (sort.toLowerCase()) {
+                case "popular":
+                    // 인기순 정렬 (interestCount 기준 내림차순)
+                    result.sort((a, b) -> b.getInterestCount().compareTo(a.getInterestCount()));
+                    break;
+                case "interested":
+                    // 관심 영상만 필터링 (로그인한 사용자가 있는 경우에만)
+                    if (userId != null) {
+                        result =
+                                result.stream()
+                                        .filter(video -> video.getIsInterested())
+                                        .collect(Collectors.toList());
+                    }
+                    break;
+                default:
+                    // 기본값: 최신순 정렬 (createdAt 기준 내림차순)
+                    result.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
+            }
+        } else {
+            // 기본값: 최신순 정렬
+            result.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
+        }
+
+        return result;
+    }
 }

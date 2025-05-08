@@ -126,4 +126,22 @@ public class VideoResponseDTO {
         private Long videoId;
         private Boolean isLiked;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class listedVideoDTO {
+        private Long videoId;
+        private String videoUrl;
+        private String title;
+        private String detail;
+        private String creatorNickname;
+        private String creatorProfileUrl;
+        private String thumbnailUrl;
+        private LocalDateTime createdAt;
+        private Boolean isInterested;
+        private Long interestCount;
+        private BigInteger floorPrice;
+    }
 }
