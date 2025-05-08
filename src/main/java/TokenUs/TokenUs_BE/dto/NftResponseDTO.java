@@ -50,7 +50,6 @@ public class NftResponseDTO {
         private Long creatorId;
         private String sellerWallet;
         private Boolean isLiked;
-        private Long likeCount;
     }
 
     @Builder
@@ -68,7 +67,6 @@ public class NftResponseDTO {
         private BigInteger mintPrice;
         private String sellerAddress;
         private Boolean isListed;
-        private Long likeCount;
     }
 
     @Builder
@@ -92,5 +90,14 @@ public class NftResponseDTO {
         private String txHash;
         private BigInteger tradePrice;
         private String createdAt;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class VideoInterestDTO {
+        private Long videoId;
+        private String message;
     }
 }

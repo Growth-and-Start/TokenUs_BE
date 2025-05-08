@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 
 import TokenUs.TokenUs_BE.apiPayload.ApiResponse;
 import TokenUs.TokenUs_BE.config.security.CustomUserDetails;
+import TokenUs.TokenUs_BE.converter.NftConverter;
 import TokenUs.TokenUs_BE.domain.User;
+import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
 import TokenUs.TokenUs_BE.service.NftService;
@@ -24,6 +26,7 @@ public class NftController {
 
     private final NftService nftService;
     private final VideoService videoService;
+    private final NftConverter nftConverter;
 
     @PostMapping("/mint")
     @Operation(summary = "nft를 발행합니다.", description = "video/save를 완료한 후 반환되는 videoId를 입력해야합니다.")
@@ -64,10 +67,8 @@ public class NftController {
     @GetMapping("/listed")
     @Operation(
             summary = "판매 등록된 NFT 리스트 반환",
-            description =
-                    "sortBy 파라미터: popular(좋아요순), liked(내가 좋아요한 NFT) </br> videoId 파라미터: 해당 videoId에 등록된 NFT 리스트 반환")
+            description = "videoId 파라미터: 해당 videoId에 등록된 NFT 리스트 반환")
     public ApiResponse<List<NftResponseDTO.listedNFTInfoDTO>> getListedNfts(
-            @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) Long videoId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
@@ -77,7 +78,7 @@ public class NftController {
             if (videoId != null) {
                 listedNfts = nftService.getListedNftsByVideoId(videoId, loginUserId);
             } else {
-                listedNfts = nftService.getListedNfts(loginUserId, sortBy);
+                listedNfts = nftService.getListedNfts(loginUserId);
             }
 
             return ApiResponse.onSuccess(listedNfts);
@@ -116,19 +117,24 @@ public class NftController {
         return ApiResponse.onSuccess(result);
     }
 
-    @PostMapping("/{nftId}/like")
-    @Operation(summary = "NFT 좋아요", description = "로그인한 사용자만 가능합니다.")
-    public ApiResponse<String> likeNft(
-            @PathVariable Long nftId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        nftService.likeNft(nftId, userDetails.getUser());
-        return ApiResponse.onSuccess("NFT 좋아요가 완료되었습니다.");
+    @PostMapping("/interest")
+    @Operation(summary = "비디오 관심도 등록", description = "로그인한 사용자가 특정 비디오에 대한 관심도를 등록합니다.")
+    public ApiResponse<NftResponseDTO.VideoInterestDTO> registerVideoInterest(
+            @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long videoId) {
+
+        VideoInterest videoInterest =
+                nftService.registerVideoInterest(userDetails.getUser().getId(), videoId);
+
+        NftResponseDTO.VideoInterestDTO response = nftConverter.toVideoInterestDTO(videoInterest);
+        return ApiResponse.onSuccess(response);
     }
 
-    @DeleteMapping("/{nftId}/dislike")
-    @Operation(summary = "NFT 좋아요 취소", description = "로그인한 사용자만 가능합니다.")
-    public ApiResponse<String> unlikeNft(
-            @PathVariable Long nftId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        nftService.unlikeNft(nftId, userDetails.getUser());
-        return ApiResponse.onSuccess("NFT 좋아요가 취소되었습니다.");
+    @DeleteMapping("/interest")
+    @Operation(summary = "비디오 관심도 삭제", description = "로그인한 사용자가 특정 비디오에 대한 관심도를 삭제합니다.")
+    public ApiResponse<String> deleteVideoInterest(
+            @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long videoId) {
+
+        nftService.deleteVideoInterest(userDetails.getUser().getId(), videoId);
+        return ApiResponse.onSuccess("관심도가 성공적으로 삭제되었습니다.");
     }
 }

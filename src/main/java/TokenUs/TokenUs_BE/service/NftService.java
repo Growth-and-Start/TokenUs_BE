@@ -10,18 +10,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import TokenUs.TokenUs_BE.apiPayload.code.status.ErrorStatus;
+import TokenUs.TokenUs_BE.apiPayload.exception.GeneralException;
 import TokenUs.TokenUs_BE.converter.NftConverter;
 import TokenUs.TokenUs_BE.domain.Nft;
 import TokenUs.TokenUs_BE.domain.Transaction;
 import TokenUs.TokenUs_BE.domain.User;
+import TokenUs.TokenUs_BE.domain.Video;
 import TokenUs.TokenUs_BE.domain.enums.TransactionType;
-import TokenUs.TokenUs_BE.domain.mapping.NftLike;
+import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
-import TokenUs.TokenUs_BE.repository.NftLikeRepository;
-import TokenUs.TokenUs_BE.repository.NftRepository;
-import TokenUs.TokenUs_BE.repository.TransactionRepository;
-import TokenUs.TokenUs_BE.repository.UserRepository;
+import TokenUs.TokenUs_BE.repository.*;
 import TokenUs.TokenUs_BE.web3.contract.VideoNftMarketplace_ABI;
 import TokenUs.TokenUs_BE.web3.contract.VideoNft_ABI;
 import org.web3j.crypto.Credentials;
@@ -47,7 +47,8 @@ public class NftService {
     private final NftRepository nftRepository;
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
-    private final NftLikeRepository nftLikeRepository;
+    private final VideoInterestRepository videoInterestRepository;
+    private final VideoRepository videoRepository;
 
     private static final String TRANSFER_EVENT_HASH =
             "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
@@ -62,7 +63,8 @@ public class NftService {
             NftRepository nftRepository,
             UserRepository userRepository,
             TransactionRepository transactionRepository,
-            NftLikeRepository nftLikeRepository)
+            VideoInterestRepository videoInterestRepository,
+            VideoRepository videoRepository)
             throws Exception {
         this.web3j = web3j;
         this.credentials = Credentials.create(privateKey);
@@ -70,7 +72,8 @@ public class NftService {
         this.nftRepository = nftRepository;
         this.userRepository = userRepository;
         this.transactionRepository = transactionRepository;
-        this.nftLikeRepository = nftLikeRepository;
+        this.videoInterestRepository = videoInterestRepository;
+        this.videoRepository = videoRepository;
 
         RawTransactionManager txManager = new RawTransactionManager(web3j, credentials, chainId);
 
@@ -244,13 +247,10 @@ public class NftService {
                 .mintPrice(nft.getMintPrice())
                 .sellerAddress(nft.getOwner().getWalletAddress())
                 .isListed(true)
-                .likeCount(nftLikeRepository.countByNft(nft))
                 .build();
     }
 
-    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId, String sortBy)
-            throws Exception {
-        // 1. 컨트랙트에서 판매중인 NFT 목록 호출
+    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId) throws Exception {
         Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
                 marketplaceContract.getListedNFTs().send();
 
@@ -272,39 +272,10 @@ public class NftService {
             if (optionalNft.isPresent()) {
                 Nft nft = optionalNft.get();
 
-                // 좋아요 여부 확인
-                Boolean isLiked = null;
-                if (loginUser.isPresent()) {
-                    isLiked = nftLikeRepository.existsByUserAndNft(loginUser.get(), nft);
-
-                    // sortBy가 liked이고 좋아요하지 않은 NFT는 건너뛰기
-                    if ("liked".equals(sortBy) && !isLiked) {
-                        continue;
-                    }
-                }
-
                 // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
-                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i), isLiked);
+                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i));
                 listedNfts.add(dto);
-            }
-        }
-
-        // 정렬 로직
-        if (sortBy != null && !"liked".equals(sortBy)) {
-            switch (sortBy) {
-                case "popular":
-                    listedNfts.sort(
-                            (a, b) -> {
-                                Long likesA =
-                                        nftLikeRepository.countByNft(
-                                                nftRepository.findByTokenId(a.getTokenId()).get());
-                                Long likesB =
-                                        nftLikeRepository.countByNft(
-                                                nftRepository.findByTokenId(b.getTokenId()).get());
-                                return likesB.compareTo(likesA);
-                            });
-                    break;
             }
         }
 
@@ -363,7 +334,6 @@ public class NftService {
                 .mintPrice(nft.getMintPrice())
                 .sellerAddress(nft.getOwner().getWalletAddress())
                 .isListed(false)
-                .likeCount(nftLikeRepository.countByNft(nft))
                 .build();
     }
 
@@ -445,35 +415,6 @@ public class NftService {
         return nftConverter.toTradeHistoryDTOList(transactions);
     }
 
-    @Transactional
-    public void likeNft(Long nftId, User user) {
-        Nft nft =
-                nftRepository
-                        .findById(nftId)
-                        .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."));
-
-        if (nftLikeRepository.existsByUserAndNft(user, nft)) {
-            throw new IllegalArgumentException("이미 좋아요한 NFT입니다.");
-        }
-
-        NftLike nftLike = NftLike.builder().user(user).nft(nft).build();
-        nftLikeRepository.save(nftLike);
-    }
-
-    @Transactional
-    public void unlikeNft(Long nftId, User user) {
-        Nft nft =
-                nftRepository
-                        .findById(nftId)
-                        .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."));
-
-        if (!nftLikeRepository.existsByUserAndNft(user, nft)) {
-            throw new IllegalArgumentException("좋아요하지 않은 NFT입니다.");
-        }
-
-        nftLikeRepository.deleteByUserAndNft(user, nft);
-    }
-
     public List<NftResponseDTO.listedNFTInfoDTO> getListedNftsByVideoId(
             Long videoId, Long loginUserId) throws Exception {
         // 1. 컨트랙트에서 판매중인 NFT 목록 호출
@@ -503,15 +444,9 @@ public class NftService {
                     continue;
                 }
 
-                // 좋아요 여부 확인
-                Boolean isLiked = null;
-                if (loginUser.isPresent()) {
-                    isLiked = nftLikeRepository.existsByUserAndNft(loginUser.get(), nft);
-                }
-
                 // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
-                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i), isLiked);
+                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i));
                 listedNfts.add(dto);
             }
         }
@@ -522,5 +457,55 @@ public class NftService {
     public List<NftResponseDTO.NFTListResultDTO> getMyNFTs(Long userId) {
         List<Nft> myNFTs = nftRepository.findByOwnerId(userId);
         return nftConverter.toNFTListResultDTOList(myNFTs);
+    }
+
+    @Transactional
+    public VideoInterest registerVideoInterest(Long userId, Long videoId) {
+        // 사용자와 비디오 존재 여부 확인
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.VIDEO_NOT_EXIST));
+
+        // 이미 등록된 관심이 있는지 확인
+        videoInterestRepository
+                .findByUserIdAndVideoId(userId, videoId)
+                .ifPresent(
+                        interest -> {
+                            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+                        });
+
+        // 새로운 관심 등록
+        VideoInterest videoInterest = VideoInterest.builder().user(user).video(video).build();
+
+        return videoInterestRepository.save(videoInterest);
+    }
+
+    @Transactional
+    public void deleteVideoInterest(Long userId, Long videoId) {
+        // 사용자와 비디오 존재 여부 확인
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.VIDEO_NOT_EXIST));
+
+        // 관심이 있는지 확인
+        VideoInterest videoInterest =
+                videoInterestRepository
+                        .findByUserIdAndVideoId(userId, videoId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus._BAD_REQUEST));
+
+        // 관심 삭제
+        videoInterestRepository.delete(videoInterest);
     }
 }

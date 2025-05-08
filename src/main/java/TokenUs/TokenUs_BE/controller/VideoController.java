@@ -9,6 +9,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -323,5 +324,17 @@ public class VideoController {
         VideoResponseDTO.getDetailDTO result = videoConverter.toDetailDTO(video, likeCount, false);
 
         return ApiResponse.onSuccess(result);
+    }
+
+    @GetMapping("/listed")
+    @Operation(
+            summary = "Listed 비디오 조회",
+            description =
+                    "NFT가 listed된 비디오들의 기본 정보를 조회합니다. sort 파라미터: popular(인기순), interested(관심영상), 기본값(최신순)")
+    public ApiResponse<List<VideoResponseDTO.listedVideoDTO>> getListedVideos(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) String sort) {
+        Long userId = userDetails != null ? ((User) userDetails).getId() : null;
+        return ApiResponse.onSuccess(videoService.getListedVideos(userId, sort));
     }
 }

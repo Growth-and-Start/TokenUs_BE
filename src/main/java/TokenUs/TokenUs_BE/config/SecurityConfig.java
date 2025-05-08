@@ -79,7 +79,9 @@ public class SecurityConfig {
                                                 "video/detail/**",
                                                 "nft/trade_history/**",
                                                 "user/detail/**",
-                                                "video/most_popular/**")
+                                                "video/most_popular/**",
+                                                "video/listed/**",
+                                                "nft/listed/**")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())
