@@ -58,13 +58,17 @@ public class NftResponseDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class NFTListResultDTO {
+        private Long id;
         private String transactionHash;
         private BigInteger tokenId;
         private String nftName;
         private String nftSymbol;
         private BigInteger price;
+        private BigInteger currentPrice;
+        private BigInteger mintPrice;
         private String sellerAddress;
         private Boolean isListed;
+        private Long likeCount;
     }
 
     @Builder

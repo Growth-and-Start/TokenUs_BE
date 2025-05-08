@@ -234,13 +234,17 @@ public class NftService {
         transactionRepository.save(transaction);
 
         return NftResponseDTO.NFTListResultDTO.builder()
+                .id(nft.getId())
                 .transactionHash(receipt.getTransactionHash())
                 .nftName(nft.getNftName())
                 .nftSymbol(nft.getNftSymbol())
                 .tokenId(request.getTokenId())
                 .price(request.getPrice())
-                .sellerAddress(walletAddress)
-                .isListed(nft.getIsListed())
+                .currentPrice(nft.getCurrentPrice())
+                .mintPrice(nft.getMintPrice())
+                .sellerAddress(nft.getOwner().getWalletAddress())
+                .isListed(true)
+                .likeCount(nftLikeRepository.countByNft(nft))
                 .build();
     }
 
@@ -349,12 +353,17 @@ public class NftService {
         transactionRepository.save(transaction);
 
         return NftResponseDTO.NFTListResultDTO.builder()
+                .id(nft.getId())
                 .transactionHash(receipt.getTransactionHash())
                 .tokenId(request.getTokenId())
                 .nftName(nft.getNftName())
                 .nftSymbol(nft.getNftSymbol())
-                .sellerAddress(walletAddress)
-                .isListed(nft.getIsListed())
+                .price(BigInteger.ZERO)
+                .currentPrice(nft.getCurrentPrice())
+                .mintPrice(nft.getMintPrice())
+                .sellerAddress(nft.getOwner().getWalletAddress())
+                .isListed(false)
+                .likeCount(nftLikeRepository.countByNft(nft))
                 .build();
     }
 
@@ -508,5 +517,10 @@ public class NftService {
         }
 
         return listedNfts;
+    }
+
+    public List<NftResponseDTO.NFTListResultDTO> getMyNFTs(Long userId) {
+        List<Nft> myNFTs = nftRepository.findByOwnerId(userId);
+        return nftConverter.toNFTListResultDTOList(myNFTs);
     }
 }
