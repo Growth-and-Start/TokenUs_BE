@@ -21,6 +21,7 @@ import TokenUs.TokenUs_BE.domain.mapping.VideoLike;
 import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
 import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
 import TokenUs.TokenUs_BE.repository.UserRepository;
+import TokenUs.TokenUs_BE.repository.VideoInterestRepository;
 import TokenUs.TokenUs_BE.repository.VideoLikeRepository;
 import TokenUs.TokenUs_BE.repository.VideoRepository;
 
@@ -32,6 +33,7 @@ public class VideoService {
     private final VideoConverter videoconverter;
     private final VideoConverter videoConverter;
     private final VideoLikeRepository videoLikeRepository;
+    private final VideoInterestRepository videoInterestRepository;
 
     public Video createVideo(VideoRequestDTO.videoDetailRequestDTO request, User user) {
 
@@ -198,9 +200,11 @@ public class VideoService {
                                 video -> {
                                     Boolean isInterested =
                                             userId != null
-                                                    && videoLikeRepository.existsByUserIdAndVideoId(
-                                                            userId, video.getId());
-                                    Long interestCount = videoLikeRepository.countByVideo(video);
+                                                    && videoInterestRepository
+                                                            .existsByUserIdAndVideoId(
+                                                                    userId, video.getId());
+                                    Long interestCount =
+                                            videoInterestRepository.countByVideo(video);
 
                                     // listed된 NFT 중 가장 낮은 가격 계산
                                     BigInteger floorPrice =
