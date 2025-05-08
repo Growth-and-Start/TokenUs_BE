@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import TokenUs.TokenUs_BE.apiPayload.exception.GeneralException;
 import TokenUs.TokenUs_BE.converter.UserConverter;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.mapping.Subscribe;
+import TokenUs.TokenUs_BE.dto.UserRequestDTO;
 import TokenUs.TokenUs_BE.dto.UserResponseDTO;
 import TokenUs.TokenUs_BE.repository.SubscribeRepository;
 import TokenUs.TokenUs_BE.repository.UserRepository;
@@ -24,6 +26,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final SubscribeRepository subscribeRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<UserResponseDTO.searchResultDTO> searchUsers(String searchFor, Long currentUserId) {
         if (searchFor == null || searchFor.trim().isEmpty()) {
@@ -84,5 +87,36 @@ public class UserService {
                         .findById(userId)
                         .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
         user.setWalletAddress(walletAddress);
+    }
+
+    @Transactional
+    public UserResponseDTO.modifyResultDTO modifyUserInfo(
+            Long userId, UserRequestDTO.modifyInfoDTO request) {
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        // 닉네임 중복 체크
+        if (request.getNickname() != null && !request.getNickname().equals(user.getNickname())) {
+            if (userRepository.findByNicknameContainingIgnoreCase(request.getNickname()).size()
+                    > 0) {
+                throw new GeneralException(ErrorStatus.NICKNAME_ALREADY_EXIST);
+            }
+            user.setNickname(request.getNickname());
+        }
+
+        // 프로필 이미지 업데이트
+        if (request.getProfileImage() != null) {
+            user.setProfile_image(request.getProfileImage());
+        }
+
+        // 비밀번호 업데이트
+        if (request.getPassword() != null) {
+            user.encodePassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        User savedUser = userRepository.save(user);
+        return UserConverter.toModifyResultDTO(savedUser);
     }
 }

@@ -133,4 +133,14 @@ public class UserController {
         userService.updateWalletAddress(userDetails.getUser().getId(), request.getWalletAddress());
         return ApiResponse.onSuccess(null);
     }
+
+    @PostMapping("/modify_info")
+    @Operation(summary = "사용자 정보 수정", description = "프로필 이미지, 닉네임, 비밀번호를 수정할 수 있습니다.")
+    public ApiResponse<UserResponseDTO.modifyResultDTO> modifyInfo(
+            @Valid @RequestBody UserRequestDTO.modifyInfoDTO request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UserResponseDTO.modifyResultDTO result =
+                userService.modifyUserInfo(userDetails.getUser().getId(), request);
+        return ApiResponse.onSuccess(result);
+    }
 }

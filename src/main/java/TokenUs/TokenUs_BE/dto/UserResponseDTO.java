@@ -64,4 +64,16 @@ public class UserResponseDTO {
         private String profileImageUrl;
         private String walletAddress;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class modifyResultDTO {
+        private Long id;
+        private String email;
+        private String nickname;
+        private String profileImage;
+        private String walletAddress;
+    }
 }
