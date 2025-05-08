@@ -15,6 +15,7 @@ import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
+import TokenUs.TokenUs_BE.repository.UserRepository;
 import TokenUs.TokenUs_BE.service.NftService;
 import TokenUs.TokenUs_BE.service.VideoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +28,7 @@ public class NftController {
     private final NftService nftService;
     private final VideoService videoService;
     private final NftConverter nftConverter;
+    private final UserRepository userRepository;
 
     @PostMapping("/mint")
     @Operation(summary = "nft를 발행합니다.", description = "video/save를 완료한 후 반환되는 videoId를 입력해야합니다.")
@@ -136,5 +138,14 @@ public class NftController {
 
         nftService.deleteVideoInterest(userDetails.getUser().getId(), videoId);
         return ApiResponse.onSuccess("관심도가 성공적으로 삭제되었습니다.");
+    }
+
+    @GetMapping("/my_nft")
+    @Operation(summary = "사용자가 보유한 NFT 목록을 반환합니다.")
+    public ApiResponse<List<NftResponseDTO.NFTListResultDTO>> getMyNFTs(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUser().getId();
+        List<NftResponseDTO.NFTListResultDTO> myNFTs = nftService.getMyNFTs(userId);
+        return ApiResponse.onSuccess(myNFTs);
     }
 }
