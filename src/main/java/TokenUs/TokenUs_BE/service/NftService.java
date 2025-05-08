@@ -10,18 +10,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import TokenUs.TokenUs_BE.apiPayload.code.status.ErrorStatus;
+import TokenUs.TokenUs_BE.apiPayload.exception.GeneralException;
 import TokenUs.TokenUs_BE.converter.NftConverter;
 import TokenUs.TokenUs_BE.domain.Nft;
 import TokenUs.TokenUs_BE.domain.Transaction;
 import TokenUs.TokenUs_BE.domain.User;
+import TokenUs.TokenUs_BE.domain.Video;
 import TokenUs.TokenUs_BE.domain.enums.TransactionType;
 import TokenUs.TokenUs_BE.domain.mapping.NftLike;
+import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
-import TokenUs.TokenUs_BE.repository.NftLikeRepository;
-import TokenUs.TokenUs_BE.repository.NftRepository;
-import TokenUs.TokenUs_BE.repository.TransactionRepository;
-import TokenUs.TokenUs_BE.repository.UserRepository;
+import TokenUs.TokenUs_BE.repository.*;
 import TokenUs.TokenUs_BE.web3.contract.VideoNftMarketplace_ABI;
 import TokenUs.TokenUs_BE.web3.contract.VideoNft_ABI;
 import org.web3j.crypto.Credentials;
@@ -48,6 +49,8 @@ public class NftService {
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
     private final NftLikeRepository nftLikeRepository;
+    private final VideoInterestRepository videoInterestRepository;
+    private final VideoRepository videoRepository;
 
     private static final String TRANSFER_EVENT_HASH =
             "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
@@ -62,7 +65,9 @@ public class NftService {
             NftRepository nftRepository,
             UserRepository userRepository,
             TransactionRepository transactionRepository,
-            NftLikeRepository nftLikeRepository)
+            NftLikeRepository nftLikeRepository,
+            VideoInterestRepository videoInterestRepository,
+            VideoRepository videoRepository)
             throws Exception {
         this.web3j = web3j;
         this.credentials = Credentials.create(privateKey);
@@ -71,6 +76,8 @@ public class NftService {
         this.userRepository = userRepository;
         this.transactionRepository = transactionRepository;
         this.nftLikeRepository = nftLikeRepository;
+        this.videoInterestRepository = videoInterestRepository;
+        this.videoRepository = videoRepository;
 
         RawTransactionManager txManager = new RawTransactionManager(web3j, credentials, chainId);
 
@@ -522,5 +529,55 @@ public class NftService {
     public List<NftResponseDTO.NFTListResultDTO> getMyNFTs(Long userId) {
         List<Nft> myNFTs = nftRepository.findByOwnerId(userId);
         return nftConverter.toNFTListResultDTOList(myNFTs);
+    }
+
+    @Transactional
+    public VideoInterest registerVideoInterest(Long userId, Long videoId) {
+        // 사용자와 비디오 존재 여부 확인
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.VIDEO_NOT_EXIST));
+
+        // 이미 등록된 관심이 있는지 확인
+        videoInterestRepository
+                .findByUserIdAndVideoId(userId, videoId)
+                .ifPresent(
+                        interest -> {
+                            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+                        });
+
+        // 새로운 관심 등록
+        VideoInterest videoInterest = VideoInterest.builder().user(user).video(video).build();
+
+        return videoInterestRepository.save(videoInterest);
+    }
+
+    @Transactional
+    public void deleteVideoInterest(Long userId, Long videoId) {
+        // 사용자와 비디오 존재 여부 확인
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
+
+        Video video =
+                videoRepository
+                        .findById(videoId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.VIDEO_NOT_EXIST));
+
+        // 관심이 있는지 확인
+        VideoInterest videoInterest =
+                videoInterestRepository
+                        .findByUserIdAndVideoId(userId, videoId)
+                        .orElseThrow(() -> new GeneralException(ErrorStatus._BAD_REQUEST));
+
+        // 관심 삭제
+        videoInterestRepository.delete(videoInterest);
     }
 }

@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 
 import TokenUs.TokenUs_BE.apiPayload.ApiResponse;
 import TokenUs.TokenUs_BE.config.security.CustomUserDetails;
+import TokenUs.TokenUs_BE.converter.NftConverter;
 import TokenUs.TokenUs_BE.domain.User;
+import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
 import TokenUs.TokenUs_BE.service.NftService;
@@ -24,6 +26,7 @@ public class NftController {
 
     private final NftService nftService;
     private final VideoService videoService;
+    private final NftConverter nftConverter;
 
     @PostMapping("/mint")
     @Operation(summary = "nft를 발행합니다.", description = "video/save를 완료한 후 반환되는 videoId를 입력해야합니다.")
@@ -130,5 +133,26 @@ public class NftController {
             @PathVariable Long nftId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         nftService.unlikeNft(nftId, userDetails.getUser());
         return ApiResponse.onSuccess("NFT 좋아요가 취소되었습니다.");
+    }
+
+    @PostMapping("/interest")
+    @Operation(summary = "비디오 관심도 등록", description = "로그인한 사용자가 특정 비디오에 대한 관심도를 등록합니다.")
+    public ApiResponse<NftResponseDTO.VideoInterestDTO> registerVideoInterest(
+            @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long videoId) {
+
+        VideoInterest videoInterest =
+                nftService.registerVideoInterest(userDetails.getUser().getId(), videoId);
+
+        NftResponseDTO.VideoInterestDTO response = nftConverter.toVideoInterestDTO(videoInterest);
+        return ApiResponse.onSuccess(response);
+    }
+
+    @DeleteMapping("/interest")
+    @Operation(summary = "비디오 관심도 삭제", description = "로그인한 사용자가 특정 비디오에 대한 관심도를 삭제합니다.")
+    public ApiResponse<String> deleteVideoInterest(
+            @AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long videoId) {
+
+        nftService.deleteVideoInterest(userDetails.getUser().getId(), videoId);
+        return ApiResponse.onSuccess("관심도가 성공적으로 삭제되었습니다.");
     }
 }

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import TokenUs.TokenUs_BE.domain.Nft;
 import TokenUs.TokenUs_BE.domain.Transaction;
+import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
 import TokenUs.TokenUs_BE.repository.NftLikeRepository;
@@ -106,5 +107,12 @@ public class NftConverter {
 
     public List<NftResponseDTO.NFTListResultDTO> toNFTListResultDTOList(List<Nft> nftList) {
         return nftList.stream().map(this::toNFTListResultDTO).toList();
+    }
+
+    public static NftResponseDTO.VideoInterestDTO toVideoInterestDTO(VideoInterest videoInterest) {
+        return NftResponseDTO.VideoInterestDTO.builder()
+                .videoId(videoInterest.getVideo().getId())
+                .message("관심이 성공적으로 등록되었습니다.")
+                .build();
     }
 }

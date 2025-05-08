@@ -93,4 +93,13 @@ public class NftResponseDTO {
         private BigInteger tradePrice;
         private String createdAt;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class VideoInterestDTO {
+        private Long videoId;
+        private String message;
+    }
 }
