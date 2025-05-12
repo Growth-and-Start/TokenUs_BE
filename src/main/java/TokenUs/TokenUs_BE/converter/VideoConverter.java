@@ -168,6 +168,7 @@ public class VideoConverter {
                 .videoUrl(video.getFileUrl())
                 .title(video.getTitle())
                 .detail(video.getDetail())
+                .creatorId(video.getCreator().getId())
                 .creatorNickname(video.getCreator().getNickname())
                 .creatorProfileUrl(video.getCreator().getProfile_image())
                 .thumbnailUrl(video.getThumbnailUrl())

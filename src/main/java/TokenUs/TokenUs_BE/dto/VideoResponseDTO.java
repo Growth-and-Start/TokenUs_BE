@@ -136,6 +136,7 @@ public class VideoResponseDTO {
         private String videoUrl;
         private String title;
         private String detail;
+        private Long creatorId;
         private String creatorNickname;
         private String creatorProfileUrl;
         private String thumbnailUrl;
