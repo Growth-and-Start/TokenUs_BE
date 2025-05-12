@@ -142,10 +142,10 @@ public class NftController {
 
     @GetMapping("/my_nft")
     @Operation(summary = "사용자가 보유한 NFT 목록을 반환합니다.")
-    public ApiResponse<List<NftResponseDTO.NFTListResultDTO>> getMyNFTs(
+    public ApiResponse<List<NftResponseDTO.MyNftDTO>> getMyNFTs(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUser().getId();
-        List<NftResponseDTO.NFTListResultDTO> myNFTs = nftService.getMyNFTs(userId);
+        List<NftResponseDTO.MyNftDTO> myNFTs = nftService.getMyNFTs(userId);
         return ApiResponse.onSuccess(myNFTs);
     }
 }

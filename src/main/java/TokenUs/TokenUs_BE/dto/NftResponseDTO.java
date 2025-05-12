@@ -98,4 +98,23 @@ public class NftResponseDTO {
         private Long videoId;
         private String message;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyNftDTO {
+
+        private BigInteger tokenId;
+        private Boolean isListed;
+        private Long videoId;
+        private String videoThumbnailUrl;
+        private String videoTitle;
+        private String videoUrl;
+        private Long creatorId;
+        private String creatorNickname;
+        private String creatorProfileUrl;
+        private BigInteger purchasedPrice;
+        private BigInteger floorPrice;
+    }
 }
