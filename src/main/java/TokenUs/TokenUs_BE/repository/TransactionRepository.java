@@ -1,6 +1,7 @@
 package TokenUs.TokenUs_BE.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                     + "ORDER BY t.createdAt DESC")
     List<Transaction> findByVideoIdAndTypeOrderByCreatedAtDesc(
             @Param("videoId") Long videoId, @Param("type") TransactionType type);
+
+    Optional<Transaction> findByNftIdAndBuyerIdAndType(
+            Long nftId, Long buyerId, TransactionType type);
 }

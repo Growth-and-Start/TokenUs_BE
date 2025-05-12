@@ -242,7 +242,6 @@ public class NftService {
                 .nftName(nft.getNftName())
                 .nftSymbol(nft.getNftSymbol())
                 .tokenId(request.getTokenId())
-                .price(request.getPrice())
                 .currentPrice(nft.getCurrentPrice())
                 .mintPrice(nft.getMintPrice())
                 .sellerAddress(nft.getOwner().getWalletAddress())
@@ -329,7 +328,6 @@ public class NftService {
                 .tokenId(request.getTokenId())
                 .nftName(nft.getNftName())
                 .nftSymbol(nft.getNftSymbol())
-                .price(BigInteger.ZERO)
                 .currentPrice(nft.getCurrentPrice())
                 .mintPrice(nft.getMintPrice())
                 .sellerAddress(nft.getOwner().getWalletAddress())
@@ -454,9 +452,34 @@ public class NftService {
         return listedNfts;
     }
 
-    public List<NftResponseDTO.NFTListResultDTO> getMyNFTs(Long userId) {
+    public List<NftResponseDTO.MyNftDTO> getMyNFTs(Long userId) {
         List<Nft> myNFTs = nftRepository.findByOwnerId(userId);
-        return nftConverter.toNFTListResultDTOList(myNFTs);
+        return myNFTs.stream()
+                .map(
+                        nft -> {
+                            // 해당 비디오의 현재 판매 중인 NFT들 중 가장 낮은 가격 조회
+                            BigInteger floorPrice =
+                                    nftRepository
+                                            .findMinCurrentPriceByVideoIdAndIsListed(
+                                                    nft.getVideo().getId())
+                                            .orElse(null); // 판매 중인 NFT가 없는 경우 null로 설정
+
+                            return NftResponseDTO.MyNftDTO.builder()
+                                    .tokenId(nft.getTokenId())
+                                    .isListed(nft.getIsListed())
+                                    .videoId(nft.getVideo().getId())
+                                    .videoThumbnailUrl(nft.getVideo().getThumbnailUrl())
+                                    .videoTitle(nft.getVideo().getTitle())
+                                    .videoUrl(nft.getVideo().getFileUrl())
+                                    .creatorId(nft.getVideo().getCreator().getId())
+                                    .creatorNickname(nft.getVideo().getCreator().getNickname())
+                                    .creatorProfileUrl(
+                                            nft.getVideo().getCreator().getProfile_image())
+                                    .purchasedPrice(nft.getCurrentPrice())
+                                    .floorPrice(floorPrice)
+                                    .build();
+                        })
+                .toList();
     }
 
     @Transactional
