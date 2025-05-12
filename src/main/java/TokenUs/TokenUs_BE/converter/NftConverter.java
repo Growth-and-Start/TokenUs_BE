@@ -91,7 +91,6 @@ public class NftConverter {
                 .tokenId(nft.getTokenId())
                 .nftName(nft.getNftName())
                 .nftSymbol(nft.getNftSymbol())
-                .price(nft.getCurrentPrice())
                 .currentPrice(nft.getCurrentPrice())
                 .mintPrice(nft.getMintPrice())
                 .sellerAddress(nft.getOwner().getWalletAddress())

@@ -61,7 +61,6 @@ public class NftResponseDTO {
         private BigInteger tokenId;
         private String nftName;
         private String nftSymbol;
-        private BigInteger price;
         private BigInteger currentPrice;
         private BigInteger mintPrice;
         private String sellerAddress;
