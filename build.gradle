@@ -133,10 +133,6 @@ jib {
 	from {
 		image = 'openjdk:17-alpine'
 	}
-	to {
-		image = 'tokenus-image'
-		tags = ['latest']
-	}
 	container {
 		jvmFlags = ['-Xms512m']
 		format = 'Docker'
