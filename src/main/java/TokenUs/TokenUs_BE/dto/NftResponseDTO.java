@@ -45,6 +45,8 @@ public class NftResponseDTO {
         private String nftName;
         private String nftSymbol;
         private BigInteger currentPrice;
+        private BigInteger mintPrice;
+        private BigInteger floorPrice;
         private Long videoId;
         private Boolean isListed;
         private Long creatorId;
@@ -107,6 +109,8 @@ public class NftResponseDTO {
 
         private BigInteger tokenId;
         private Boolean isListed;
+        private String nftName;
+        private String nftSymbol;
         private Long videoId;
         private String videoThumbnailUrl;
         private String videoTitle;
@@ -116,5 +120,7 @@ public class NftResponseDTO {
         private String creatorProfileUrl;
         private BigInteger purchasedPrice;
         private BigInteger floorPrice;
+        private BigInteger currentPrice;
+        private BigInteger mintPrice;
     }
 }

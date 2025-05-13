@@ -74,7 +74,8 @@ public class NftConverter {
                 .toList();
     }
 
-    public NftResponseDTO.listedNFTInfoDTO toListedNFTInfoDTO(Nft nft, String sellerWallet) {
+    public NftResponseDTO.listedNFTInfoDTO toListedNFTInfoDTO(
+            Nft nft, String sellerWallet, BigInteger floorPrice) {
         return NftResponseDTO.listedNFTInfoDTO
                 .builder()
                 .id(nft.getId())
@@ -82,6 +83,8 @@ public class NftConverter {
                 .nftName(nft.getNftName())
                 .nftSymbol(nft.getNftSymbol())
                 .currentPrice(nft.getCurrentPrice())
+                .mintPrice(nft.getMintPrice())
+                .floorPrice(floorPrice)
                 .videoId(nft.getVideo().getId())
                 .isListed(nft.getIsListed())
                 .creatorId(nft.getVideo().getCreator().getId())

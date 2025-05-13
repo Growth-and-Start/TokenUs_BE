@@ -212,7 +212,7 @@ public class VideoService {
                                                     .filter(nft -> nft.getIsListed())
                                                     .map(nft -> nft.getCurrentPrice())
                                                     .min(BigInteger::compareTo)
-                                                    .orElse(BigInteger.ZERO);
+                                                    .orElse(null);
 
                                     return VideoConverter.toListedVideoDTO(
                                             video, isInterested, interestCount, floorPrice);

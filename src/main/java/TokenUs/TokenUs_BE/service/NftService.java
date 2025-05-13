@@ -250,6 +250,7 @@ public class NftService {
     }
 
     public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId) throws Exception {
+        // 1. 컨트랙트에서 판매중인 NFT 목록 호출
         Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
                 marketplaceContract.getListedNFTs().send();
 
@@ -263,6 +264,8 @@ public class NftService {
         Optional<User> loginUser =
                 loginUserId != null ? userRepository.findById(loginUserId) : Optional.empty();
 
+        BigInteger floorPrice = null; // floorPrice 초기화
+
         for (int i = 0; i < tokenIds.size(); i++) {
             BigInteger tokenId = tokenIds.get(i);
 
@@ -271,9 +274,16 @@ public class NftService {
             if (optionalNft.isPresent()) {
                 Nft nft = optionalNft.get();
 
+                // listed 값이 true인 경우 floorPrice 계산
+                if (nft.getIsListed()) {
+                    if (floorPrice == null || nft.getCurrentPrice().compareTo(floorPrice) < 0) {
+                        floorPrice = nft.getCurrentPrice();
+                    }
+                }
+
                 // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
-                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i));
+                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i), floorPrice);
                 listedNfts.add(dto);
             }
         }
@@ -429,6 +439,8 @@ public class NftService {
         Optional<User> loginUser =
                 loginUserId != null ? userRepository.findById(loginUserId) : Optional.empty();
 
+        BigInteger floorPrice = null; // floorPrice 초기화
+
         for (int i = 0; i < tokenIds.size(); i++) {
             BigInteger tokenId = tokenIds.get(i);
 
@@ -442,9 +454,16 @@ public class NftService {
                     continue;
                 }
 
+                // listed 값이 true인 경우 floorPrice 계산
+                if (nft.getIsListed()) {
+                    if (floorPrice == null || nft.getCurrentPrice().compareTo(floorPrice) < 0) {
+                        floorPrice = nft.getCurrentPrice();
+                    }
+                }
+
                 // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
-                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i));
+                        nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i), floorPrice);
                 listedNfts.add(dto);
             }
         }
@@ -467,6 +486,8 @@ public class NftService {
                             return NftResponseDTO.MyNftDTO.builder()
                                     .tokenId(nft.getTokenId())
                                     .isListed(nft.getIsListed())
+                                    .nftName(nft.getNftName())
+                                    .nftSymbol(nft.getNftSymbol())
                                     .videoId(nft.getVideo().getId())
                                     .videoThumbnailUrl(nft.getVideo().getThumbnailUrl())
                                     .videoTitle(nft.getVideo().getTitle())
@@ -476,7 +497,9 @@ public class NftService {
                                     .creatorProfileUrl(
                                             nft.getVideo().getCreator().getProfile_image())
                                     .purchasedPrice(nft.getCurrentPrice())
+                                    .currentPrice(nft.getCurrentPrice())
                                     .floorPrice(floorPrice)
+                                    .mintPrice(nft.getMintPrice())
                                     .build();
                         })
                 .toList();
