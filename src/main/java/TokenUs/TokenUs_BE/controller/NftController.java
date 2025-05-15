@@ -75,16 +75,20 @@ public class NftController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
             Long loginUserId = userDetails.getUser().getId();
+            System.out.println("[NFT LIST] 요청자 ID: " + loginUserId);
             List<NftResponseDTO.listedNFTInfoDTO> listedNfts;
 
             if (videoId != null) {
+                System.out.println("[NFT LIST] videoId: " + videoId);
                 listedNfts = nftService.getListedNftsByVideoId(videoId, loginUserId);
             } else {
+                System.out.println("[NFT LIST] videoId 파라미터 없음 - 전체 NFT 리스트 요청");
                 listedNfts = nftService.getListedNfts(loginUserId);
             }
-
+            System.out.println("[NFT LIST] 반환된 NFT 수: " + listedNfts.size());
             return ApiResponse.onSuccess(listedNfts);
         } catch (Exception e) {
+            System.out.println("[NFT LIST] 리스트 조회 실패: " + e.getMessage());
             return ApiResponse.onFailure("LIST_FAIL", e.getMessage(), null);
         }
     }

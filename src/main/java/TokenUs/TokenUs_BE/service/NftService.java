@@ -22,8 +22,8 @@ import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
 import TokenUs.TokenUs_BE.dto.NftResponseDTO;
 import TokenUs.TokenUs_BE.repository.*;
-import TokenUs.TokenUs_BE.web3.contract.VideoNftMarketplace_ABI;
-import TokenUs.TokenUs_BE.web3.contract.VideoNft_ABI;
+import TokenUs.TokenUs_BE.web3.contract.VideoNFT;
+import TokenUs.TokenUs_BE.web3.contract.VideoNFTMarketplace;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.Log;
@@ -40,8 +40,8 @@ public class NftService {
     private final Web3j web3j;
     private final Credentials credentials;
 
-    private final VideoNft_ABI videoNftContract;
-    private final VideoNftMarketplace_ABI marketplaceContract;
+    private final VideoNFT videoNftContract;
+    private final VideoNFTMarketplace marketplaceContract;
 
     private final NftConverter nftConverter;
     private final NftRepository nftRepository;
@@ -78,7 +78,7 @@ public class NftService {
         RawTransactionManager txManager = new RawTransactionManager(web3j, credentials, chainId);
 
         this.videoNftContract =
-                VideoNft_ABI.load(
+                VideoNFT.load(
                         videoNftcontractAddress,
                         web3j,
                         txManager,
@@ -87,7 +87,7 @@ public class NftService {
                                 BigInteger.valueOf(6_500_000)));
 
         this.marketplaceContract =
-                VideoNftMarketplace_ABI.load(
+                VideoNFTMarketplace.load(
                         marketplaceContractAddress,
                         web3j,
                         txManager,
@@ -211,6 +211,7 @@ public class NftService {
         // 3. 마켓플레이스 컨트랙트에 list 요청
         TransactionReceipt receipt =
                 marketplaceContract.listNFT(request.getTokenId(), request.getPrice()).send();
+        System.out.println("RECEIPT" + receipt);
 
         String txHash = receipt.getTransactionHash();
 
@@ -250,13 +251,23 @@ public class NftService {
     }
 
     public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId) throws Exception {
+        System.out.println("[SERVICE] getListedNfts() 호출됨");
+
         // 1. 컨트랙트에서 판매중인 NFT 목록 호출
+        System.out.println("[SERVICE] getListedNFTs().send() 호출 직전");
         Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
                 marketplaceContract.getListedNFTs().send();
+        System.out.println("[SERVICE] getListedNFTs().send() 성공");
+
+        System.out.println("result " + result);
 
         List<BigInteger> tokenIds = result.component1();
         List<String> sellerAddresses = result.component2();
         List<BigInteger> prices = result.component3();
+
+        System.out.println("[SERVICE] 가져온 tokenIds 수: " + tokenIds.size());
+        System.out.println("[SERVICE] 가져온 sellerAddresses 수: " + sellerAddresses.size());
+        System.out.println("[SERVICE] 가져온 prices 수: " + prices.size());
 
         List<NftResponseDTO.listedNFTInfoDTO> listedNfts = new ArrayList<>();
 
@@ -269,15 +280,23 @@ public class NftService {
         for (int i = 0; i < tokenIds.size(); i++) {
             BigInteger tokenId = tokenIds.get(i);
 
+            System.out.println("[SERVICE] 처리 중인 tokenId: " + tokenId);
+            ;
             Optional<Nft> optionalNft = nftRepository.findByTokenId(tokenId);
 
             if (optionalNft.isPresent()) {
                 Nft nft = optionalNft.get();
+                System.out.println(
+                        "[SERVICE] DB에서 찾은 NFT ID: "
+                                + nft.getId()
+                                + ", isListed: "
+                                + nft.getIsListed());
 
                 // listed 값이 true인 경우 floorPrice 계산
                 if (nft.getIsListed()) {
                     if (floorPrice == null || nft.getCurrentPrice().compareTo(floorPrice) < 0) {
                         floorPrice = nft.getCurrentPrice();
+                        System.out.println("[SERVICE] 현재 floorPrice 갱신: " + floorPrice);
                     }
                 }
 
@@ -287,7 +306,7 @@ public class NftService {
                 listedNfts.add(dto);
             }
         }
-
+        System.out.println("[SERVICE] 최종 반환할 listedNfts 크기: " + listedNfts.size());
         return listedNfts;
     }
 
@@ -431,7 +450,9 @@ public class NftService {
 
         List<BigInteger> tokenIds = result.component1();
         List<String> sellerAddresses = result.component2();
-        List<BigInteger> prices = result.component3();
+
+        System.out.println("[SERVICE] 가져온 tokenIds 수: " + tokenIds.size());
+        System.out.println("[SERVICE] 가져온 sellerAddresses 수: " + sellerAddresses.size());
 
         List<NftResponseDTO.listedNFTInfoDTO> listedNfts = new ArrayList<>();
 
@@ -448,9 +469,19 @@ public class NftService {
 
             if (optionalNft.isPresent()) {
                 Nft nft = optionalNft.get();
+                Long nftVideoId = nft.getVideo().getId();
+
+                System.out.println(
+                        "[SERVICE] DB에서 찾은 NFT ID: "
+                                + nft.getId()
+                                + ", videoId: "
+                                + nftVideoId
+                                + ", isListed: "
+                                + nft.getIsListed());
 
                 // 해당 비디오의 NFT만 필터링
                 if (!nft.getVideo().getId().equals(videoId)) {
+
                     continue;
                 }
 
@@ -468,6 +499,7 @@ public class NftService {
             }
         }
 
+        System.out.println("[SERVICE] 최종 반환할 listedNfts 크기: " + listedNfts.size());
         return listedNfts;
     }
 
