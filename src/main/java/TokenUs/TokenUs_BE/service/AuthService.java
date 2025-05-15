@@ -62,7 +62,7 @@ public class AuthService {
                 jwtUtil.generateToken(
                         user.getEmail(),
                         Collections.singleton(user.getRole()),
-                        1000 * 60 * 30L, // 30분 만료
+                        1000 * 60 * 60 * 24L, // 30분 만료
                         "access");
         String refreshToken =
                 jwtUtil.generateToken(
