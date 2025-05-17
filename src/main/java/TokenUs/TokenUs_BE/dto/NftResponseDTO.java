@@ -74,7 +74,8 @@ public class NftResponseDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class NFTPurchaseResultDTO {
-        private String transactionHash;
+        private String purchaseTxHash;
+        private String transferTxHash;
         private BigInteger tokenId;
         private String nftName;
         private String nftSymbol;
