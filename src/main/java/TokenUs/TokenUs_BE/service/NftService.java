@@ -1,6 +1,5 @@
 package TokenUs.TokenUs_BE.service;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,6 @@ import org.web3j.tuples.generated.Tuple3;
 import org.web3j.tuples.generated.Tuple4;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.gas.StaticGasProvider;
-import org.web3j.utils.Convert;
 
 @Service
 public class NftService {
@@ -366,36 +364,56 @@ public class NftService {
 
     public NftResponseDTO.NFTPurchaseResultDTO purchaseNFT(
             NftRequestDTO.NFTPurchaseRequestDTO request, Long loginUserId) throws Exception {
-        BigInteger tokenId = request.getTokenId();
-        BigInteger price = nftRepository.findByTokenId(tokenId).get().getCurrentPrice();
-        User originalOwner = nftRepository.findByTokenId(tokenId).get().getOwner();
 
-        // 🔎 구매자 지갑 주소
+        BigInteger tokenId = request.getTokenId();
+
+        // 💰 가격 확인
+        BigInteger price =
+                nftRepository
+                        .findByTokenId(tokenId)
+                        .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."))
+                        .getCurrentPrice();
+
+        User originalOwner =
+                nftRepository
+                        .findByTokenId(tokenId)
+                        .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."))
+                        .getOwner();
+
+        // 👛 구매자 지갑 주소
         String buyerAddress =
                 userRepository
                         .findById(loginUserId)
                         .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."))
                         .getWalletAddress();
 
+        // 🧾 온체인 가격 확인
         Tuple4<BigInteger, String, BigInteger, Boolean> listing =
                 marketplaceContract.listings(tokenId).send();
+        BigInteger onChainPrice = listing.getValue3();
 
-        BigInteger onChainPrice = listing.getValue3(); // 2번째 값: 가격 (wei)
         System.out.println("📦 체인 상 가격 (wei): " + onChainPrice);
-        System.out.println(
-                "💰 체인 상 가격 (MATIC): "
-                        + Convert.fromWei(new BigDecimal(onChainPrice), Convert.Unit.ETHER)
-                        + " MATIC");
-        System.out.println("📦 컨트랙트로 전달하는 가격(wei): " + price);
+        System.out.println("💰 컨트랙트로 전달하는 가격(wei): " + price);
         System.out.println("🧾 tx.sender: " + credentials.getAddress());
         System.out.println("🧾 chain approved: " + videoNftContract.getApproved(tokenId).send());
         System.out.println("🧾 ownerOf: " + videoNftContract.ownerOf(tokenId).send());
-        // 🔄 스마트 컨트랙트에 구매 요청 (ETH 포함)
-        TransactionReceipt receipt = marketplaceContract.purchaseNFT(tokenId, price).send();
 
-        String txHash = receipt.getTransactionHash();
+        // ✅ 1. NFT 구매
+        TransactionReceipt purchaseReceipt = marketplaceContract.purchaseNFT(tokenId, price).send();
+        String purchaseTxHash = purchaseReceipt.getTransactionHash();
+        System.out.println("✅ NFT 구매 완료!");
+        System.out.println("🧾 구매 트랜잭션 해시: " + purchaseTxHash);
 
-        // 📂 DB 업데이트
+        // ✅ 2. NFT를 구매자에게 전송
+        TransactionReceipt transferReceipt =
+                videoNftContract
+                        .safeTransferFrom(credentials.getAddress(), buyerAddress, tokenId)
+                        .send();
+        String transferTxHash = transferReceipt.getTransactionHash();
+        System.out.println("✅ NFT를 구매자 주소로 전송 완료!");
+        System.out.println("🧾 전송 트랜잭션 해시: " + transferTxHash);
+
+        // 📦 DB 업데이트
         Nft nft =
                 nftRepository
                         .findByTokenId(tokenId)
@@ -404,29 +422,40 @@ public class NftService {
         nft.setIsListed(false);
         nft.setCurrentPrice(price);
 
-        // 🔁 소유자 업데이트
         User buyer =
                 userRepository
                         .findByWalletAddress(buyerAddress)
                         .orElseThrow(() -> new IllegalArgumentException("해당 지갑의 유저가 존재하지 않습니다."));
         nft.setOwner(buyer);
-
         nftRepository.save(nft);
 
-        // 🧾 트랜잭션 저장
-        Transaction transaction =
+        // 🧾 거래 트랜잭션 저장
+        Transaction tradeTx =
                 Transaction.builder()
-                        .txHash(txHash)
+                        .txHash(purchaseTxHash)
                         .type(TransactionType.TRADE)
                         .seller(originalOwner)
                         .buyer(buyer)
                         .tradePrice(price)
                         .nft(nft)
                         .build();
-        transactionRepository.save(transaction);
+        transactionRepository.save(tradeTx);
+
+        // 🧾 전송 트랜잭션 저장
+        Transaction transferTx =
+                Transaction.builder()
+                        .txHash(transferTxHash)
+                        .type(TransactionType.TRANSFER)
+                        .seller(null)
+                        .buyer(buyer)
+                        .tradePrice(BigInteger.ZERO)
+                        .nft(nft)
+                        .build();
+        transactionRepository.save(transferTx);
 
         return NftResponseDTO.NFTPurchaseResultDTO.builder()
-                .transactionHash(txHash)
+                .purchaseTxHash(purchaseTxHash)
+                .transferTxHash(transferTxHash)
                 .tokenId(tokenId)
                 .nftName(nft.getNftName())
                 .nftSymbol(nft.getNftSymbol())
@@ -434,6 +463,79 @@ public class NftService {
                 .tradePrice(price)
                 .build();
     }
+
+    //    public NftResponseDTO.NFTPurchaseResultDTO purchaseNFT(
+    //            NftRequestDTO.NFTPurchaseRequestDTO request, Long loginUserId) throws Exception {
+    //        BigInteger tokenId = request.getTokenId();
+    //        BigInteger price = nftRepository.findByTokenId(tokenId).get().getCurrentPrice();
+    //        User originalOwner = nftRepository.findByTokenId(tokenId).get().getOwner();
+    //
+    //        // 🔎 구매자 지갑 주소
+    //        String buyerAddress =
+    //                userRepository
+    //                        .findById(loginUserId)
+    //                        .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."))
+    //                        .getWalletAddress();
+    //
+    //        Tuple4<BigInteger, String, BigInteger, Boolean> listing =
+    //                marketplaceContract.listings(tokenId).send();
+    //
+    //        BigInteger onChainPrice = listing.getValue3(); // 2번째 값: 가격 (wei)
+    //        System.out.println("📦 체인 상 가격 (wei): " + onChainPrice);
+    //        System.out.println(
+    //                "💰 체인 상 가격 (MATIC): "
+    //                        + Convert.fromWei(new BigDecimal(onChainPrice), Convert.Unit.ETHER)
+    //                        + " MATIC");
+    //        System.out.println("📦 컨트랙트로 전달하는 가격(wei): " + price);
+    //        System.out.println("🧾 tx.sender: " + credentials.getAddress());
+    //        System.out.println("🧾 chain approved: " +
+    // videoNftContract.getApproved(tokenId).send());
+    //        System.out.println("🧾 ownerOf: " + videoNftContract.ownerOf(tokenId).send());
+    //        // 🔄 스마트 컨트랙트에 구매 요청 (ETH 포함)
+    //        TransactionReceipt receipt = marketplaceContract.purchaseNFT(tokenId, price).send();
+    //
+    //        String txHash = receipt.getTransactionHash();
+    //
+    //        // 📂 DB 업데이트
+    //        Nft nft =
+    //                nftRepository
+    //                        .findByTokenId(tokenId)
+    //                        .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."));
+    //
+    //        nft.setIsListed(false);
+    //        nft.setCurrentPrice(price);
+    //
+    //        // 🔁 소유자 업데이트
+    //        User buyer =
+    //                userRepository
+    //                        .findByWalletAddress(buyerAddress)
+    //                        .orElseThrow(() -> new IllegalArgumentException("해당 지갑의 유저가 존재하지
+    // 않습니다."));
+    //        nft.setOwner(buyer);
+    //
+    //        nftRepository.save(nft);
+    //
+    //        // 🧾 트랜잭션 저장
+    //        Transaction transaction =
+    //                Transaction.builder()
+    //                        .txHash(txHash)
+    //                        .type(TransactionType.TRADE)
+    //                        .seller(originalOwner)
+    //                        .buyer(buyer)
+    //                        .tradePrice(price)
+    //                        .nft(nft)
+    //                        .build();
+    //        transactionRepository.save(transaction);
+    //
+    //        return NftResponseDTO.NFTPurchaseResultDTO.builder()
+    //                .transactionHash(txHash)
+    //                .tokenId(tokenId)
+    //                .nftName(nft.getNftName())
+    //                .nftSymbol(nft.getNftSymbol())
+    //                .buyerAddress(buyerAddress)
+    //                .tradePrice(price)
+    //                .build();
+    //    }
 
     public List<NftResponseDTO.NFTTradeHistoryDTO> getTradeHistoryByVideoId(Long videoId) {
         List<Transaction> transactions =
