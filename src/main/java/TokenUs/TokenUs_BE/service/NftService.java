@@ -456,7 +456,11 @@ public class NftService {
         return NftResponseDTO.NFTPurchaseResultDTO.builder()
                 .purchaseTxHash(purchaseTxHash)
                 .transferTxHash(transferTxHash)
+                .tokenId(tokenId)
+                .nftName(nft.getNftName())
+                .nftSymbol(nft.getNftSymbol())
                 .buyerAddress(buyerAddress)
+                .tradePrice(price)
                 .build();
     }
 
