@@ -120,7 +120,7 @@ public class VideoConverter {
                 .videoTitle(video.getTitle())
                 .videoDetail(video.getDetail())
                 .thumbnailUrl(video.getThumbnailUrl())
-                .isOpened(video.getIsOpen())
+                .isOpen(video.getIsOpen())
                 .build();
     }
 
