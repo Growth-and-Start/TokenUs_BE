@@ -113,6 +113,17 @@ public class VideoConverter {
                 .build();
     }
 
+    public static VideoResponseDTO.modifyResultDTO toModifyResultDTO(Video video) {
+        return VideoResponseDTO.modifyResultDTO
+                .builder()
+                .id(video.getId())
+                .videoTitle(video.getTitle())
+                .videoDetail(video.getDetail())
+                .thumbnailUrl(video.getThumbnailUrl())
+                .isOpened(video.getIsOpen())
+                .build();
+    }
+
     public static VideoResponseDTO.getDetailDTO toDetailDTO(
             Video video, Long likeCount, Boolean isLiked) {
         // mintPrice와 floorPrice 계산
