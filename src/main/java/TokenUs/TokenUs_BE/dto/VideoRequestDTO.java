@@ -29,4 +29,17 @@ public class VideoRequestDTO {
 
         private String videoUrl;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class modifyRequestDTO {
+
+        private Long videoId;
+        private String videoTitle;
+        private String videoDetail;
+        private String thumbnailUrl;
+        private Boolean isOpen;
+    }
 }

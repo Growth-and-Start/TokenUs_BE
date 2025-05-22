@@ -82,6 +82,19 @@ public class VideoResponseDTO {
 
     @Builder
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class modifyResultDTO {
+
+        private Long id;
+        private String videoTitle;
+        private String videoDetail;
+        private String thumbnailUrl;
+        private Boolean isOpen;
+    }
+
+    @Builder
+    @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor

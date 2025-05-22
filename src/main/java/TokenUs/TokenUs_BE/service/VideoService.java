@@ -137,6 +137,26 @@ public class VideoService {
         return video;
     }
 
+    public Video modifyVideo(VideoRequestDTO.modifyRequestDTO request, User user) {
+        // 영상이 존재하는지 검증
+        Video video =
+                videoRepository
+                        .findById(request.getVideoId())
+                        .orElseThrow(() -> new GeneralException(ErrorStatus.NOT_YOUR_VIDEO));
+
+        // 로그인한 사용자의 영상이 맞는지 검증
+        if (!video.getCreator().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.NOT_YOUR_VIDEO);
+        }
+
+        video.setTitle(request.getVideoTitle());
+        video.setDetail(request.getVideoDetail());
+        video.setThumbnailUrl(request.getThumbnailUrl());
+        video.setIsOpen(request.getIsOpen());
+        videoRepository.save(video);
+        return video;
+    }
+
     @Transactional
     public void increaseView(Long videoId) {
         Video video =

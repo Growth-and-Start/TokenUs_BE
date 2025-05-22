@@ -183,32 +183,49 @@ public class VideoController {
         return ApiResponse.onSuccess(result);
     }
 
-    @PatchMapping("/to_open")
-    @Operation(summary = "비디오를 비공개에서 공개로 전환", description = "")
-    public ApiResponse<VideoResponseDTO.openResultDTO> toOpenVideo(
+    //    @PatchMapping("/to_open")
+    //    @Operation(summary = "비디오를 비공개에서 공개로 전환", description = "")
+    //    public ApiResponse<VideoResponseDTO.openResultDTO> toOpenVideo(
+    //            @AuthenticationPrincipal CustomUserDetails userDetails,
+    //            @RequestParam(required = true) Long videoId) {
+    //        // 현재 로그인한 사용자가 크리에이터가 맞는지 확인
+    //        User user = userDetails.getUser();
+    //
+    //        Video video = videoService.openVideo(videoId, user);
+    //
+    //        VideoResponseDTO.openResultDTO result = videoConverter.toOpenResultDTO(video);
+    //
+    //        return ApiResponse.onSuccess(result);
+    //    }
+    //
+    //    @PatchMapping("/to_close")
+    //    @Operation(summary = "비디오를 공개에서 비공개로 전환", description = "")
+    //    public ApiResponse<VideoResponseDTO.openResultDTO> toCloseVideo(
+    //            @AuthenticationPrincipal CustomUserDetails userDetails,
+    //            @RequestParam(required = true) Long videoId) {
+    //        // 현재 로그인한 사용자가 크리에이터가 맞는지 확인
+    //        User user = userDetails.getUser();
+    //
+    //        Video video = videoService.closeVideo(videoId, user);
+    //
+    //        VideoResponseDTO.openResultDTO result = videoConverter.toOpenResultDTO(video);
+    //
+    //        return ApiResponse.onSuccess(result);
+    //    }
+
+    @PatchMapping("/modify")
+    @Operation(
+            summary = "비디오의 정보를 수정",
+            description = "영상의 title, detail, thumbnailUrl, isOpen을 수정합니다.")
+    public ApiResponse<VideoResponseDTO.modifyResultDTO> modifyVideoInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(required = true) Long videoId) {
+            @RequestBody(required = true) VideoRequestDTO.modifyRequestDTO request) {
         // 현재 로그인한 사용자가 크리에이터가 맞는지 확인
         User user = userDetails.getUser();
 
-        Video video = videoService.openVideo(videoId, user);
+        Video video = videoService.modifyVideo(request, user);
 
-        VideoResponseDTO.openResultDTO result = videoConverter.toOpenResultDTO(video);
-
-        return ApiResponse.onSuccess(result);
-    }
-
-    @PatchMapping("/to_close")
-    @Operation(summary = "비디오를 공개에서 비공개로 전환", description = "")
-    public ApiResponse<VideoResponseDTO.openResultDTO> toCloseVideo(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(required = true) Long videoId) {
-        // 현재 로그인한 사용자가 크리에이터가 맞는지 확인
-        User user = userDetails.getUser();
-
-        Video video = videoService.closeVideo(videoId, user);
-
-        VideoResponseDTO.openResultDTO result = videoConverter.toOpenResultDTO(video);
+        VideoResponseDTO.modifyResultDTO result = videoConverter.toModifyResultDTO(video);
 
         return ApiResponse.onSuccess(result);
     }
