@@ -1,11 +1,13 @@
 package TokenUs.TokenUs_BE.dto;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import lombok.*;
 
 public class NftRequestDTO {
 
+    // emit VideoNFTMinted(videoId, creatorAddress, totalSupply, nftName, nftSymbol, price);
     @Builder
     @Getter
     @Setter
@@ -21,6 +23,23 @@ public class NftRequestDTO {
 
         // 클라이언트가 보내지 않지만 백엔드에서 주입될 값들
         private String creatorAddress;
+    }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NFTMintRequestGetDTO {
+        private BigInteger totalSupply;
+        private String nftName;
+        private String nftSymbol;
+        private BigInteger price;
+        private BigInteger videoId;
+        private String creatorAddress;
+        private Long creatorId;
+        private String txHash;
+        private List<BigInteger> tokenIdList;
     }
 
     @Builder

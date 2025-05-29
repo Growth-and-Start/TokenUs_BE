@@ -152,6 +152,47 @@ public class NftService {
                 .build();
     }
 
+    public NftResponseDTO.NFTMintResultDTO mintResultGet(NftRequestDTO.NFTMintRequestGetDTO request)
+            throws Exception {
+
+        List<BigInteger> tokenIdList = request.getTokenIdList();
+
+        List<Nft> savedNfts = new ArrayList<>();
+
+        for (BigInteger tokenId : tokenIdList) {
+            Nft nft =
+                    nftConverter.toNft_V2(
+                            request,
+                            tokenId,
+                            request.getCreatorId(),
+                            request.getNftName(),
+                            request.getNftSymbol());
+
+            nft = nftRepository.save(nft); // 저장된 엔티티 다시 할당
+
+            savedNfts.add(nft);
+
+            Transaction transaction =
+                    Transaction.builder()
+                            .txHash(request.getTxHash())
+                            .type(TransactionType.MINT)
+                            .seller(userRepository.getReferenceById(request.getCreatorId()))
+                            .buyer(null)
+                            .nft(nft)
+                            .build();
+
+            transactionRepository.save(transaction);
+        }
+
+        // 4. 응답 DTO 구성
+        List<NftResponseDTO.NFTInfoDTO> nftInfos = nftConverter.toDTOList(savedNfts);
+
+        return NftResponseDTO.NFTMintResultDTO.builder()
+                .transactionHash(request.getTxHash())
+                .mintedNFTs(nftInfos)
+                .build();
+    }
+
     private List<BigInteger> extractTokenIdsFromLogs(TransactionReceipt receipt) {
         List<BigInteger> tokenIds = new ArrayList<>();
 

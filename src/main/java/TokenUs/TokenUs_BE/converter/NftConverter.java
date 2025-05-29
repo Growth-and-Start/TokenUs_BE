@@ -45,6 +45,25 @@ public class NftConverter {
                 .build();
     }
 
+    public Nft toNft_V2(
+            NftRequestDTO.NFTMintRequestGetDTO dto,
+            BigInteger tokenId,
+            Long userId,
+            String nftName,
+            String nftSymbol) {
+        return Nft.builder()
+                .tokenId(tokenId)
+                .nftName(nftName)
+                .nftSymbol(nftSymbol)
+                .currentPrice(BigInteger.ZERO) // 민팅 시엔 기본 0
+                .mintPrice(dto.getPrice())
+                .mintQuantity(dto.getTotalSupply())
+                .isListed(false) // 민팅 시엔 기본 false
+                .owner(userRepository.getReferenceById(userId))
+                .video(videoRepository.getReferenceById(dto.getVideoId().longValue()))
+                .build();
+    }
+
     public List<NftResponseDTO.NFTInfoDTO> toDTOList(List<Nft> nftList) {
         return nftList.stream()
                 .map(

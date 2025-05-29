@@ -50,6 +50,16 @@ public class NftController {
         return nftService.mintVideoNFT(request, user);
     }
 
+    @PostMapping("/mint_result")
+    @Operation(
+            summary = "nft 발행 결과를 반환합니다.",
+            description =
+                    "FE에서 메타마스크로 스마트 컨트랙트 호출 후, 발행 결과를 확인하기 위해 사용합니다.</br> tokenId 리스트는 컨트랙트의 로그에서 추출해야합니다.</br> creatorId는 프런트에서 넣어주세요.")
+    public NftResponseDTO.NFTMintResultDTO mintResultGet(
+            @Validated @RequestBody NftRequestDTO.NFTMintRequestGetDTO request) throws Exception {
+        return nftService.mintResultGet(request);
+    }
+
     @PostMapping("/list")
     @Operation(
             summary = "nft를 마켓 플레이스에 등록",
