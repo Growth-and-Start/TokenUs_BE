@@ -82,4 +82,16 @@ public class NftRequestDTO {
     public static class NFTPurchaseRequestDTO {
         private BigInteger tokenId;
     }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NFTPurchaseResultGetDTO {
+        private BigInteger tokenId;
+        private String txHash;
+        private String buyerAddress; // 구매자의 지갑 주소
+        private BigInteger tradePrice; // 거래 가격 (wei 단위)
+    }
 }

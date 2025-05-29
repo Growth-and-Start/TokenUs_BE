@@ -150,6 +150,21 @@ public class NftController {
                 nftService.purchaseNFT(request, userDetails.getUser().getId()));
     }
 
+    @PostMapping("/trade_result")
+    @Operation(
+            summary = "NFT 거래 결과를 반환합니다.",
+            description = "FE에서 메타마스크로 스마트 컨트랙트 호출 후, 거래 결과를 확인하기 위해 사용합니다.</br>")
+    public ApiResponse<NftResponseDTO.NFTPurchaseResultGetDTO> purchaseNFTResultGet(
+            @Validated @RequestBody NftRequestDTO.NFTPurchaseResultGetDTO request) {
+        try {
+            NftResponseDTO.NFTPurchaseResultGetDTO result =
+                    nftService.purchaseNftResultGet(request);
+            return ApiResponse.onSuccess(result);
+        } catch (Exception e) {
+            return ApiResponse.onFailure("TRADE_RESULT_FAIL", e.getMessage(), null);
+        }
+    }
+
     @GetMapping("/trade_history")
     @Operation(
             summary = "videoId로 NFT 거래 내역을 조회합니다.",
