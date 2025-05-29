@@ -57,6 +57,19 @@ public class NftRequestDTO {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class listNftResultGetDTO {
+        private BigInteger tokenId;
+        private BigInteger price; // wei 단위
+        private String txHash;
+        private String creatorAddress;
+        private String creatorId; // 프론트에서 넣어주세요
+    }
+
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class NftDelistRequestDTO {
         private BigInteger tokenId;
     }
