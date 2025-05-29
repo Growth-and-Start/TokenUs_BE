@@ -152,6 +152,47 @@ public class NftService {
                 .build();
     }
 
+    public NftResponseDTO.NFTMintResultDTO mintResultGet(NftRequestDTO.NFTMintRequestGetDTO request)
+            throws Exception {
+
+        List<BigInteger> tokenIdList = request.getTokenIdList();
+
+        List<Nft> savedNfts = new ArrayList<>();
+
+        for (BigInteger tokenId : tokenIdList) {
+            Nft nft =
+                    nftConverter.toNft_V2(
+                            request,
+                            tokenId,
+                            request.getCreatorId(),
+                            request.getNftName(),
+                            request.getNftSymbol());
+
+            nft = nftRepository.save(nft); // 저장된 엔티티 다시 할당
+
+            savedNfts.add(nft);
+
+            Transaction transaction =
+                    Transaction.builder()
+                            .txHash(request.getTxHash())
+                            .type(TransactionType.MINT)
+                            .seller(userRepository.getReferenceById(request.getCreatorId()))
+                            .buyer(null)
+                            .nft(nft)
+                            .build();
+
+            transactionRepository.save(transaction);
+        }
+
+        // 4. 응답 DTO 구성
+        List<NftResponseDTO.NFTInfoDTO> nftInfos = nftConverter.toDTOList(savedNfts);
+
+        return NftResponseDTO.NFTMintResultDTO.builder()
+                .transactionHash(request.getTxHash())
+                .mintedNFTs(nftInfos)
+                .build();
+    }
+
     private List<BigInteger> extractTokenIdsFromLogs(TransactionReceipt receipt) {
         List<BigInteger> tokenIds = new ArrayList<>();
 
@@ -245,6 +286,80 @@ public class NftService {
                 .mintPrice(nft.getMintPrice())
                 .sellerAddress(nft.getOwner().getWalletAddress())
                 .isListed(true)
+                .build();
+    }
+
+    public NftResponseDTO.NFTListResultDTO listNftResultGet(
+            NftRequestDTO.listNftResultGetDTO request) throws Exception {
+
+        Nft nft =
+                nftRepository
+                        .findByTokenId(request.getTokenId())
+                        .orElseThrow(
+                                () -> new IllegalArgumentException("해당 tokenId의 NFT가 존재하지 않습니다."));
+
+        nft.setIsListed(true);
+        nft.setCurrentPrice(request.getPrice());
+        nftRepository.save(nft);
+
+        // 🧾 트랜잭션 기록
+        Transaction transaction =
+                Transaction.builder()
+                        .txHash(request.getTxHash())
+                        .type(TransactionType.LIST)
+                        .seller(nft.getOwner())
+                        .buyer(null)
+                        .nft(nft)
+                        .build();
+        transactionRepository.save(transaction);
+
+        return NftResponseDTO.NFTListResultDTO.builder()
+                .id(nft.getId())
+                .transactionHash(request.getTxHash())
+                .nftName(nft.getNftName())
+                .nftSymbol(nft.getNftSymbol())
+                .tokenId(request.getTokenId())
+                .currentPrice(nft.getCurrentPrice())
+                .mintPrice(nft.getMintPrice())
+                .sellerAddress(nft.getOwner().getWalletAddress())
+                .isListed(true)
+                .build();
+    }
+
+    public NftResponseDTO.NFTListResultDTO delistNftResultGet(
+            NftRequestDTO.listNftResultGetDTO request) throws Exception {
+
+        Nft nft =
+                nftRepository
+                        .findByTokenId(request.getTokenId())
+                        .orElseThrow(
+                                () -> new IllegalArgumentException("해당 tokenId의 NFT가 존재하지 않습니다."));
+
+        nft.setIsListed(false);
+        nft.setCurrentPrice(request.getPrice());
+        nftRepository.save(nft);
+
+        // 🧾 트랜잭션 기록
+        Transaction transaction =
+                Transaction.builder()
+                        .txHash(request.getTxHash())
+                        .type(TransactionType.DELIST)
+                        .seller(nft.getOwner())
+                        .buyer(null)
+                        .nft(nft)
+                        .build();
+        transactionRepository.save(transaction);
+
+        return NftResponseDTO.NFTListResultDTO.builder()
+                .id(nft.getId())
+                .transactionHash(request.getTxHash())
+                .nftName(nft.getNftName())
+                .nftSymbol(nft.getNftSymbol())
+                .tokenId(request.getTokenId())
+                .currentPrice(nft.getCurrentPrice())
+                .mintPrice(nft.getMintPrice())
+                .sellerAddress(nft.getOwner().getWalletAddress())
+                .isListed(false)
                 .build();
     }
 
@@ -420,7 +535,7 @@ public class NftService {
                         .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."));
 
         nft.setIsListed(false);
-        nft.setCurrentPrice(price);
+        nft.setCurrentPrice(null);
 
         User buyer =
                 userRepository
@@ -536,6 +651,49 @@ public class NftService {
     //                .tradePrice(price)
     //                .build();
     //    }
+
+    public NftResponseDTO.NFTPurchaseResultGetDTO purchaseNftResultGet(
+            NftRequestDTO.NFTPurchaseResultGetDTO request) throws Exception {
+
+        BigInteger tokenId = request.getTokenId();
+
+        // 📦 DB 업데이트
+        Nft nft =
+                nftRepository
+                        .findByTokenId(tokenId)
+                        .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."));
+
+        nft.setIsListed(false);
+        nft.setCurrentPrice(null);
+
+        User buyer =
+                userRepository
+                        .findByWalletAddress(request.getBuyerAddress())
+                        .orElseThrow(() -> new IllegalArgumentException("해당 지갑의 유저가 존재하지 않습니다."));
+        nft.setOwner(buyer);
+        nftRepository.save(nft);
+
+        // 🧾 트랜잭션 저장
+        Transaction transaction =
+                Transaction.builder()
+                        .txHash(request.getTxHash())
+                        .type(TransactionType.TRADE)
+                        .seller(nft.getOwner())
+                        .buyer(buyer)
+                        .tradePrice(request.getTradePrice())
+                        .nft(nft)
+                        .build();
+        transactionRepository.save(transaction);
+
+        return NftResponseDTO.NFTPurchaseResultGetDTO.builder()
+                .txHash(request.getTxHash())
+                .tokenId(tokenId)
+                .nftName(nft.getNftName())
+                .nftSymbol(nft.getNftSymbol())
+                .buyerAddress(request.getBuyerAddress())
+                .tradePrice(request.getTradePrice())
+                .build();
+    }
 
     public List<NftResponseDTO.NFTTradeHistoryDTO> getTradeHistoryByVideoId(Long videoId) {
         List<Transaction> transactions =

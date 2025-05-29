@@ -50,6 +50,16 @@ public class NftController {
         return nftService.mintVideoNFT(request, user);
     }
 
+    @PostMapping("/mint_result")
+    @Operation(
+            summary = "nft 발행 결과를 반환합니다.",
+            description =
+                    "FE에서 메타마스크로 스마트 컨트랙트 호출 후, 발행 결과를 확인하기 위해 사용합니다.</br> tokenId 리스트는 컨트랙트의 로그에서 추출해야합니다.</br> creatorId는 프런트에서 넣어주세요.")
+    public NftResponseDTO.NFTMintResultDTO mintResultGet(
+            @Validated @RequestBody NftRequestDTO.NFTMintRequestGetDTO request) throws Exception {
+        return nftService.mintResultGet(request);
+    }
+
     @PostMapping("/list")
     @Operation(
             summary = "nft를 마켓 플레이스에 등록",
@@ -63,6 +73,20 @@ public class NftController {
             return ApiResponse.onSuccess(result);
         } catch (Exception e) {
             return ApiResponse.onFailure("LIST_FAIL", e.getMessage(), null);
+        }
+    }
+
+    @PostMapping("/list_result")
+    @Operation(
+            summary = "nft 판매 등록 결과를 반환합니다.",
+            description = "FE에서 메타마스크로 스마트 컨트랙트 호출 후, 판매 등록 결과를 확인하기 위해 사용합니다.</br>")
+    public ApiResponse<NftResponseDTO.NFTListResultDTO> listNFTResultGet(
+            @Validated @RequestBody NftRequestDTO.listNftResultGetDTO request) {
+        try {
+            NftResponseDTO.NFTListResultDTO result = nftService.listNftResultGet(request);
+            return ApiResponse.onSuccess(result);
+        } catch (Exception e) {
+            return ApiResponse.onFailure("LIST_RESULT_FAIL", e.getMessage(), null);
         }
     }
 
@@ -102,6 +126,20 @@ public class NftController {
         return ApiResponse.onSuccess(nftService.delistNFT(request, userDetails.getUser().getId()));
     }
 
+    @PostMapping("/delist_result")
+    @Operation(
+            summary = "nft 판매 등록 취소 결과를 반환합니다.",
+            description = "FE에서 메타마스크로 스마트 컨트랙트 호출 후, 판매 등록 결과를 확인하기 위해 사용합니다.</br>")
+    public ApiResponse<NftResponseDTO.NFTListResultDTO> delistNFTResultGet(
+            @Validated @RequestBody NftRequestDTO.listNftResultGetDTO request) {
+        try {
+            NftResponseDTO.NFTListResultDTO result = nftService.delistNftResultGet(request);
+            return ApiResponse.onSuccess(result);
+        } catch (Exception e) {
+            return ApiResponse.onFailure("LIST_RESULT_FAIL", e.getMessage(), null);
+        }
+    }
+
     @PostMapping("/trade")
     @Operation(summary = "NFT 거래", description = "")
     public ApiResponse<NftResponseDTO.NFTPurchaseResultDTO> purchaseNFT(
@@ -110,6 +148,21 @@ public class NftController {
             throws Exception {
         return ApiResponse.onSuccess(
                 nftService.purchaseNFT(request, userDetails.getUser().getId()));
+    }
+
+    @PostMapping("/trade_result")
+    @Operation(
+            summary = "NFT 거래 결과를 반환합니다.",
+            description = "FE에서 메타마스크로 스마트 컨트랙트 호출 후, 거래 결과를 확인하기 위해 사용합니다.</br>")
+    public ApiResponse<NftResponseDTO.NFTPurchaseResultGetDTO> purchaseNFTResultGet(
+            @Validated @RequestBody NftRequestDTO.NFTPurchaseResultGetDTO request) {
+        try {
+            NftResponseDTO.NFTPurchaseResultGetDTO result =
+                    nftService.purchaseNftResultGet(request);
+            return ApiResponse.onSuccess(result);
+        } catch (Exception e) {
+            return ApiResponse.onFailure("TRADE_RESULT_FAIL", e.getMessage(), null);
+        }
     }
 
     @GetMapping("/trade_history")
