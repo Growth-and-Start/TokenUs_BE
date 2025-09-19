@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 
-# 환경 변수 불러오기
+# .env 파일을 환경 변수로 export
+set -a
 source .env
+set +a
 
 # ==============================
 # Docker network 확인 및 생성
