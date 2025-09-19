@@ -81,4 +81,5 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd deploy-script
-            sh ./deploy.sh
+            chmod +x deploy.sh
+            ./deploy.sh
