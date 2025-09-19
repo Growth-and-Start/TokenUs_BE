@@ -1,16 +1,16 @@
 name: tokenus
 
 services:
-  tokenus_mysql:
-    container_name: tokenus_mysql
+  tokenus-mysql:
+    container_name: tokenus-mysql
     image: mysql:latest
     env_file: .env
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
-      - "3308:3306"
+      - "3306:3306"
     networks:
-      - network
+      - tokenus-network
     command: [ "--character-set-server=utf8mb4","--collation-server=utf8mb4_unicode_ci" ] # MySQL 서버가 실행될 때 사용할 문자셋 및 정렬 규칙 지정
     restart: always
     healthcheck:
@@ -21,12 +21,12 @@ services:
 
   tokenus-app:
     container_name: tokenus-app
-    image: 343218215881.dkr.ecr.ap-northeast-2.amazonaws.com/tokenus/app:latest
+    image: ${APP_IMAGE}
     env_file: .env
     ports:
       - "8080:8080"
     networks:
-      - network
+      - tokenus-network
     restart: always
     depends_on:
       tokenus-mysql:
@@ -35,8 +35,8 @@ services:
     mem_limit: 512m       # ✅ 메모리 사용 제한 (512MB)
 
 networks:
-  network:
-    driver: bridge # "브리지 네트워크"를 자동 생성하고 컨테이너 간 통신이 가능하도록 설정
+  tokenus-network:
+    external: true
 
 volumes:
   mysql_data:

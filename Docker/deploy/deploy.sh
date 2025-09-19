@@ -1,9 +1,27 @@
+#!/bin/bash
+set -e
+
+# 환경 변수 불러오기
+source .env
+
+# ==============================
+# Docker network 확인 및 생성
+# ==============================
+if ! docker network ls | grep -q "tokenus-network"; then
+  echo "tokenus-network 네트워크가 없어 새로 생성합니다..."
+  docker network create tokenus-network
+else
+  echo "tokenus-network 네트워크가 이미 존재합니다."
+fi
+
 # AWS ECR 로그인
-aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 343218215881.dkr.ecr.ap-northeast-2.amazonaws.com
+aws ecr get-login-password --region $AWS_REGION | docker login \
+  --username AWS \
+  --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
 # ECR에서 최신 이미지 pull
 echo "ECR에 있는 이미지 불러오기"
-if ! docker pull 343218215881.dkr.ecr.ap-northeast-2.amazonaws.com/tokenus/app:latest; then
+if ! docker pull $APP_IMAGE; then
     echo "이미지 불러오기에 실패했습니다."
     exit 1
 fi
