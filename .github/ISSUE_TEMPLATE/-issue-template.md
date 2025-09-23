@@ -7,14 +7,14 @@ assignees: ''
 
 ---
 
-## 어떤 이슈인가요?
+## Issue?
 
 
-## 작업 상세 내용
+## Details
 - [ ] 
 
 
-## 참고할만한 자료(선택)
+## References(Optional)
 
 
 ## Must do

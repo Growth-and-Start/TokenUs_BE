@@ -12,7 +12,7 @@ import TokenUs.TokenUs_BE.apiPayload.code.ReasonDTO;
 @AllArgsConstructor
 public enum SuccessStatus implements BaseCode {
 
-    // 일반적인 응답 상수
+    // General Success Responses
     _OK(HttpStatus.OK, "COMMON200", "성공입니다.");
 
     private final HttpStatus httpStatus;

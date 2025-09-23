@@ -10,16 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 1.리포지토리 가져오기
+      - name: 1. Checkout repository
         uses: actions/checkout@v4
 
-      - name: 2.JDK 17 설치
+      - name: 2. Install JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 3.Gradle 명령 실행 권한 설정
+      - name: 3. Set execute permission for gradlew
         run: chmod +x gradlew
 
       - name: 4.Configure AWS credentials
@@ -29,11 +29,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: 5.Amazon ECR에 로그인
+      - name: 5.Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: 6.Docker Image 빌드 및 ECR에 push
+      - name: 6.Build and push Docker image to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
@@ -43,7 +43,7 @@ jobs:
             -Djib.to.image=$ECR_REGISTRY/$ECR_REPOSITORY \
             -Djib.to.tags=$IMAGE_TAG,latest
 
-      - name: 7.오래된 Docker 이미지 삭제 (최신 5개 제외)
+      - name: 7.Delete old Docker images (keep latest 5)
         env:
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
@@ -62,9 +62,9 @@ jobs:
               --region $AWS_REGION \
               --repository-name $ECR_REPOSITORY \
               --image-ids file://old-images.json
-            echo "🧹 $IMAGE_COUNT개의 오래된 이미지를 삭제했습니다."
+            echo "Deleted $IMAGE_COUNT old images."
           else
-            echo "🧼 삭제할 이미지가 없습니다."
+            echo "No images to delete."
           fi
 
   run-images-on-ec2:
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 8.EC2 접속 및 배포 스크립트 실행
+      - name: 8. Connect to EC2 and run deployment script
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SSH_HOST_NAME }}

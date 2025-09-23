@@ -21,7 +21,7 @@ public class S3Controller {
     @GetMapping("/presigned_url")
     @Operation(summary = "S3 업로드용 presigned-url, 유효기간 10분")
     public ResponseEntity<String> getPresignedUrl(
-            @RequestParam String folder, // "video", "profile", "thumbnail"
+            @RequestParam String folder,
             @RequestParam String fileName,
             @RequestParam(defaultValue = "application/octet-stream") String contentType) {
 

@@ -96,7 +96,7 @@ public class NftService {
 
     public NftResponseDTO.NFTMintResultDTO mintVideoNFT(
             NftRequestDTO.NFTMintRequestDTO request, User creator) throws Exception {
-        // 1. 스마트 컨트랙트 호출
+
         TransactionReceipt receipt =
                 videoNftContract
                         .mintVideoNFT(
@@ -111,10 +111,8 @@ public class NftService {
         String txHash = receipt.getTransactionHash();
         System.out.println(" Mint txHash: " + txHash);
 
-        // 2. tokenId 리스트 추출 (Transfer 이벤트에서)
         List<BigInteger> tokenIdList = extractTokenIdsFromLogs(receipt);
 
-        // 3. NFT 도메인 객체 생성 & 저장
         List<Nft> savedNfts = new ArrayList<>();
 
         for (BigInteger tokenId : tokenIdList) {
@@ -126,7 +124,7 @@ public class NftService {
                             request.getNftName(),
                             request.getNftSymbol());
 
-            nft = nftRepository.save(nft); // 저장된 엔티티 다시 할당
+            nft = nftRepository.save(nft);
 
             savedNfts.add(nft);
 
@@ -142,7 +140,6 @@ public class NftService {
             transactionRepository.save(transaction);
         }
 
-        // 4. 응답 DTO 구성
         List<NftResponseDTO.NFTInfoDTO> nftInfos = nftConverter.toDTOList(savedNfts);
 
         return NftResponseDTO.NFTMintResultDTO.builder()
@@ -167,7 +164,7 @@ public class NftService {
                             request.getNftName(),
                             request.getNftSymbol());
 
-            nft = nftRepository.save(nft); // 저장된 엔티티 다시 할당
+            nft = nftRepository.save(nft);
 
             savedNfts.add(nft);
 
@@ -183,7 +180,6 @@ public class NftService {
             transactionRepository.save(transaction);
         }
 
-        // 4. 응답 DTO 구성
         List<NftResponseDTO.NFTInfoDTO> nftInfos = nftConverter.toDTOList(savedNfts);
 
         return NftResponseDTO.NFTMintResultDTO.builder()
@@ -219,14 +215,12 @@ public class NftService {
         return videoNftContract.safeTransferFrom(from, to, tokenId).send().getTransactionHash();
     }
 
-    // 판매 등록 메서드
     public NftResponseDTO.NFTListResultDTO listNft(
             NftRequestDTO.listNftRequestDTO request, Long loginUserId) throws Exception {
 
         BigInteger tokenId = request.getTokenId();
         BigInteger price = request.getPrice();
 
-        // 1. 로그인한 사용자의 wallet address 확인
         String walletAddress =
                 userRepository
                         .findById(loginUserId)
@@ -235,7 +229,6 @@ public class NftService {
 
         System.out.println("DB상 소유자" + walletAddress);
 
-        // 2. 스마트 컨트랙트 상 NFT 소유자 확인
         String onChainOwner = videoNftContract.ownerOf(request.getTokenId()).send();
         System.out.println("Chain상 소유자" + onChainOwner);
 
@@ -246,14 +239,12 @@ public class NftService {
             throw new IllegalAccessException("NFT의 실제 소유자가 아닙니다.");
         }
 
-        // 3. 마켓플레이스 컨트랙트에 list 요청
         TransactionReceipt receipt =
                 marketplaceContract.listNFT(request.getTokenId(), request.getPrice()).send();
         System.out.println("RECEIPT" + receipt);
 
         String txHash = receipt.getTransactionHash();
 
-        // DB 업데이트
         Nft nft =
                 nftRepository
                         .findByTokenId(tokenId)
@@ -264,7 +255,6 @@ public class NftService {
         nft.setCurrentPrice(price);
         nftRepository.save(nft);
 
-        // 트랜잭션 기록
         Transaction transaction =
                 Transaction.builder()
                         .txHash(txHash)
@@ -301,7 +291,6 @@ public class NftService {
         nft.setCurrentPrice(request.getPrice());
         nftRepository.save(nft);
 
-        // 트랜잭션 기록
         Transaction transaction =
                 Transaction.builder()
                         .txHash(request.getTxHash())
@@ -338,7 +327,6 @@ public class NftService {
         nft.setCurrentPrice(request.getPrice());
         nftRepository.save(nft);
 
-        // 트랜잭션 기록
         Transaction transaction =
                 Transaction.builder()
                         .txHash(request.getTxHash())
@@ -365,7 +353,6 @@ public class NftService {
     public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId) throws Exception {
         System.out.println("[SERVICE] getListedNfts() 호출됨");
 
-        // 1. 컨트랙트에서 판매중인 NFT 목록 호출
         System.out.println("[SERVICE] getListedNFTs().send() 호출 직전");
         Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
                 marketplaceContract.getListedNFTs().send();
@@ -383,11 +370,10 @@ public class NftService {
 
         List<NftResponseDTO.listedNFTInfoDTO> listedNfts = new ArrayList<>();
 
-        // 로그인한 사용자 정보 가져오기
         Optional<User> loginUser =
                 loginUserId != null ? userRepository.findById(loginUserId) : Optional.empty();
 
-        BigInteger floorPrice = null; // floorPrice 초기화
+        BigInteger floorPrice = null;
 
         for (int i = 0; i < tokenIds.size(); i++) {
             BigInteger tokenId = tokenIds.get(i);
@@ -404,7 +390,6 @@ public class NftService {
                                 + ", isListed: "
                                 + nft.getIsListed());
 
-                // listed 값이 true인 경우 floorPrice 계산
                 if (nft.getIsListed()) {
                     if (floorPrice == null || nft.getCurrentPrice().compareTo(floorPrice) < 0) {
                         floorPrice = nft.getCurrentPrice();
@@ -412,7 +397,6 @@ public class NftService {
                     }
                 }
 
-                // DTO 변환
                 NftResponseDTO.listedNFTInfoDTO dto =
                         nftConverter.toListedNFTInfoDTO(nft, sellerAddresses.get(i), floorPrice);
                 listedNfts.add(dto);
@@ -426,7 +410,6 @@ public class NftService {
             NftRequestDTO.NftDelistRequestDTO request, Long loginUserId) throws Exception {
         BigInteger tokenId = request.getTokenId();
 
-        // 소유자 인증 (체인 or DB 기준)
         Nft nft =
                 nftRepository
                         .findByTokenId(tokenId)
@@ -443,16 +426,13 @@ public class NftService {
             throw new IllegalAccessException("NFT의 실제 소유자가 아닙니다.");
         }
 
-        // 스마트 컨트랙트 호출
         TransactionReceipt receipt = marketplaceContract.delistNFT(tokenId).send();
         String txHash = receipt.getTransactionHash();
 
-        // DB 상태 변경
         nft.setIsListed(false);
         nft.setCurrentPrice(null);
         nftRepository.save(nft);
 
-        // 트랜잭션 기록
         Transaction transaction =
                 Transaction.builder()
                         .txHash(txHash)
@@ -481,7 +461,6 @@ public class NftService {
 
         BigInteger tokenId = request.getTokenId();
 
-        // 가격 확인
         BigInteger price =
                 nftRepository
                         .findByTokenId(tokenId)
@@ -494,14 +473,12 @@ public class NftService {
                         .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."))
                         .getOwner();
 
-        // 구매자 지갑 주소
         String buyerAddress =
                 userRepository
                         .findById(loginUserId)
                         .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."))
                         .getWalletAddress();
 
-        // 온체인 가격 확인
         Tuple4<BigInteger, String, BigInteger, Boolean> listing =
                 marketplaceContract.listings(tokenId).send();
         BigInteger onChainPrice = listing.getValue3();
@@ -512,13 +489,11 @@ public class NftService {
         System.out.println(" chain approved: " + videoNftContract.getApproved(tokenId).send());
         System.out.println(" ownerOf: " + videoNftContract.ownerOf(tokenId).send());
 
-        //  1. NFT 구매
         TransactionReceipt purchaseReceipt = marketplaceContract.purchaseNFT(tokenId, price).send();
         String purchaseTxHash = purchaseReceipt.getTransactionHash();
         System.out.println(" NFT 구매 완료!");
         System.out.println(" 구매 트랜잭션 해시: " + purchaseTxHash);
 
-        //  2. NFT를 구매자에게 전송
         TransactionReceipt transferReceipt =
                 videoNftContract
                         .safeTransferFrom(credentials.getAddress(), buyerAddress, tokenId)
@@ -527,7 +502,6 @@ public class NftService {
         System.out.println(" NFT를 구매자 주소로 전송 완료!");
         System.out.println(" 전송 트랜잭션 해시: " + transferTxHash);
 
-        //  DB 업데이트
         Nft nft =
                 nftRepository
                         .findByTokenId(tokenId)

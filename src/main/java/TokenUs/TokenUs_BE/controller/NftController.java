@@ -36,15 +36,14 @@ public class NftController {
             @Validated @RequestBody NftRequestDTO.NFTMintRequestDTO request,
             @AuthenticationPrincipal CustomUserDetails userDetails)
             throws Exception {
-        // 1. 로그인 유저
+
         User user = userDetails.getUser();
 
-        // 2. 지갑 주소 확인
         if (user.getWalletAddress() == null || user.getWalletAddress().isEmpty()) {
-            throw new IllegalArgumentException("NFT 민팅을 위해서는 지갑 주소가 필요합니다. 먼저 지갑 주소를 등록해주세요.");
+            throw new IllegalArgumentException(
+                    "To mint NFT, a wallet address is required. Please register your wallet address first.");
         }
 
-        // 3. DTO에 주입
         request.setCreatorAddress(user.getWalletAddress());
 
         return nftService.mintVideoNFT(request, user);

@@ -33,7 +33,6 @@ public class JwtUtil {
         return this.key;
     }
 
-    // JWT 액세스 토큰 생성
     public String generateToken(
             String email,
             Collection<? extends GrantedAuthority> authorities,
@@ -42,22 +41,18 @@ public class JwtUtil {
 
         Date now = new Date();
 
-        List<String> roleNames =
-                authorities.stream()
-                        .map(GrantedAuthority::getAuthority) // "ROLE_ADMIN" 등
-                        .toList();
+        List<String> roleNames = authorities.stream().map(GrantedAuthority::getAuthority).toList();
 
         return Jwts.builder()
-                .setSubject(email) // 사용자 식별 정보
-                .setIssuedAt(now) // 발급 시간
-                .claim("type", tokenType) // type: 토큰 종류
+                .setSubject(email)
+                .setIssuedAt(now)
+                .claim("type", tokenType)
                 .claim("roles", roleNames)
-                .setExpiration(new Date(now.getTime() + expirationTime)) // 만료 시간
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // HS256 알고리즘
+                .setExpiration(new Date(now.getTime() + expirationTime))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // 토큰에서 이메일(=username)추출
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -67,25 +62,22 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    // 토큰 유효성 검사
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            // 만료되었거나 서명 검증 실패 등
+
             return false;
         }
     }
 
-    // Jwt 리프레시 토큰 생성
     public String generateRefreshToken(
             String email, Collection<? extends GrantedAuthority> authorities) {
         Date now = new Date();
 
         List<String> roleNames = authorities.stream().map(GrantedAuthority::getAuthority).toList();
 
-        // expiration 1일
         long EXPIRATION_TIME = 1000 * 60 * 60 * 24L;
 
         return Jwts.builder()
@@ -98,7 +90,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // 토큰 클레임 요청
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -107,7 +98,6 @@ public class JwtUtil {
                 .getBody();
     }
 
-    // 토큰에서 role 반환
     public List<String> getRolesFromToken(String token) {
 
         Claims claims = getAllClaimsFromToken(token);
@@ -116,10 +106,9 @@ public class JwtUtil {
         if (rolesObject instanceof List<?>) {
             return ((List<?>) rolesObject).stream().map(Object::toString).toList();
         }
-        return List.of(); // 빈 리스트 반환
+        return List.of();
     }
 
-    // 토큰에서 type 추출, accessToken인지 refreshToken인지
     public String getTypeFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
         return claims.get("type", String.class);

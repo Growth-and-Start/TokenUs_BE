@@ -11,10 +11,10 @@ public class TokenDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class tokenDTO {
-        private String grantType; // 토큰 타입 (Bearer)
-        private String accessToken; // 액세스 토큰
-        private Long accessTokenExpiresIn; // 액세스 토큰 만료 시간 (Unix Timestamp)
-        private String refreshToken; // 리프레시 토큰
+        private String grantType;
+        private String accessToken;
+        private Long accessTokenExpiresIn;
+        private String refreshToken;
     }
 
     @Getter

@@ -108,12 +108,10 @@ public class VideoController {
             @RequestBody VideoRequestDTO.similarityCheckRequestDTO request) {
 
         String fileUrl = request.getVideoUrl();
-        System.out.println("📤 Flask로 유사도 검사 요청 시작: " + fileUrl);
+        System.out.println("Flask로 유사도 검사 요청 시작: " + fileUrl);
 
-        // Flask 서버로 비동기 요청 전송 (응답 기다리지 않음)
         flaskService.sendSimilarityRequestAsync(fileUrl);
 
-        // 즉시 응답
         return ApiResponse.onSuccess("유사도 검사 요청이 성공적으로 전송되었습니다.");
     }
 
@@ -125,8 +123,6 @@ public class VideoController {
 
         System.out.println("📡 Received similarity check result: " + result);
 
-        // WebSocket으로 결과 전송
-        // TODO: 유저에 따라 다르게 구현
         messagingTemplate.convertAndSend("/topic/similarity_result", result);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
@@ -138,10 +134,8 @@ public class VideoController {
             @Validated @RequestBody VideoRequestDTO.videoDetailRequestDTO request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        // 1. 로그인 유저
         User user = userDetails.getUser();
 
-        // 2. VideoService를 통해 Video 객체 생성 및 반환
         Video video = videoService.createVideo(request, user);
 
         VideoResponseDTO.uploadResultDTO response = videoConverter.toUploadResult(video);
@@ -149,12 +143,11 @@ public class VideoController {
         return ApiResponse.onSuccess(response);
     }
 
-    // 필요 API->내 영상 리스트 반환, 공개 여부 수정, 현재 로그인한 사용자 이메일 받아오기, 지갑 주소 있는지 확인
     @GetMapping("/get_my_videos")
     @Operation(summary = "로그인한 사용자의 영상 리스트 반환", description = "영상 NFT의 currentPrice의 평균값 포함")
     public ApiResponse<List<VideoResponseDTO.listResultDTO>> getMyVideos(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        // user 객체 반환
+
         User currentUser = userDetails.getUser();
 
         List<VideoResponseDTO.listResultDTO> result =
@@ -163,36 +156,6 @@ public class VideoController {
         return ApiResponse.onSuccess(result);
     }
 
-    //    @PatchMapping("/to_open")
-    //    @Operation(summary = "비디오를 비공개에서 공개로 전환", description = "")
-    //    public ApiResponse<VideoResponseDTO.openResultDTO> toOpenVideo(
-    //            @AuthenticationPrincipal CustomUserDetails userDetails,
-    //            @RequestParam(required = true) Long videoId) {
-    //        // 현재 로그인한 사용자가 크리에이터가 맞는지 확인
-    //        User user = userDetails.getUser();
-    //
-    //        Video video = videoService.openVideo(videoId, user);
-    //
-    //        VideoResponseDTO.openResultDTO result = videoConverter.toOpenResultDTO(video);
-    //
-    //        return ApiResponse.onSuccess(result);
-    //    }
-    //
-    //    @PatchMapping("/to_close")
-    //    @Operation(summary = "비디오를 공개에서 비공개로 전환", description = "")
-    //    public ApiResponse<VideoResponseDTO.openResultDTO> toCloseVideo(
-    //            @AuthenticationPrincipal CustomUserDetails userDetails,
-    //            @RequestParam(required = true) Long videoId) {
-    //        // 현재 로그인한 사용자가 크리에이터가 맞는지 확인
-    //        User user = userDetails.getUser();
-    //
-    //        Video video = videoService.closeVideo(videoId, user);
-    //
-    //        VideoResponseDTO.openResultDTO result = videoConverter.toOpenResultDTO(video);
-    //
-    //        return ApiResponse.onSuccess(result);
-    //    }
-
     @PatchMapping("/modify")
     @Operation(
             summary = "비디오의 정보를 수정",
@@ -200,7 +163,6 @@ public class VideoController {
     public ApiResponse<VideoResponseDTO.modifyResultDTO> modifyVideoInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody(required = true) VideoRequestDTO.modifyRequestDTO request) {
-        // 현재 로그인한 사용자가 크리에이터가 맞는지 확인
         User user = userDetails.getUser();
 
         Video video = videoService.modifyVideo(request, user);
@@ -284,7 +246,6 @@ public class VideoController {
     public ApiResponse<VideoResponseDTO.likeResultDTO> likeVideo(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(required = true) Long videoId) {
-        // user id 반환
         Long userId = userDetails.getUser().getId();
 
         VideoLike videoLike = videoService.like(userId, videoId);
@@ -299,7 +260,6 @@ public class VideoController {
     public ApiResponse<VideoResponseDTO.likeResultDTO> unlikeVideo(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(required = true) Long videoId) {
-        // user id 반환
         Long userId = userDetails.getUser().getId();
 
         VideoLike videoLike = videoService.unlike(userId, videoId);

@@ -36,10 +36,10 @@ public class NftConverter {
                 .tokenId(tokenId)
                 .nftName(nftName)
                 .nftSymbol(nftSymbol)
-                .currentPrice(BigInteger.ZERO) // 민팅 시엔 기본 0
+                .currentPrice(BigInteger.ZERO)
                 .mintPrice(dto.getPrice())
                 .mintQuantity(dto.getTotalSupply())
-                .isListed(false) // 민팅 시엔 기본 false
+                .isListed(false)
                 .owner(userRepository.getReferenceById(userId))
                 .video(videoRepository.getReferenceById(dto.getVideoId().longValue()))
                 .build();
@@ -55,10 +55,10 @@ public class NftConverter {
                 .tokenId(tokenId)
                 .nftName(nftName)
                 .nftSymbol(nftSymbol)
-                .currentPrice(BigInteger.ZERO) // 민팅 시엔 기본 0
+                .currentPrice(BigInteger.ZERO)
                 .mintPrice(dto.getPrice())
                 .mintQuantity(dto.getTotalSupply())
-                .isListed(false) // 민팅 시엔 기본 false
+                .isListed(false)
                 .owner(userRepository.getReferenceById(userId))
                 .video(videoRepository.getReferenceById(dto.getVideoId().longValue()))
                 .build();
@@ -131,7 +131,7 @@ public class NftConverter {
     public static NftResponseDTO.VideoInterestDTO toVideoInterestDTO(VideoInterest videoInterest) {
         return NftResponseDTO.VideoInterestDTO.builder()
                 .videoId(videoInterest.getVideo().getId())
-                .message("관심이 성공적으로 등록되었습니다.")
+                .message("Success.")
                 .build();
     }
 
@@ -139,7 +139,6 @@ public class NftConverter {
         return nftList.stream()
                 .map(
                         nft -> {
-                            // Transaction에서 구매 가격 조회
                             Optional<Transaction> purchaseTransaction =
                                     transactionRepository.findByNftIdAndBuyerIdAndType(
                                             nft.getId(), userId, TransactionType.TRADE);
