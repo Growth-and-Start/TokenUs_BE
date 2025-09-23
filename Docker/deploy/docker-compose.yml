@@ -11,7 +11,7 @@ services:
       - "3306:3306"
     networks:
       - tokenus-network
-    command: [ "--character-set-server=utf8mb4","--collation-server=utf8mb4_unicode_ci" ] # MySQL 서버가 실행될 때 사용할 문자셋 및 정렬 규칙 지정
+    command: [ "--character-set-server=utf8mb4","--collation-server=utf8mb4_unicode_ci" ]
     restart: always
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
@@ -30,9 +30,9 @@ services:
     restart: always
     depends_on:
       tokenus-mysql:
-        condition: service_healthy  # MySQL이 완전히 실행된 후 Spring Boot 실행
-    cpus: "0.5"           # ✅ CPU 사용 제한
-    mem_limit: 512m       # ✅ 메모리 사용 제한 (512MB)
+        condition: service_healthy
+    cpus: "0.5"
+    mem_limit: 512m
 
 networks:
   tokenus-network:

@@ -71,7 +71,7 @@ public class AuthService {
                         1000 * 60 * 60 * 24 * 7L, // 7일 만료
                         "refresh");
 
-        // 🔥 Refresh Token 저장
+        // Refresh Token 저장
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
 
@@ -80,7 +80,7 @@ public class AuthService {
 
     @Transactional
     public ApiResponse<TokenDTO.tokenResponseDTO> refreshAccessToken(String refreshToken) {
-        // 🔥 Refresh Token 검증
+        // Refresh Token 검증
         if (!jwtUtil.validateToken(refreshToken)) {
             throw new GeneralHandler(ErrorStatus.INVALID_REFRESH_TOKEN);
         }
@@ -91,7 +91,7 @@ public class AuthService {
                         .findByEmail(email)
                         .orElseThrow(() -> new GeneralHandler(ErrorStatus.USER_NOT_FOUND));
 
-        // 🔥 저장된 Refresh Token과 요청된 Refresh Token이 일치하는지 확인
+        // 저장된 Refresh Token과 요청된 Refresh Token이 일치하는지 확인
         if (!refreshToken.equals(user.getRefreshToken())) {
             throw new GeneralHandler(ErrorStatus.INVALID_REFRESH_TOKEN);
         }
@@ -104,7 +104,7 @@ public class AuthService {
                         1000 * 60 * 30L,
                         "access");
 
-        // ✅ ApiResponse 형식에 맞게 반환
+        // ApiResponse 형식에 맞게 반환
         return ApiResponse.of(SuccessStatus._OK, new TokenDTO.tokenResponseDTO(newAccessToken));
     }
 

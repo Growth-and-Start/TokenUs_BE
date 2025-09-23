@@ -33,22 +33,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException, jakarta.servlet.ServletException {
 
-        log.info("🚀 JwtAuthenticationFilter 실행됨. 요청 URI: {}", request.getRequestURI());
+        log.info("JwtAuthenticationFilter 실행됨. 요청 URI: {}", request.getRequestURI());
 
         String token = getTokenFromRequest(request);
 
         if (!StringUtils.hasText(token)) {
-            log.warn("❌ Authorization 헤더가 없거나 JWT 토큰이 없습니다. 요청 URI: {}", request.getRequestURI());
+            log.warn("Authorization 헤더가 없거나 JWT 토큰이 없습니다. 요청 URI: {}", request.getRequestURI());
         } else {
-            log.info("🔑 JWT 토큰 추출 성공: {}", token);
+            log.info("JWT 토큰 추출 성공: {}", token);
 
             if (!jwtUtil.validateToken(token)) {
-                log.warn("❌ 유효하지 않은 JWT 토큰: {}", token);
+                log.warn("유효하지 않은 JWT 토큰: {}", token);
             } else {
-                log.info("✅ JWT 토큰 유효함");
+                log.info("JWT 토큰 유효함");
 
                 String email = jwtUtil.getEmailFromToken(token);
-                log.info("👤 토큰에서 추출한 사용자 이메일: {}", email);
+                log.info("토큰에서 추출한 사용자 이메일: {}", email);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                 UsernamePasswordAuthenticationToken authentication =
@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.info("🔐 SecurityContextHolder에 인증 정보 저장 완료. 사용자: {}", email);
+                log.info("SecurityContextHolder에 인증 정보 저장 완료. 사용자: {}", email);
             }
         }
 

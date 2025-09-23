@@ -8,7 +8,7 @@
 - [ ] 기타
 
 
-## ⭐Related Issues
+## Related Issues
 - closes #
 
 

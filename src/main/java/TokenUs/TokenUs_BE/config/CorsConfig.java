@@ -19,10 +19,10 @@ public class CorsConfig {
                                 "http://localhost:5500",
                                 "http://localhost:5714" // 로컬 웹소캣 테스트환경
                                 )
-                        .allowedMethods("*") // ✅ 모든 HTTP 메서드 허용
-                        .allowedHeaders("*") // ✅ 모든 요청 헤더 허용
+                        .allowedMethods("*") // 모든 HTTP 메서드 허용
+                        .allowedHeaders("*") // 모든 요청 헤더 허용
                         .allowCredentials(true) // JWT 쿠키/토큰 포함 허용, allowOrigins("*")불가
-                        .exposedHeaders("Authorization"); // ✅ JWT 토큰이 담긴 응답 헤더 허용
+                        .exposedHeaders("Authorization"); // JWT 토큰이 담긴 응답 헤더 허용
             }
         };
     }

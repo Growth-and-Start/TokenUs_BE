@@ -60,9 +60,9 @@ public class FlaskService {
             // 비동기로 요청만 보냄 (응답은 로그만)
             ResponseEntity<String> response =
                     restTemplate.postForEntity(url, requestEntity, String.class);
-            System.out.println("📡 Flask 응답 상태: " + response.getStatusCode());
+            System.out.println(" Flask 응답 상태: " + response.getStatusCode());
         } catch (Exception e) {
-            System.err.println("🚨 Flask 요청 실패: " + e.getMessage());
+            System.err.println("Flask 요청 실패: " + e.getMessage());
         }
     }
 
@@ -73,7 +73,7 @@ public class FlaskService {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("❌ FAISS info 요청 실패: " + e.getMessage());
+            System.err.println(" FAISS info 요청 실패: " + e.getMessage());
             return null;
         }
     }
@@ -85,7 +85,7 @@ public class FlaskService {
             ResponseEntity<String> response = restTemplate.postForEntity(url, null, String.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("❌ FAISS 초기화 요청 실패: " + e.getMessage());
+            System.err.println(" FAISS 초기화 요청 실패: " + e.getMessage());
             return null;
         }
     }

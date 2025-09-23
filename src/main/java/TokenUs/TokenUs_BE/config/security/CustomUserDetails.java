@@ -24,9 +24,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(
-                new SimpleGrantedAuthority(
-                        user.getRole().name())); // ✅ Role 자체가 GrantedAuthority이므로 바로 반환
+        return List.of(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
     @Override
@@ -36,22 +34,22 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail(); // email을 사용자명으로 사용
+        return user.getEmail();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // 계정 만료 정책이 없다면 true
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return user.getStatus() != Status.INACTIVE; // 예: 비활성화된 계정이면 false
+        return user.getStatus() != Status.INACTIVE;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // 비밀번호 만료 정책이 없다면 true
+        return true;
     }
 
     @Override
