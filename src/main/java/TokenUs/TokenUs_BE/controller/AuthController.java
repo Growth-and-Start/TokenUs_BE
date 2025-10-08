@@ -26,7 +26,6 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final AuthService authService;
 
-    // 회원가입
     @PostMapping("/signup")
     @Operation(
             summary = "이메일, 비밀번호, 닉네임, 이름을 바탕으로 회원가입 - profileUrl, walletAddress는 optional",

@@ -15,6 +15,6 @@ public class Web3jConfig {
 
     @Bean
     public Web3j web3j() {
-        return Web3j.build(new HttpService(rpcUrl)); // Truffle or Ganache RPC 주소
+        return Web3j.build(new HttpService(rpcUrl));
     }
 }

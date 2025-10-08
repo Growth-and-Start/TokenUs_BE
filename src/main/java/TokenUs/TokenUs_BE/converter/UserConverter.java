@@ -23,7 +23,6 @@ public class UserConverter {
                 .build();
     }
 
-    // 회원가입시 사용
     public static User toUser(UserRequestDTO.joinRequestDTO request) {
 
         return User.builder()

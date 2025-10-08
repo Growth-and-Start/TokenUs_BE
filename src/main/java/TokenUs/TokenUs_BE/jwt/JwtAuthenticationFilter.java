@@ -15,11 +15,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import lombok.extern.slf4j.Slf4j;
 
-// jwt를 사용해 사용자 인증 정보를 확인하고, SecurityContextHolder에 저장하는 역할
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    // 필터에서 JWT 관련 작업을 수행할 때 jwtUtil을 사용
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 

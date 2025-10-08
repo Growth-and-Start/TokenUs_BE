@@ -88,15 +88,12 @@ public class VideoConverter {
 
     public static VideoResponseDTO.getDetailDTO toDetailDTO(
             Video video, Long likeCount, Boolean isLiked) {
-        // mintPrice와 floorPrice 계산
         BigInteger mintPrice = null;
         BigInteger floorPrice = null;
 
         if (video.getNfts() != null && !video.getNfts().isEmpty()) {
-            // mintPrice는 첫 번째 NFT의 mintPrice로 설정
             mintPrice = video.getNfts().get(0).getMintPrice();
 
-            // floorPrice는 현재 판매 중인 NFT 중 가장 낮은 가격
             System.out.println("Total NFTs: " + video.getNfts().size());
             System.out.println(
                     "Listed NFTs: "

@@ -46,7 +46,7 @@ public class SecurityConfig {
         this.customUserDetailsService = customUserDetailsService;
     }
 
-    // AuthenticationManager 를 빈으로 등록 (스프링 시큐리티 6.x 이상)
+    // Register AuthenticationManager as a bean (Spring Security 6.x and above)
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
             throws Exception {
