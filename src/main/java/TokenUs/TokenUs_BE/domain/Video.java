@@ -47,4 +47,11 @@ public class Video extends BaseEntity {
 
     @OneToMany(mappedBy = "video", fetch = FetchType.LAZY)
     private List<Nft> nfts = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_video_id")
+    private Video parentVideo;
+
+    @OneToMany(mappedBy = "parentVideo", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Video> derivedVideos = new ArrayList<>();
 }
