@@ -21,18 +21,14 @@ public class FlaskService {
 
     public String requestSimilarityCheck(String fileUrl) {
 
-        // 1. requestBody 설정
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("file_url", fileUrl);
 
-        // 2. header 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // 3. requestBody+Header
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        // 4. 요청 보냄
         ResponseEntity<String> response =
                 restTemplate.exchange(flaskUrl, HttpMethod.POST, requestEntity, String.class);
 
@@ -57,12 +53,12 @@ public class FlaskService {
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
         try {
-            // 비동기로 요청만 보냄 (응답은 로그만)
+
             ResponseEntity<String> response =
                     restTemplate.postForEntity(url, requestEntity, String.class);
-            System.out.println("📡 Flask 응답 상태: " + response.getStatusCode());
+            System.out.println(" Flask 응답 상태: " + response.getStatusCode());
         } catch (Exception e) {
-            System.err.println("🚨 Flask 요청 실패: " + e.getMessage());
+            System.err.println("Flask 요청 실패: " + e.getMessage());
         }
     }
 
@@ -73,7 +69,7 @@ public class FlaskService {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("❌ FAISS info 요청 실패: " + e.getMessage());
+            System.err.println(" FAISS info 요청 실패: " + e.getMessage());
             return null;
         }
     }
@@ -85,7 +81,7 @@ public class FlaskService {
             ResponseEntity<String> response = restTemplate.postForEntity(url, null, String.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("❌ FAISS 초기화 요청 실패: " + e.getMessage());
+            System.err.println(" FAISS 초기화 요청 실패: " + e.getMessage());
             return null;
         }
     }

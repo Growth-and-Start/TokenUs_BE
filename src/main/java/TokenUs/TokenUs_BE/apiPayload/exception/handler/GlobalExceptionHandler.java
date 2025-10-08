@@ -19,12 +19,13 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.onFailure(reason.getCode(), reason.getMessage(), null));
     }
 
-    // 예: NullPointerException 등 다른 예외도 처리 가능
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleAllUnexpected(Exception e) {
-        e.printStackTrace(); // 로그 출력
+        e.printStackTrace();
 
         return ResponseEntity.status(500)
-                .body(ApiResponse.onFailure("INTERNAL_SERVER_ERROR", "예기치 못한 오류가 발생했습니다.", null));
+                .body(
+                        ApiResponse.onFailure(
+                                "INTERNAL_SERVER_ERROR", "Unexpected error occurred.", null));
     }
 }

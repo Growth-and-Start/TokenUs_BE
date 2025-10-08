@@ -37,7 +37,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                         .orElseThrow(
                                 () ->
                                         new RuntimeException(
-                                                "ConstraintViolationException 추출 도중 에러 발생"));
+                                                "Error occurred while extracting ConstraintViolationException"));
 
         return handleExceptionInternalConstraint(
                 e, ErrorStatus.valueOf(errorMessage), HttpHeaders.EMPTY, request);
@@ -94,7 +94,6 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
         ApiResponse<Object> body =
                 ApiResponse.onFailure(reason.getCode(), reason.getMessage(), null);
-        //        e.printStackTrace();
 
         WebRequest webRequest = new ServletWebRequest(request);
         return super.handleExceptionInternal(e, body, headers, reason.getHttpStatus(), webRequest);

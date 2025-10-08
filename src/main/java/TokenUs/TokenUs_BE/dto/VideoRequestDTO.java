@@ -12,7 +12,6 @@ public class VideoRequestDTO {
     @AllArgsConstructor
     public static class videoDetailRequestDTO {
 
-        // video 정보
         private String videoTitle;
         private String videoDetail;
         private String videoUrl;

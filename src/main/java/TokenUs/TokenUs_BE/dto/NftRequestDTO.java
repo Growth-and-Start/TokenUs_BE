@@ -7,7 +7,6 @@ import lombok.*;
 
 public class NftRequestDTO {
 
-    // emit VideoNFTMinted(videoId, creatorAddress, totalSupply, nftName, nftSymbol, price);
     @Builder
     @Getter
     @Setter
@@ -21,7 +20,6 @@ public class NftRequestDTO {
         private BigInteger price;
         private BigInteger videoId;
 
-        // 클라이언트가 보내지 않지만 백엔드에서 주입될 값들
         private String creatorAddress;
     }
 
@@ -49,7 +47,7 @@ public class NftRequestDTO {
     @AllArgsConstructor
     public static class listNftRequestDTO {
         private BigInteger tokenId;
-        private BigInteger price; // wei 단위
+        private BigInteger price;
     }
 
     @Builder
@@ -59,10 +57,10 @@ public class NftRequestDTO {
     @AllArgsConstructor
     public static class listNftResultGetDTO {
         private BigInteger tokenId;
-        private BigInteger price; // wei 단위
+        private BigInteger price;
         private String txHash;
         private String creatorAddress;
-        private String creatorId; // 프론트에서 넣어주세요
+        private String creatorId;
     }
 
     @Builder
@@ -91,7 +89,7 @@ public class NftRequestDTO {
     public static class NFTPurchaseResultGetDTO {
         private BigInteger tokenId;
         private String txHash;
-        private String buyerAddress; // 구매자의 지갑 주소
-        private BigInteger tradePrice; // 거래 가격 (wei 단위)
+        private String buyerAddress;
+        private BigInteger tradePrice;
     }
 }

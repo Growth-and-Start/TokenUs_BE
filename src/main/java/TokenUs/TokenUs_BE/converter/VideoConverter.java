@@ -67,44 +67,6 @@ public class VideoConverter {
                 .build();
     }
 
-    //    public static VideoResponseDTO.similarityCheckResultDTO toCheckResult(String json) {
-    //        try {
-    //            ObjectMapper mapper = new ObjectMapper();
-    //            JsonNode root = mapper.readTree(json);
-    //
-    //            // Flask의 /download 응답 구조:
-    //            // {
-    //            //   "message": "Download successful",
-    //            //   "video_url": "...",
-    //            //   "similarity_check_result": {
-    //            //       "max_similarity": ...,
-    //            //       "avg_similarity": ...,
-    //            //       "message": "...",
-    //            //       "passed": true,
-    //            //       "similar_video_id": "3" (optional)
-    //            //   }
-    //            // }
-    //
-    //            JsonNode sim = root.path("similarity_check_result");
-    //
-    //            return VideoResponseDTO.similarityCheckResultDTO
-    //                    .builder()
-    //                    .videoUrl(root.path("video_url").asText(null))
-    //                    .maxSimilarity(sim.path("max_similarity").asDouble(0.0))
-    //                    .avgSimilarity(sim.path("avg_similarity").asDouble(0.0))
-    //                    .similarityMessage(sim.path("message").asText(null))
-    //                    .passed(sim.path("passed").asBoolean(false))
-    //                    .similarVideoId(
-    //                            sim.has("similar_video_id")
-    //                                    ? sim.get("similar_video_id").asText(null)
-    //                                    : null)
-    //                    .build();
-    //
-    //        } catch (Exception e) {
-    //            throw new RuntimeException("Flask 응답 JSON 파싱 실패", e);
-    //        }
-    //    }
-
     public static VideoResponseDTO.openResultDTO toOpenResultDTO(Video video) {
         return VideoResponseDTO.openResultDTO
                 .builder()
@@ -126,15 +88,12 @@ public class VideoConverter {
 
     public static VideoResponseDTO.getDetailDTO toDetailDTO(
             Video video, Long likeCount, Boolean isLiked) {
-        // mintPrice와 floorPrice 계산
         BigInteger mintPrice = null;
         BigInteger floorPrice = null;
 
         if (video.getNfts() != null && !video.getNfts().isEmpty()) {
-            // mintPrice는 첫 번째 NFT의 mintPrice로 설정
             mintPrice = video.getNfts().get(0).getMintPrice();
 
-            // floorPrice는 현재 판매 중인 NFT 중 가장 낮은 가격
             System.out.println("Total NFTs: " + video.getNfts().size());
             System.out.println(
                     "Listed NFTs: "

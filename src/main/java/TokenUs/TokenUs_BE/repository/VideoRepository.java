@@ -13,29 +13,23 @@ import TokenUs.TokenUs_BE.domain.Video;
 
 @Repository
 public interface VideoRepository extends JpaRepository<Video, Long> {
-    // Video_Url로 영상 검색
+
     Optional<Video> findByFileUrl(String fileUrl);
 
     Optional<Video> findById(Long videoId);
 
-    // 모든 영상 찾기, 최신순 정렬
     List<Video> findAllByOrderByCreatedAtDesc();
 
-    // 크리에이터로 영상 찾기, 최신순 정렬
     List<Video> findByCreatorOrderByCreatedAtDesc(User user);
 
-    // (공개Only)Video_Url로 영상 검색
     List<Video> findAllByIsOpenTrueOrderByCreatedAtDesc();
 
-    // (공개Only)크리에이터로 영상 찾기, 최신순 정렬
     List<Video> findByCreatorInAndIsOpenTrueOrderByCreatedAtDesc(List<User> users);
 
-    // (공개Only)크리에이터로 영상 찾기, 최신순 정렬
     List<Video> findByIsOpenTrue();
 
     List<Video> findAllByIsOpenTrueOrderByViewsDesc();
 
-    // (공개Only) 공개 영상 중, views가 가장 높은 영상 1개
     Video findTopByIsOpenTrueOrderByViewsDesc();
 
     @Query(

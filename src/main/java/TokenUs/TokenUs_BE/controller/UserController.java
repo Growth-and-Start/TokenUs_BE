@@ -59,7 +59,6 @@ public class UserController {
     @Operation(summary = "크리에이터(유저) 구독하기", description = "크리에이터의 id를 넣고 요청하면 현재 로그인한 사용자가 구독하도록 설정")
     public ApiResponse<UserResponseDTO.subscribeResultDTO> subscribe(
             @RequestParam Long targetId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        // user id 반환
         Long userId = userDetails.getUser().getId();
 
         Subscribe subscribe = userService.subscribe(userId, targetId);
@@ -76,7 +75,6 @@ public class UserController {
             description = "크리에이터의 id를 넣고 요청하면 현재 로그인한 사용자가 구독 취소하도록 설정")
     public ApiResponse<UserResponseDTO.subscribeResultDTO> unsubscribe(
             @RequestParam Long targetId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        // user id 반환
         Long userId = userDetails.getUser().getId();
 
         Subscribe subscribe = userService.unsubscribe(userId, targetId);

@@ -12,9 +12,7 @@ import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 public interface VideoInterestRepository extends JpaRepository<VideoInterest, Long> {
     Optional<VideoInterest> findByUserIdAndVideoId(Long userId, Long videoId);
 
-    // 비디오에 대한 관심 수 계산
     Long countByVideo(Video video);
 
-    // 사용자가 특정 비디오에 관심을 표시했는지 확인
     boolean existsByUserIdAndVideoId(Long userId, Long videoId);
 }

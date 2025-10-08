@@ -1,52 +1,52 @@
 #!/bin/bash
 set -e
 
-# .env 파일을 환경 변수로 export
+# export all variables from .env file
 set -a
 source .env
 set +a
 
 # ==============================
-# Docker network 확인 및 생성
+# Check and create Docker network
 # ==============================
 if ! docker network ls | grep -q "tokenus-network"; then
-  echo "tokenus-network 네트워크가 없어 새로 생성합니다..."
+  echo "Creating tokenus-network..."
   docker network create tokenus-network
 else
-  echo "tokenus-network 네트워크가 이미 존재합니다."
+  echo "tokenus-network already exists."
 fi
 
-# AWS ECR 로그인
+# Login to AWS ECR
 aws ecr get-login-password --region $AWS_REGION | docker login \
   --username AWS \
   --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
-# ECR에서 최신 이미지 pull
-echo "ECR에 있는 이미지 불러오기"
+# Pull latest image from ECR
+echo "Pulling latest image from ECR..."
 if ! docker pull $APP_IMAGE; then
-    echo "이미지 불러오기에 실패했습니다."
+    echo "Failed to pull image."
     exit 1
 fi
 
-# Docker compose down으로 기존 컨테이너 중지 및 삭제
-echo "Docker compose down 실행"
+# Docker compose down
+echo "Docker compose down "
 docker compose down --remove-orphans
 
-# 볼륨이 없으면 생성
+# Create volume if not exists
 docker volume create mysql_data || true
 
-# Docker compose up 실행
-echo "Docker compose up 실행"
+# Docker compose up
+echo "Docker compose up"
 if ! docker compose up -d; then
-    echo "컨테이너 실행에 실패했습니다"
+    echo "Failed to start containers."
     exit 1
 fi
 
-# dangling 이미지 삭제
-echo "dangling 이미지 삭제"
+# Removing dangling images
+echo "Removing dangling images..."
 docker image prune -f
 
-echo "멈춘 container 삭제"
+echo "Removing stopped containers..."
 docker container prune -f
 
 for i in {1..10}; do
@@ -57,12 +57,12 @@ for i in {1..10}; do
     fi
 
     if curl "http://localhost:8080/health"; then
-        echo "컨테이너가 정상적으로 실행되었습니다..."
+        echo "Container is running healthy..."
         break
     fi
 
-    echo "spring boot application health check 중..."
+    echo "Spring Boot application health check in progress..."
     sleep 15
 done
 
-echo "모든 작업이 완료되었습니다."
+echo "All tasks are completed."

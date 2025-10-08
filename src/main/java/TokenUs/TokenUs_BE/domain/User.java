@@ -100,13 +100,12 @@ public class User extends BaseEntity {
         this.refreshToken = refreshToken;
     }
 
-    // JwTokenProvider을 위해
     public User(String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.email = email;
         this.password = password;
-        this.nickname = "default"; // 필요하면 기본값 설정
-        this.role = Role.USER; // 기본 역할 지정
-        this.profile_image = null; // 기본값 설정 가능
-        this.walletAddress = null; // 기본값 설정 가능
+        this.nickname = "default";
+        this.role = Role.USER;
+        this.profile_image = null;
+        this.walletAddress = null;
     }
 }

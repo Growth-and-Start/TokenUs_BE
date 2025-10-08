@@ -5,8 +5,6 @@ import org.springframework.http.HttpStatus;
 import lombok.Builder;
 import lombok.Getter;
 
-// API 응답의 이유와 관련된 정보를 담음
-
 @Getter
 @Builder
 public class ReasonDTO {
