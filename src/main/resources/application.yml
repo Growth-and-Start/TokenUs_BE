@@ -19,13 +19,13 @@ spring:
       mode: never
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
-    show-sql: false #실행되는 SQL을 콘솔에 출력
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true #SQL을 보기 좋게 포맷팅하여 출력
-        use_sql_comments: true #SQL 실행시 주석 표시
-        hbm2ddl.auto: update  #DB 테이블 자동 업데이트(개발환경에서만, 서버에서는 none)
-        default_batch_fetch_size: 1000 # 성능 최적화를 위한 배치 크기 설정
+        format_sql: true
+        use_sql_comments: true
+        hbm2ddl.auto: create
+        default_batch_fetch_size: 1000
         time_zone: KST
 
 logging:
