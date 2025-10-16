@@ -2,6 +2,7 @@ package TokenUs.TokenUs_BE.dto;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.*;
 
@@ -53,6 +54,10 @@ public class VideoResponseDTO {
 
         @JsonProperty("similar_video_url")
         private String similarVideoUrl;
+
+        private Long similarVideoId;
+
+        private List<String> tokenIds;
     }
 
     @Builder
