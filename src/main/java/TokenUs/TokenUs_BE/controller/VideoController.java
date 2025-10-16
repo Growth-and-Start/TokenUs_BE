@@ -121,7 +121,7 @@ public class VideoController {
             receiveSimilarityResult(
                     @Validated @RequestBody VideoResponseDTO.similarityCheckResultDTO result) {
 
-        System.out.println("Received similarity check result: " + result);
+        System.out.println("📡 Received similarity check result: " + result);
 
         messagingTemplate.convertAndSend("/topic/similarity_result", result);
 
@@ -138,7 +138,7 @@ public class VideoController {
 
         Video video = videoService.createVideo(request, user);
 
-        VideoResponseDTO.uploadResultDTO response = videoConverter.toUploadResult(video);
+        VideoResponseDTO.uploadResultDTO response = videoConverter.toUploadResult(video, user);
 
         return ApiResponse.onSuccess(response);
     }

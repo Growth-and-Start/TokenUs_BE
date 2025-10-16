@@ -1,6 +1,7 @@
 package TokenUs.TokenUs_BE.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -8,15 +9,27 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
+import TokenUs.TokenUs_BE.repository.NftRepository;
+import TokenUs.TokenUs_BE.repository.VideoRepository;
+
 @Service
 public class FlaskService {
 
     private final RestTemplate restTemplate;
     private final String flaskUrl;
+    private final NftRepository nftRepository;
+    private final VideoRepository videoRepository;
 
-    public FlaskService(RestTemplate restTemplate, @Value("${flask.url}") String flaskUrl) {
+    public FlaskService(
+            RestTemplate restTemplate,
+            @Value("${flask.url}") String flaskUrl,
+            NftRepository nftRepository,
+            VideoRepository videoRepository) {
         this.restTemplate = restTemplate;
         this.flaskUrl = flaskUrl;
+        this.videoRepository = videoRepository;
+        this.nftRepository = nftRepository;
     }
 
     public String requestSimilarityCheck(String fileUrl) {
@@ -84,5 +97,19 @@ public class FlaskService {
             System.err.println(" FAISS 초기화 요청 실패: " + e.getMessage());
             return null;
         }
+    }
+
+    public void enrichWithVideoData(VideoResponseDTO.similarityCheckResultDTO result) {
+        if (result.getSimilarVideoUrl() == null || result.getSimilarVideoUrl().isEmpty()) return;
+
+        videoRepository
+                .findByFileUrl(result.getSimilarVideoUrl())
+                .ifPresent(
+                        video -> {
+                            result.setSimilarVideoId(video.getId());
+                            List<String> tokenIds =
+                                    nftRepository.findTokenIdsByVideoId(video.getId());
+                            result.setTokenIds(tokenIds);
+                        });
     }
 }
