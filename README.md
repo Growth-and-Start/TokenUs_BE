@@ -22,44 +22,12 @@ Implements smart contract–based automated profit sharing, ensuring transparent
 <img src="https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white"><br>
 <img src="https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"><br>
 
+
 ## How To Use
 #### 1. Create and Configure the .env File
 
-```
-# Common
-MYSQL_PASSWORD=
-MYSQL_USER=
 
-# MySQL Container Environment Variables
-MYSQL_ROOT_PASSWORD=
-MYSQL_DATABASE=
-
-# Spring Boot Application Environment Variables
-MYSQL_DRIVER=
-MYSQL_URL=
-
-#JWT
-JWT_SECRET=
-
-# AWS S3
-AWS_S3_BUCKET=
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_DEFAULT_REGION=
-
-#Smart Contract(Web3j)
-VIDEO_NFT_CONTRACT_ADDRESS=
-MARKET_PLACE_CONTRACT_ADDRESS=
-PRIVATE_KEY=
-SERVER_WALLET_ADDRESS=
-RPC_URL
-CHAIN_ID=
-
-#Flask
-FLASK_URL=
-```
-
-#### 2. 디렉터리 이동
+#### 2. Move Directory
 ```
 cd Docker/local/
 ```
@@ -68,3 +36,8 @@ cd Docker/local/
 ```
 docker-compose up -d
 ```
+
+
+---
+### Open Source Acknowledgments
+This project uses open source components such as Spring Boot, Flask, web3j, FAISS, and PyTorch, licensed under their respective open source licenses (Apache 2.0, MIT, BSD).
