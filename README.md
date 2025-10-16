@@ -1,22 +1,20 @@
 # 🪙TokenUs🪙
-- 이화여자대학교 컴퓨터공학과 캡스톤디자인과창업프로젝트A,B
-- 개발 기간: 2024.09 ~ 2025.06
 
-## Team Info : 8시 스쿼시 연맹
-| 안희재 | 서지민 | 김원영 |
-| --- | --- | --- |
+## Team Info
 | @AnyJae | @SeoJimin1234    | @lasagna10 |
-| -FE 개발<br>-SmartContract개발 | -BE 개발<br>-ML 개발<br>-SmartContract 개발| -UX/UI 디자인<br>-FE개발<br>-SmartContract 개발 |
 
 
 ## Project Info
- 영상을 NFT로 발행하여 영상의 고유 가치를 지키고, 불법 복제를 방지하며, 원저작자의 권리를 보호하고 투자의 기회까지 제공하는 영상 플랫폼.
-#### [주요 기능1 - 영상 유사도 검사]
-사전 학습된 ResNet-50 모델과 Cosine Similarity를 활용한 유사도 검사. 영상의 고유성과 NFT의 가치를 보호하고, 불법 복제 방지.
-#### [주요 기능2 - NFT 발행]
-Ethereum을 기반으로 한 NFT 발행
-#### [주요 기능3 - NFT 거래]
-유저 간 자유로운 NFT 거래. 수익을 기대할 수 있음
+ A video platform that protects the unique value of videos by issuing them as NFTs, preventing illegal duplication, safeguarding the original creator’s rights, and providing investment opportunities.
+#### [Key Feature 1 - Video Similarity Check]
+Uses a pre-trained ResNet-50 model and cosine similarity to analyze and detect video similarity. This ensures the originality of videos, preserves NFT value, and prevents unauthorized copies.
+#### [Key Feature 2 - NFT Minting]
+Enables video NFT minting based on the Ethereum blockchain.
+#### [Key Feature 3 - NFT Trading]
+Allows users to freely trade NFTs, offering opportunities for profit.
+#### [Automated Profit Distribution]
+Implements smart contract–based automated profit sharing, ensuring transparent and fair revenue distribution among creators, investors, and rights holders.
+
 ### Stacks
 <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=SpringBoot&logoColor=white"><br>
 <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"><br>
@@ -25,25 +23,25 @@ Ethereum을 기반으로 한 NFT 발행
 <img src="https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"><br>
 
 ## How To Use
-#### 1. .env 파일 생성 및 작성
+#### 1. Create and Configure the .env File
 
 ```
-# 공통
+# Common
 MYSQL_PASSWORD=
 MYSQL_USER=
 
-# MySQL 컨테이너 환경 변수
+# MySQL Container Environment Variables
 MYSQL_ROOT_PASSWORD=
 MYSQL_DATABASE=
 
-# Spring Boot 애플리케이션 환경 변수
+# Spring Boot Application Environment Variables
 MYSQL_DRIVER=
 MYSQL_URL=
 
 #JWT
 JWT_SECRET=
 
-#AWS S3(githubAction User 기준)
+# AWS S3
 AWS_S3_BUCKET=
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
@@ -57,7 +55,7 @@ SERVER_WALLET_ADDRESS=
 RPC_URL
 CHAIN_ID=
 
-#Flask 서버
+#Flask
 FLASK_URL=
 ```
 
