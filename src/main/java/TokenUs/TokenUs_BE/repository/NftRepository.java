@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import TokenUs.TokenUs_BE.domain.Nft;
+import TokenUs.TokenUs_BE.domain.User;
+import TokenUs.TokenUs_BE.domain.Video;
 
 @Repository
 public interface NftRepository extends JpaRepository<Nft, Long> {
@@ -26,4 +28,8 @@ public interface NftRepository extends JpaRepository<Nft, Long> {
 
     @Query("SELECT n.tokenId FROM Nft n WHERE n.video.id = :videoId")
     List<String> findTokenIdsByVideoId(@Param("videoId") Long videoId);
+
+    // 업로더가 소유한 특정 video의 NFT tokenId들 조회
+    @Query("SELECT n.tokenId FROM Nft n WHERE n.video = :video AND n.owner = :owner")
+    List<Long> findTokenIdsByVideoAndOwner(@Param("video") Video video, @Param("owner") User owner);
 }

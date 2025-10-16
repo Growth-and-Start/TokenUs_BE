@@ -138,7 +138,7 @@ public class VideoController {
 
         Video video = videoService.createVideo(request, user);
 
-        VideoResponseDTO.uploadResultDTO response = videoConverter.toUploadResult(video);
+        VideoResponseDTO.uploadResultDTO response = videoConverter.toUploadResult(video, user);
 
         return ApiResponse.onSuccess(response);
     }

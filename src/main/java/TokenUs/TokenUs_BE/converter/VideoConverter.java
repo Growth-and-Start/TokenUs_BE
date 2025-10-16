@@ -1,21 +1,39 @@
 package TokenUs.TokenUs_BE.converter;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
+import TokenUs.TokenUs_BE.apiPayload.code.status.ErrorStatus;
+import TokenUs.TokenUs_BE.apiPayload.exception.GeneralException;
 import TokenUs.TokenUs_BE.domain.User;
 import TokenUs.TokenUs_BE.domain.Video;
 import TokenUs.TokenUs_BE.dto.VideoRequestDTO;
 import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
+import TokenUs.TokenUs_BE.repository.NftRepository;
+import TokenUs.TokenUs_BE.repository.VideoRepository;
 
 @Component
 @RequiredArgsConstructor
 public class VideoConverter {
 
-    public static Video toVideo(VideoRequestDTO.videoDetailRequestDTO request, User user) {
+    private final VideoRepository videoRepository;
+    private final NftRepository nftRepository;
+
+    public Video toVideo(VideoRequestDTO.videoDetailRequestDTO request, User user) {
+
+        Video parentVideo = null;
+
+        if (request.getParentVideoId() != null) {
+            parentVideo =
+                    videoRepository
+                            .findById(request.getParentVideoId())
+                            .orElseThrow(() -> new GeneralException(ErrorStatus.VIDEO_NOT_EXIST));
+        }
 
         return Video.builder()
                 .title(request.getVideoTitle())
@@ -24,6 +42,7 @@ public class VideoConverter {
                 .isOpen(request.getIsOpen())
                 .thumbnailUrl(request.getThumbnailUrl())
                 .creator(user)
+                .parentVideo(parentVideo)
                 .views(0L)
                 .build();
     }
@@ -57,12 +76,20 @@ public class VideoConverter {
                 .build();
     }
 
-    public static VideoResponseDTO.uploadResultDTO toUploadResult(Video video) {
+    public VideoResponseDTO.uploadResultDTO toUploadResult(Video video, User user) {
+
+        List<Long> parentTokenIds = new ArrayList<>();
+
+        if (video.getParentVideo() != null) {
+            parentTokenIds =
+                    nftRepository.findTokenIdsByVideoAndOwner(video.getParentVideo(), user);
+        }
 
         return VideoResponseDTO.uploadResultDTO
                 .builder()
                 .id(video.getId())
                 .videoPath(video.getFileUrl())
+                .parentVideoTokenId(parentTokenIds)
                 .createdAt(video.getCreatedAt())
                 .build();
     }

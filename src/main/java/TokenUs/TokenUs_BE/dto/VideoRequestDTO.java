@@ -16,6 +16,7 @@ public class VideoRequestDTO {
         private String videoDetail;
         private String videoUrl;
         private Boolean isOpen;
+        private Long parentVideoId;
 
         @Builder.Default private String thumbnailUrl = "https://example.com/default-thumbnail.jpg";
     }

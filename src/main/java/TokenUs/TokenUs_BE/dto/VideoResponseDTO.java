@@ -71,6 +71,8 @@ public class VideoResponseDTO {
         @JsonProperty("video_path")
         private String videoPath;
 
+        private List<Long> parentVideoTokenId;
+
         private LocalDateTime createdAt;
     }
 
