@@ -43,11 +43,11 @@ public class VideoResponseDTO {
         @JsonProperty("message")
         private String similarityMessage;
 
-        @JsonProperty("max_similarity")
-        private double maxSimilarity;
+        @JsonProperty("max_segment_similarity")
+        private double maxSegmentSimilarity;
 
-        @JsonProperty("avg_similarity")
-        private double avgSimilarity;
+        @JsonProperty("elapsed_time")
+        private float elapsedTime;
 
         @JsonProperty("passed")
         private boolean passed;

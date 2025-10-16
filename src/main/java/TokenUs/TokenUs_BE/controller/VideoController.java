@@ -121,9 +121,7 @@ public class VideoController {
             receiveSimilarityResult(
                     @Validated @RequestBody VideoResponseDTO.similarityCheckResultDTO result) {
 
-        System.out.println("Received similarity check result: " + result);
-
-        flaskService.enrichWithVideoData(result);
+        System.out.println("📡 Received similarity check result: " + result);
 
         messagingTemplate.convertAndSend("/topic/similarity_result", result);
 
