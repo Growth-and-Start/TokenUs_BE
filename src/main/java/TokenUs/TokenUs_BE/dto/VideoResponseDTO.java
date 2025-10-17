@@ -133,6 +133,7 @@ public class VideoResponseDTO {
         private Long creatorId;
         private Long likeCount;
         private Long viewCount;
+        private Long parentVideoId;
         private Boolean isLiked;
         private BigInteger mintPrice;
         private BigInteger floorPrice;

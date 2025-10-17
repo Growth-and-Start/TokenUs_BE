@@ -48,6 +48,7 @@ public class NftResponseDTO {
         private BigInteger mintPrice;
         private BigInteger floorPrice;
         private Long videoId;
+        private Boolean isPrimary;
         private Boolean isListed;
         private Long creatorId;
         private String sellerWallet;
