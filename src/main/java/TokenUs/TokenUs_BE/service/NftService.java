@@ -665,6 +665,7 @@ public class NftService {
 
     public List<NftResponseDTO.MyNftDTO> getMyNFTs(Long userId) {
         List<Nft> myNFTs = nftRepository.findByOwnerId(userId);
+
         return myNFTs.stream()
                 .map(
                         nft -> {
@@ -674,6 +675,10 @@ public class NftService {
                                             .findMinCurrentPriceByVideoIdAndIsListed(
                                                     nft.getVideo().getId())
                                             .orElse(null); // 판매 중인 NFT가 없는 경우 null로 설정
+
+                            Video video = nft.getVideo();
+
+                            boolean isPrimary = (video.getParentVideo() == null);
 
                             return NftResponseDTO.MyNftDTO.builder()
                                     .tokenId(nft.getTokenId())
@@ -689,6 +694,7 @@ public class NftService {
                                     .creatorProfileUrl(
                                             nft.getVideo().getCreator().getProfile_image())
                                     .purchasedPrice(nft.getCurrentPrice())
+                                    .isPrimary(isPrimary)
                                     .currentPrice(nft.getCurrentPrice())
                                     .floorPrice(floorPrice)
                                     .mintPrice(nft.getMintPrice())

@@ -131,6 +131,7 @@ public class NftResponseDTO {
         private String videoTitle;
         private String videoUrl;
         private Long creatorId;
+        private Boolean isPrimary;
         private String creatorNickname;
         private String creatorProfileUrl;
         private BigInteger purchasedPrice;
