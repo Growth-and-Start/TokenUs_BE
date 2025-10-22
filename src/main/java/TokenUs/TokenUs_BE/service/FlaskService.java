@@ -3,12 +3,14 @@ package TokenUs.TokenUs_BE.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import TokenUs.TokenUs_BE.domain.Video;
 import TokenUs.TokenUs_BE.dto.VideoResponseDTO;
 import TokenUs.TokenUs_BE.repository.NftRepository;
 import TokenUs.TokenUs_BE.repository.VideoRepository;
@@ -99,17 +101,39 @@ public class FlaskService {
         }
     }
 
-    public void enrichWithVideoData(VideoResponseDTO.similarityCheckResultDTO result) {
-        if (result.getSimilarVideoUrl() == null || result.getSimilarVideoUrl().isEmpty()) return;
+    public VideoResponseDTO.similarityCheckResultDTO enrichSimilarityResult(
+            VideoResponseDTO.similarityCheckResultDTO result) {
 
-        videoRepository
-                .findByFileUrl(result.getSimilarVideoUrl())
-                .ifPresent(
-                        video -> {
-                            result.setSimilarVideoId(video.getId());
-                            List<String> tokenIds =
-                                    nftRepository.findTokenIdsByVideoId(video.getId());
-                            result.setTokenIds(tokenIds);
-                        });
+        // 1. similar_video_url이 존재하는 경우만 처리
+        if (result.getSimilarVideoUrl() != null) {
+            System.out.println("[Service] Searching video for URL: " + result.getSimilarVideoUrl());
+
+            // 2. URL로 Video 엔티티 조회
+            Optional<Video> similarVideoOpt =
+                    videoRepository.findByFileUrl(result.getSimilarVideoUrl());
+
+            if (similarVideoOpt.isPresent()) {
+                Video similarVideo = similarVideoOpt.get();
+                result.setSimilarVideoId(similarVideo.getId());
+
+                // 3. 해당 영상의 NFT token 목록 조회
+                List<Long> tokenIds = nftRepository.findAllTokenIdsByVideoId(similarVideo.getId());
+                result.setTokenIds(tokenIds);
+
+                System.out.println(
+                        "[Service] Enriched result: similar_video_id="
+                                + similarVideo.getId()
+                                + ", token_ids="
+                                + tokenIds);
+            } else {
+                System.out.println(
+                        "[Service] No matching video found for URL: "
+                                + result.getSimilarVideoUrl());
+            }
+        } else {
+            System.out.println("[Service] No similar_video_url provided, skipping enrichment");
+        }
+
+        return result;
     }
 }

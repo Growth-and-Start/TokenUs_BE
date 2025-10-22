@@ -57,7 +57,7 @@ public class VideoResponseDTO {
 
         private Long similarVideoId;
 
-        private List<String> tokenIds;
+        private List<Long> tokenIds;
     }
 
     @Builder

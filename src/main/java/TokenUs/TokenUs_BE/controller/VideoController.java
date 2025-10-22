@@ -123,7 +123,10 @@ public class VideoController {
 
         System.out.println("Received similarity check result: " + result);
 
-        messagingTemplate.convertAndSend("/topic/similarity_result", result);
+        VideoResponseDTO.similarityCheckResultDTO enrichedResult =
+                flaskService.enrichSimilarityResult(result);
+
+        messagingTemplate.convertAndSend("/topic/similarity_result", enrichedResult);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }

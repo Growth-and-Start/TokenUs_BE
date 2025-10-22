@@ -27,7 +27,7 @@ public interface NftRepository extends JpaRepository<Nft, Long> {
     Optional<BigInteger> findMinCurrentPriceByVideoIdAndIsListed(@Param("videoId") Long videoId);
 
     @Query("SELECT n.tokenId FROM Nft n WHERE n.video.id = :videoId")
-    List<String> findTokenIdsByVideoId(@Param("videoId") Long videoId);
+    List<Long> findAllTokenIdsByVideoId(@Param("videoId") Long videoId);
 
     // 업로더가 소유한 특정 video의 NFT tokenId들 조회
     @Query("SELECT n.tokenId FROM Nft n WHERE n.video = :video AND n.owner = :owner")
