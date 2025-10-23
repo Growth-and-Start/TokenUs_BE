@@ -150,7 +150,8 @@ public class VideoConverter {
                 .thumbnailUrl(video.getThumbnailUrl())
                 .creatorId(video.getCreator().getId())
                 .likeCount(likeCount)
-                .parentVideoId(video.getParentVideo().getId())
+                .parentVideoId(
+                        video.getParentVideo() != null ? video.getParentVideo().getId() : null)
                 .viewCount(video.getViews())
                 .isLiked(isLiked)
                 .mintPrice(mintPrice)
