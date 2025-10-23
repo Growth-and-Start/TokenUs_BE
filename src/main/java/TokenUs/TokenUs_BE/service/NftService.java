@@ -3,7 +3,9 @@ package TokenUs.TokenUs_BE.service;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -350,23 +352,16 @@ public class NftService {
                 .build();
     }
 
-    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId) throws Exception {
-        System.out.println("[SERVICE] getListedNfts() 호출됨");
-
-        System.out.println("[SERVICE] getListedNFTs().send() 호출 직전");
+    public List<NftResponseDTO.listedNFTInfoDTO> getListedNftsWithContract(Long loginUserId)
+            throws Exception {
         Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
                 marketplaceContract.getListedNFTs().send();
-        System.out.println("[SERVICE] getListedNFTs().send() 성공");
 
         System.out.println("result " + result);
 
         List<BigInteger> tokenIds = result.component1();
         List<String> sellerAddresses = result.component2();
         List<BigInteger> prices = result.component3();
-
-        System.out.println("[SERVICE] 가져온 tokenIds 수: " + tokenIds.size());
-        System.out.println("[SERVICE] 가져온 sellerAddresses 수: " + sellerAddresses.size());
-        System.out.println("[SERVICE] 가져온 prices 수: " + prices.size());
 
         List<NftResponseDTO.listedNFTInfoDTO> listedNfts = new ArrayList<>();
 
@@ -403,6 +398,34 @@ public class NftService {
             }
         }
         System.out.println("[SERVICE] 최종 반환할 listedNfts 크기: " + listedNfts.size());
+        return listedNfts;
+    }
+
+    public List<NftResponseDTO.listedNFTInfoDTO> getListedNfts(Long loginUserId) {
+        // 1. 로그인 사용자 정보 (옵션)
+        Optional<User> loginUser =
+                loginUserId != null ? userRepository.findById(loginUserId) : Optional.empty();
+
+        // 2. DB에서 isListed == true 인 NFT 모두 조회
+        List<Nft> listedNftsFromDb = nftRepository.findByIsListedTrue();
+
+        // 3. floorPrice 계산 (최저가 NFT)
+        BigInteger floorPrice =
+                listedNftsFromDb.stream()
+                        .map(Nft::getCurrentPrice)
+                        .filter(Objects::nonNull)
+                        .min(BigInteger::compareTo)
+                        .orElse(null);
+
+        // 4. DTO 변환
+        List<NftResponseDTO.listedNFTInfoDTO> listedNfts =
+                listedNftsFromDb.stream()
+                        .map(
+                                nft ->
+                                        nftConverter.toListedNFTInfoDTO(
+                                                nft, nft.getOwner().getWalletAddress(), floorPrice))
+                        .collect(Collectors.toList());
+
         return listedNfts;
     }
 
@@ -602,7 +625,7 @@ public class NftService {
         return nftConverter.toTradeHistoryDTOList(transactions);
     }
 
-    public List<NftResponseDTO.listedNFTInfoDTO> getListedNftsByVideoId(
+    public List<NftResponseDTO.listedNFTInfoDTO> getListedNftsByVideoIdWithContract(
             Long videoId, Long loginUserId) throws Exception {
         // 1. 컨트랙트에서 판매중인 NFT 목록 호출
         Tuple3<List<BigInteger>, List<String>, List<BigInteger>> result =
@@ -660,6 +683,39 @@ public class NftService {
         }
 
         System.out.println("[SERVICE] 최종 반환할 listedNfts 크기: " + listedNfts.size());
+        return listedNfts;
+    }
+
+    public List<NftResponseDTO.listedNFTInfoDTO> getListedNftsByVideoId(
+            Long videoId, Long loginUserId) {
+        // 1. 로그인 사용자 정보 (현재는 직접 사용되지 않지만, 나중에 "내 NFT" 구분용으로 유지 가능)
+        Optional<User> loginUser =
+                loginUserId != null ? userRepository.findById(loginUserId) : Optional.empty();
+
+        // 2. DB에서 videoId에 해당하고 isListed == true 인 NFT만 조회
+        List<Nft> listedNftsFromDb = nftRepository.findByVideo_IdAndIsListedTrue(videoId);
+
+        // 3. floorPrice 계산 (최저가 NFT)
+        BigInteger floorPrice =
+                listedNftsFromDb.stream()
+                        .map(Nft::getCurrentPrice)
+                        .filter(Objects::nonNull)
+                        .min(BigInteger::compareTo)
+                        .orElse(null);
+
+        // 4. DTO 변환
+        List<NftResponseDTO.listedNFTInfoDTO> listedNfts =
+                listedNftsFromDb.stream()
+                        .map(
+                                nft ->
+                                        nftConverter.toListedNFTInfoDTO(
+                                                nft,
+                                                nft.getOwner() != null
+                                                        ? nft.getOwner().getWalletAddress()
+                                                        : null,
+                                                floorPrice))
+                        .collect(Collectors.toList());
+
         return listedNfts;
     }
 
