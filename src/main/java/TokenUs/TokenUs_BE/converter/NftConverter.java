@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 
 import TokenUs.TokenUs_BE.domain.Nft;
 import TokenUs.TokenUs_BE.domain.Transaction;
-import TokenUs.TokenUs_BE.domain.Video;
 import TokenUs.TokenUs_BE.domain.enums.TransactionType;
 import TokenUs.TokenUs_BE.domain.mapping.VideoInterest;
 import TokenUs.TokenUs_BE.dto.NftRequestDTO;
@@ -59,6 +58,7 @@ public class NftConverter {
                 .currentPrice(BigInteger.ZERO)
                 .mintPrice(dto.getPrice())
                 .mintQuantity(dto.getTotalSupply())
+                .isPrimary(Boolean.TRUE)
                 .isListed(false)
                 .owner(userRepository.getReferenceById(userId))
                 .video(videoRepository.getReferenceById(dto.getVideoId().longValue()))
@@ -97,10 +97,6 @@ public class NftConverter {
     public NftResponseDTO.listedNFTInfoDTO toListedNFTInfoDTO(
             Nft nft, String sellerWallet, BigInteger floorPrice) {
 
-        Video video = nft.getVideo();
-
-        boolean isPrimary = (video.getParentVideo() == null);
-
         return NftResponseDTO.listedNFTInfoDTO
                 .builder()
                 .id(nft.getId())
@@ -110,7 +106,7 @@ public class NftConverter {
                 .currentPrice(nft.getCurrentPrice())
                 .mintPrice(nft.getMintPrice())
                 .floorPrice(floorPrice)
-                .isPrimary(isPrimary)
+                .isPrimary(nft.getIsPrimary())
                 .videoId(nft.getVideo().getId())
                 .isListed(nft.getIsListed())
                 .creatorId(nft.getVideo().getCreator().getId())

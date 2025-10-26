@@ -587,6 +587,7 @@ public class NftService {
                         .orElseThrow(() -> new IllegalArgumentException("NFT를 찾을 수 없습니다."));
 
         nft.setIsListed(false);
+        nft.setIsPrimary(false);
         nft.setCurrentPrice(null);
 
         User buyer =
@@ -732,10 +733,6 @@ public class NftService {
                                                     nft.getVideo().getId())
                                             .orElse(null); // 판매 중인 NFT가 없는 경우 null로 설정
 
-                            Video video = nft.getVideo();
-
-                            boolean isPrimary = (video.getParentVideo() == null);
-
                             return NftResponseDTO.MyNftDTO.builder()
                                     .tokenId(nft.getTokenId())
                                     .isListed(nft.getIsListed())
@@ -750,7 +747,7 @@ public class NftService {
                                     .creatorProfileUrl(
                                             nft.getVideo().getCreator().getProfile_image())
                                     .purchasedPrice(nft.getCurrentPrice())
-                                    .isPrimary(isPrimary)
+                                    .isPrimary(nft.getIsPrimary())
                                     .currentPrice(nft.getCurrentPrice())
                                     .floorPrice(floorPrice)
                                     .mintPrice(nft.getMintPrice())
